@@ -1,0 +1,32 @@
+# =============================================================================
+# MODULE C: Document Research (Local NotebookLM)
+# =============================================================================
+# "I want to upload PDFs and research documents"
+#
+# Services: Local NotebookLM
+# Ports: 3002
+# Dependencies: Core (Ollama)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Local NotebookLM - Document Research (port 3002)
+  # ---------------------------------------------------------------------------
+  notebooklm:
+    image: ghcr.io/notebooklm-local/notebooklm:latest
+    container_name: deepkit-notebooklm
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+    volumes:
+      - notebooklm_data:/app/data
+    depends_on:
+      - ollama
+    networks:
+      - deepkit-network
+
+volumes:
+  notebooklm_data:
+    name: deepkit-notebooklm-data

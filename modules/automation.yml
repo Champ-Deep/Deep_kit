@@ -1,0 +1,53 @@
+# =============================================================================
+# MODULE A: Workflow Automation (n8n)
+# =============================================================================
+# "I want to automate tasks and connect apps"
+#
+# Services: n8n
+# Ports: 5678
+# Dependencies: Core (PostgreSQL, Redis)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # n8n - Visual Workflow Automation (port 5678)
+  # ---------------------------------------------------------------------------
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: deepkit-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # Database (uses shared PostgreSQL)
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: ${POSTGRES_USER:-deepkit}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+      # Security
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:?N8N_ENCRYPTION_KEY is required}
+      # Queue (uses shared Redis)
+      QUEUE_BULL_REDIS_HOST: redis
+      QUEUE_BULL_REDIS_PORT: 6379
+      EXECUTIONS_MODE: queue
+      # Settings
+      GENERIC_TIMEZONE: ${TIMEZONE:-UTC}
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      # AI Integration
+      N8N_AI_ENABLED: "true"
+      OLLAMA_HOST: http://ollama:11434
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - deepkit-network
+
+volumes:
+  n8n_data:
+    name: deepkit-n8n-data

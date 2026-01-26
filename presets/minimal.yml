@@ -1,0 +1,22 @@
+# =============================================================================
+# PRESET: Minimal
+# =============================================================================
+# Perfect for getting started. Includes the essentials for automation and AI.
+#
+# Included:
+#   - Core (PostgreSQL, Redis, Ollama, Portainer)
+#   - Module A: n8n (automation)
+#   - Module B: Open WebUI (AI chat)
+#   - Module F: chamPDF (PDF tools)
+#
+# Total: 7 services
+# Ports: 5432, 6379, 11434, 9000, 5678, 3001, 3005
+#
+# Usage: ./install.sh --preset minimal
+# =============================================================================
+
+include:
+  - path: ../docker-compose.yml
+  - path: ../modules/automation.yml
+  - path: ../modules/chat.yml
+  - path: ../modules/pdf.yml

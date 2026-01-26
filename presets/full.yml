@@ -1,0 +1,35 @@
+# =============================================================================
+# PRESET: Full Stack
+# =============================================================================
+# Everything included. Only for users who need all capabilities.
+#
+# Included:
+#   - Core (PostgreSQL, Redis, Ollama, Portainer)
+#   - Module A: n8n (automation)
+#   - Module B: Open WebUI (AI chat)
+#   - Module C: Local NotebookLM (document research)
+#   - Module D: Strapi CMS (content management)
+#   - Module E: EspoCRM (customer management)
+#   - Module F: chamPDF (PDF tools)
+#   - Module G: Knowledge Graphs (FalkorDB + Graphiti)
+#   - Module H: Vector Search (Qdrant)
+#   - Module I: Uptime Kuma (monitoring)
+#   - Module J: Database Admin (Adminer)
+#
+# Total: ~18 services
+#
+# Usage: ./install.sh --preset full
+# =============================================================================
+
+include:
+  - path: ../docker-compose.yml
+  - path: ../modules/automation.yml
+  - path: ../modules/chat.yml
+  - path: ../modules/research.yml
+  - path: ../modules/cms.yml
+  - path: ../modules/crm.yml
+  - path: ../modules/pdf.yml
+  - path: ../modules/knowledge.yml
+  - path: ../modules/vector.yml
+  - path: ../modules/monitoring.yml
+  - path: ../modules/admin.yml

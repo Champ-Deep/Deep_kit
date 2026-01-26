@@ -1,0 +1,26 @@
+# =============================================================================
+# PRESET: Developer
+# =============================================================================
+# For building AI applications with knowledge graphs and vector search.
+#
+# Included:
+#   - Core (PostgreSQL, Redis, Ollama, Portainer)
+#   - Module A: n8n (automation)
+#   - Module B: Open WebUI (AI chat)
+#   - Module G: Knowledge Graphs (FalkorDB + Graphiti)
+#   - Module H: Vector Search (Qdrant)
+#   - Module J: Database Admin (Adminer)
+#
+# Total: 11 services
+# Ports: 5432, 6379, 11434, 9000, 5678, 3001, 6380, 3011, 8000, 6333, 9003
+#
+# Usage: ./install.sh --preset developer
+# =============================================================================
+
+include:
+  - path: ../docker-compose.yml
+  - path: ../modules/automation.yml
+  - path: ../modules/chat.yml
+  - path: ../modules/knowledge.yml
+  - path: ../modules/vector.yml
+  - path: ../modules/admin.yml

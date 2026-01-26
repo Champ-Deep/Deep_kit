@@ -1,0 +1,35 @@
+# =============================================================================
+# MODULE F: PDF Tools (chamPDF / Stirling PDF)
+# =============================================================================
+# "I want to merge, split, and edit PDFs"
+#
+# Services: chamPDF (Stirling PDF)
+# Ports: 3005
+# Dependencies: Core (none specifically)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # chamPDF - PDF Manipulation (port 3005)
+  # ---------------------------------------------------------------------------
+  champdf:
+    image: frooodle/s-pdf:latest
+    container_name: deepkit-champdf
+    restart: unless-stopped
+    ports:
+      - "3005:8080"
+    environment:
+      DOCKER_ENABLE_SECURITY: "false"
+      INSTALL_BOOK_AND_ADVANCED_HTML_OPS: "true"
+      LANGS: en_US
+    volumes:
+      - champdf_data:/usr/share/tessdata
+      - champdf_configs:/configs
+    networks:
+      - deepkit-network
+
+volumes:
+  champdf_data:
+    name: deepkit-champdf-data
+  champdf_configs:
+    name: deepkit-champdf-configs

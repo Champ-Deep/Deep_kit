@@ -1,0 +1,116 @@
+# =============================================================================
+# DEEP STARTER KIT - Core Services
+# =============================================================================
+# This file contains only the CORE services that are always installed.
+# Additional modules can be added using files from the modules/ directory.
+#
+# Usage:
+#   docker compose up -d                    # Start core services
+#   docker compose -f docker-compose.yml -f modules/automation.yml up -d
+#
+# For presets, use the install.sh script:
+#   ./install.sh --preset minimal
+#
+# =============================================================================
+
+name: deep-starter-kit
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL - Shared Database (port 5432)
+  # ---------------------------------------------------------------------------
+  # Single PostgreSQL instance for all applications.
+  # Each app uses its own database within this instance.
+  postgres:
+    image: postgres:16-alpine
+    container_name: deepkit-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-deepkit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-deepkit}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-deepkit}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - deepkit-network
+
+  # ---------------------------------------------------------------------------
+  # Redis - Caching & Job Queues (port 6379)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: deepkit-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - deepkit-network
+
+  # ---------------------------------------------------------------------------
+  # Ollama - Local AI Models (port 11434)
+  # ---------------------------------------------------------------------------
+  # CPU version (default)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: deepkit-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - deepkit-network
+
+  # ---------------------------------------------------------------------------
+  # Portainer - Docker Management UI (port 9000)
+  # ---------------------------------------------------------------------------
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: deepkit-portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - deepkit-network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  deepkit-network:
+    name: deepkit-network
+    driver: bridge
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    name: deepkit-postgres-data
+  redis_data:
+    name: deepkit-redis-data
+  ollama_data:
+    name: deepkit-ollama-data
+  portainer_data:
+    name: deepkit-portainer-data

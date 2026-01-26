@@ -1,0 +1,28 @@
+# =============================================================================
+# MODULE H: Vector Search (Qdrant)
+# =============================================================================
+# "I want semantic search and RAG capabilities"
+#
+# Services: Qdrant
+# Ports: 6333
+# Dependencies: Core (Ollama for embeddings)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Qdrant - Vector Database (port 6333)
+  # ---------------------------------------------------------------------------
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: deepkit-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - deepkit-network
+
+volumes:
+  qdrant_data:
+    name: deepkit-qdrant-data

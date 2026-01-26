@@ -1,0 +1,43 @@
+# =============================================================================
+# MODULE D: Content Management (Strapi CMS)
+# =============================================================================
+# "I want to manage blog posts, pages, and content"
+#
+# Services: Strapi
+# Ports: 3003
+# Dependencies: Core (PostgreSQL)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Strapi - Headless CMS (port 3003)
+  # ---------------------------------------------------------------------------
+  strapi:
+    image: strapi/strapi:latest
+    container_name: deepkit-strapi
+    restart: unless-stopped
+    ports:
+      - "3003:1337"
+    environment:
+      # Database (uses shared PostgreSQL)
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: strapi
+      DATABASE_USERNAME: ${POSTGRES_USER:-deepkit}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      # Security
+      JWT_SECRET: ${STRAPI_JWT_SECRET:?STRAPI_JWT_SECRET is required}
+      ADMIN_JWT_SECRET: ${STRAPI_ADMIN_JWT_SECRET:-${STRAPI_JWT_SECRET}}
+      APP_KEYS: ${STRAPI_APP_KEYS:-}
+    volumes:
+      - strapi_data:/srv/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - deepkit-network
+
+volumes:
+  strapi_data:
+    name: deepkit-strapi-data

@@ -1,0 +1,28 @@
+# =============================================================================
+# MODULE I: Monitoring (Uptime Kuma)
+# =============================================================================
+# "I want to monitor uptime and service health"
+#
+# Services: Uptime Kuma
+# Ports: 9002
+# Dependencies: Core (none specifically)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Uptime Kuma - Service Monitoring (port 9002)
+  # ---------------------------------------------------------------------------
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: deepkit-uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "9002:3001"
+    volumes:
+      - uptimekuma_data:/app/data
+    networks:
+      - deepkit-network
+
+volumes:
+  uptimekuma_data:
+    name: deepkit-uptimekuma-data
