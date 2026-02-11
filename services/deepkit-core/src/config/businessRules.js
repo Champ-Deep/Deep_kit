@@ -1,2 +1,0 @@
-const BUSINESSES = [{id:'lakeb2b',name:'LakeB2B',keywords:['enterprise','sales','b2b']},{id:'ampliz',name:'Ampliz',keywords:['healthcare','medical']},{id:'champions_accelerator',name:'Champions Accelerator',keywords:['founder','startup']},{id:'champions_group',name:'Champions Group',keywords:['events','venue']},{id:'recruitchamp',name:'RecruitChamp',keywords:['hiring','recruitment']},{id:'metricfox',name:'MetricFox',keywords:['marketing','roi']},{id:'ipmomentum',name:'IP Momentum',keywords:['voip','cti']}];
-module.exports={BUSINESSES,THRESHOLDS:{primary:7,secondary:4}};
