@@ -1,0 +1,39 @@
+# =============================================================================
+# OPENCODE - AI Agent Runtime
+# =============================================================================
+# Headless AI agent runtime that provides advanced AI capabilities
+# Runs locally with Ollama for 100% data sovereignty
+#
+# Port: 4096
+# =============================================================================
+
+services:
+  opencode:
+    image: opencode/opencode:latest
+    container_name: deepkit-opencode
+    restart: unless-stopped
+    command: serve --port 4096 --hostname 0.0.0.0
+    ports:
+      - "4096:4096"
+    environment:
+      - OLLAMA_HOST=http://deepkit-engine:11434
+      - LOCAL_ENDPOINT=http://deepkit-engine:11434/v1
+      - OPENCODE_SERVER_PASSWORD=${DEEPKIT_INTERNAL_TOKEN:-deepkit}
+      - OPENCODE_SERVER_USERNAME=opencode
+    depends_on:
+      - deepkit-engine
+    volumes:
+      - opencode_data:/root/.opencode
+      - ./config/opencode:/config:ro
+    networks:
+      - deepkit-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4096/global/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  opencode_data:
+    name: deepkit-opencode-data
