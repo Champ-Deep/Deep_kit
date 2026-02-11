@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepKit Forms</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: #0A0B10;
+      color: #00F2FF;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.03) 50%, transparent 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: scanline 8s linear infinite;
+    }
+    @keyframes scanline { to { transform: translateY(4px); } }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(112,0,255,0.1);
+      border: 2px solid #7000FF;
+      border-radius: 8px;
+    }
+    h1 { font-size: 2.5rem; color: #7000FF; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 0 20px rgba(112,0,255,0.5); }
+    .subtitle { color: #00F2FF; font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem; }
+    .panel {
+      background: rgba(0,242,255,0.05);
+      border: 2px solid #00F2FF;
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .panel-header { font-size: 1.2rem; color: #00F2FF; margin-bottom: 1.5rem; text-transform: uppercase; }
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; color: #00F2FF; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
+    input, textarea {
+      width: 100%;
+      background: rgba(0,242,255,0.1);
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .button {
+      background: #7000FF;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+    }
+    .button:hover { background: #8F00FF; box-shadow: 0 0 20px rgba(112,0,255,0.5); }
+    .slider { width: 100%; height: 8px; background: rgba(0,242,255,0.2); border-radius: 4px; appearance: none; }
+    .slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #7000FF;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .form-item {
+      background: rgba(112,0,255,0.1);
+      border: 1px solid #7000FF;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .form-item:hover { background: rgba(112,0,255,0.2); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const API_BASE = window.location.origin;
+
+    function App() {
+      const [forms, setForms] = useState([]);
+      const [title, setTitle] = useState('');
+      const [description, setDescription] = useState('');
+
+      useEffect(() => {
+        loadForms();
+      }, []);
+
+      const loadForms = async () => {
+        const response = await fetch(`${API_BASE}/api/forms`);
+        const data = await response.json();
+        setForms(data.forms || []);
+      };
+
+      const createForm = async () => {
+        if (!title) {
+          alert('Enter form title');
+          return;
+        }
+        await fetch(`${API_BASE}/api/forms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description })
+        });
+        setTitle('');
+        setDescription('');
+        loadForms();
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <h1>📋 DeepKit Forms</h1>
+            <div className="subtitle">Behavioral Interaction Form Builder</div>
+          </div>
+
+          <div className="panel">
+            <div className="panel-header">Create Form</div>
+            <div className="form-group">
+              <label>Form Title</label>
+              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Customer Feedback Survey" />
+            </div>
+            <div className="form-group">
+              <label>Description</label>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Gather customer insights..." />
+            </div>
+            <button className="button" onClick={createForm}>Create Form</button>
+          </div>
+
+          <div className="panel">
+            <div className="panel-header">Forms ({forms.length})</div>
+            {forms.map(form => (
+              <div key={form.id} className="form-item">
+                <div style={{ color: '#7000FF', fontWeight: 'bold' }}>{form.title}</div>
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.5rem' }}>
+                  Created: {new Date(form.created_at).toLocaleDateString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>

@@ -1,28 +1,41 @@
 # =============================================================================
 # PRESET: Full Stack
 # =============================================================================
-# Everything included. Only for users who need all capabilities.
+# Everything included. The complete DeepKit arsenal.
 #
 # Included:
-#   - Core (PostgreSQL, Redis, Ollama, Portainer)
-#   - Module A: n8n (automation)
-#   - Module B: Open WebUI (AI chat)
-#   - Module C: Local NotebookLM (document research)
-#   - Module D: Strapi CMS (content management)
-#   - Module E: EspoCRM (customer management)
-#   - Module F: chamPDF (PDF tools)
-#   - Module G: Knowledge Graphs (FalkorDB + Graphiti)
-#   - Module H: Vector Search (Qdrant)
-#   - Module I: Uptime Kuma (monitoring)
-#   - Module J: Database Admin (Adminer)
+#   - Core (DEEPKIT_STORE, DEEPKIT_CACHE, DEEPKIT_ENGINE)
+#   - DEEPKIT_CORE (command center - AI chat + generative UI)
+#   - DEEPKIT_ORCHESTRATOR (workflow automation)
+#   - DEEPKIT_CHAT (AI conversation)
+#   - DEEPKIT_RESEARCH (document research)
+#   - DEEPKIT_CONTENT (content management)
+#   - DEEPKIT_SALES (customer management)
+#   - DEEPKIT_DOCS (PDF tools)
+#   - DEEPKIT_GRAPH + DEEPKIT_MEMORY (knowledge graphs)
+#   - DEEPKIT_VECTOR (semantic search)
+#   - DEEPKIT_PULSE (system monitoring)
+#   - DEEPKIT_DATA (database admin)
+#   - CHAMPMAIL (email automation)
+#   - COWORK (unified AI workspace)
+#   - GATEWAY (Traefik reverse proxy)
+#   - OBSERVABILITY (Loki + Prometheus + Grafana)
+#   - N8N_BRIDGE (event bus -> n8n)
+#   - Productivity: invoicing, calendar, marketing360, task-tracker, time-tracker
+#   - Security: password-manager
+#   - Utilities: file-manager, webhook-manager, link-shortener, qr-generator,
+#     utm-tracker, request-tracker, super-admin, deepkit-forms, api-testing, recorder
 #
-# Total: ~18 services
+# Total: ~38 services
 #
 # Usage: ./install.sh --preset full
 # =============================================================================
 
 include:
   - path: ../docker-compose.yml
+  # Command Center
+  - path: ../modules/deepkit-core.yml
+  # Core Modules
   - path: ../modules/automation.yml
   - path: ../modules/chat.yml
   - path: ../modules/research.yml
@@ -33,3 +46,28 @@ include:
   - path: ../modules/vector.yml
   - path: ../modules/monitoring.yml
   - path: ../modules/admin.yml
+  - path: ../modules/champmail.yml
+  - path: ../modules/cowork.yml
+  # Infrastructure
+  - path: ../modules/gateway.yml
+  - path: ../modules/observability.yml
+  - path: ../modules/deepkit-bridge.yml
+  # Productivity Suite
+  - path: ../modules/invoicing.yml
+  - path: ../modules/calendar.yml
+  - path: ../modules/marketing360.yml
+  - path: ../modules/task-tracker.yml
+  - path: ../modules/time-tracker.yml
+  # Security
+  - path: ../modules/password-manager.yml
+  # Utilities
+  - path: ../modules/file-manager.yml
+  - path: ../modules/webhook-manager.yml
+  - path: ../modules/link-shortener.yml
+  - path: ../modules/qr-generator.yml
+  - path: ../modules/utm-tracker.yml
+  - path: ../modules/request-tracker.yml
+  - path: ../modules/super-admin.yml
+  - path: ../modules/deepkit-forms.yml
+  - path: ../modules/api-testing.yml
+  - path: ../modules/recorder.yml

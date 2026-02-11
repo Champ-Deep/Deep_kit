@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEEPKIT_TASKTRACKER</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="/css/custom.css">
+  <script>
+    window.addEventListener('load', () => {
+      if (!window.React || !window.ReactDOM) {
+        const indicator = document.getElementById('loading-indicator');
+        if (indicator) {
+          indicator.innerHTML = "ERROR: React failed to load.<br>Check internet connection or CDN.";
+          indicator.style.color = "#FF0000";
+        }
+      }
+    });
+  </script>
+</head>
+<body>
+  <div id="loading-indicator">
+    [ SYSTEM_INITIALIZING ]<br>
+    Loading React Runtime...
+  </div>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const TaskTrackerApp = () => {
+      // Hide indicator on mount
+      useEffect(() => {
+        const indicator = document.getElementById('loading-indicator');
+        if (indicator) indicator.style.display = 'none';
+      }, []);
+      // ... rest of code ...
+    // ... rest of the app ...
+      const [activeTab, setActiveTab] = useState('kanban');
+      const [tasks, setTasks] = useState([]);
+      const [projects, setProjects] = useState([]);
+      const [stats, setStats] = useState({ total_points: 0, level: 1, current_streak: 0 });
+      const [achievements, setAchievements] = useState([]);
+      const [alert, setAlert] = useState(null);
+      const [showTaskModal, setShowTaskModal] = useState(false);
+      const [editingTask, setEditingTask] = useState(null);
+      const [taskForm, setTaskForm] = useState({
+        title: '',
+        description: '',
+        project_id: null,
+        priority: 'medium',
+        due_date: ''
+      });
+
+      useEffect(() => {
+        loadTasks();
+        loadProjects();
+        loadStats();
+        loadAchievements();
+
+        const interval = setInterval(() => {
+          if (activeTab === 'kanban' || activeTab === 'list') {
+            loadTasks();
+          }
+          loadStats();
+        }, 10000);
+
+        return () => clearInterval(interval);
+      }, [activeTab]);
+
+      const loadTasks = async () => {
+        try {
+          const response = await fetch('/api/tasks');
+          const data = await response.json();
+          setTasks(data.tasks || []);
+        } catch (error) {
+          console.error('Failed to load tasks:', error);
+        }
+      };
+
+      const loadProjects = async () => {
+        try {
+          const response = await fetch('/api/projects');
+          const data = await response.json();
+          setProjects(data.projects || []);
+        } catch (error) {
+          console.error('Failed to load projects:', error);
+        }
+      };
+
+      const loadStats = async () => {
+        try {
+          const response = await fetch('/api/stats');
+          const data = await response.json();
+          setStats(data || { total_points: 0, level: 1, current_streak: 0 });
+        } catch (error) {
+          console.error('Failed to load stats:', error);
+        }
+      };
+
+      const loadAchievements = async () => {
+        try {
+          const response = await fetch('/api/achievements');
+          const data = await response.json();
+          setAchievements(data.achievements || []);
+        } catch (error) {
+          console.error('Failed to load achievements:', error);
+        }
+      };
+
+      const showAlert = (message, type = 'success') => {
+        setAlert({ message, type });
+        setTimeout(() => setAlert(null), 5000);
+      };
+
+      const playChime = () => {
+        // Play completion sound (would need audio file)
+        console.log('🎵 Chime!');
+      };
+
+      const openTaskModal = (task = null) => {
+        if (task) {
+          setEditingTask(task);
+          setTaskForm({
+            title: task.title,
+            description: task.description || '',
+            project_id: task.project_id,
+            priority: task.priority,
+            due_date: task.due_date || ''
+          });
+        } else {
+          setEditingTask(null);
+          setTaskForm({
+            title: '',
+            description: '',
+            project_id: null,
+            priority: 'medium',
+            due_date: ''
+          });
+        }
+        setShowTaskModal(true);
+      };
+
+      const handleTaskSubmit = async (e) => {
+        e.preventDefault();
+        try {
+          const url = editingTask ? `/api/tasks/${editingTask.id}` : '/api/tasks';
+          const method = editingTask ? 'PUT' : 'POST';
+
+          const response = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(taskForm)
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            showAlert(editingTask ? 'Task updated!' : 'Task created!', 'success');
+            setShowTaskModal(false);
+            loadTasks();
+            loadStats();
+          } else {
+            showAlert(data.error || 'Failed to save task', 'error');
+          }
+        } catch (error) {
+          showAlert('Network error: ' + error.message, 'error');
+        }
+      };
+
+      const handleCompleteTask = async (taskId) => {
+        try {
+          const response = await fetch(`/api/tasks/${taskId}/complete`, {
+            method: 'POST'
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            playChime();
+            showAlert(`Task completed! +${data.points_awarded} XP`, 'success');
+            loadTasks();
+            loadStats();
+            loadAchievements();
+          } else {
+            showAlert(data.error || 'Failed to complete task', 'error');
+          }
+        } catch (error) {
+          showAlert('Network error: ' + error.message, 'error');
+        }
+      };
+
+      const handleUpdateStatus = async (taskId, newStatus) => {
+        try {
+          const response = await fetch(`/api/tasks/${taskId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+          });
+
+          if (response.ok) {
+            loadTasks();
+            if (newStatus === 'done') {
+              handleCompleteTask(taskId);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to update status:', error);
+        }
+      };
+
+      const getPriorityClass = (priority) => {
+        return `priority-${priority}`;
+      };
+
+      const calculateXPPercentage = () => {
+        const pointsInLevel = stats.total_points % 100;
+        return (pointsInLevel / 100) * 100;
+      };
+
+      const tasksByStatus = {
+        todo: tasks.filter(t => t.status === 'todo'),
+        in_progress: tasks.filter(t => t.status === 'in_progress'),
+        done: tasks.filter(t => t.status === 'done')
+      };
+
+      return (
+        <div className="container">
+          <header>
+            <div>
+              <h1>DEEPKIT_TASKTRACKER</h1>
+              <p style={{ opacity: 0.7, marginTop: '10px' }}>Gamified Task Management System</p>
+            </div>
+            <div className="gamification-hud">
+              <div className="level-badge">LVL {stats.level}</div>
+              <div className="xp-bar">
+                <div className="xp-label">{stats.total_points % 100} / 100 XP</div>
+                <div className="xp-progress">
+                  <div className="xp-fill" style={{ width: `${calculateXPPercentage()}%` }}></div>
+                  <div className="xp-text">{Math.round(calculateXPPercentage())}%</div>
+                </div>
+              </div>
+              <div className="streak-counter">
+                <span className="streak-icon">🔥</span>
+                <span>{stats.current_streak} Day Streak</span>
+              </div>
+            </div>
+          </header>
+
+          {alert && (
+            <div className={`alert ${alert.type}`}>
+              {alert.message}
+            </div>
+          )}
+
+          <div className="stats">
+            <div className="stat-card">
+              <div className="stat-value">{tasks.length}</div>
+              <div className="stat-label">Total Tasks</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{tasksByStatus.todo.length}</div>
+              <div className="stat-label">To Do</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{tasksByStatus.in_progress.length}</div>
+              <div className="stat-label">In Progress</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{tasksByStatus.done.length}</div>
+              <div className="stat-label">Completed</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.total_points}</div>
+              <div className="stat-label">Total XP</div>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <button onClick={() => openTaskModal()}>+ Create New Task</button>
+          </div>
+
+          <div className="tabs">
+            <button className={`tab ${activeTab === 'kanban' ? 'active' : ''}`} onClick={() => setActiveTab('kanban')}>
+              Kanban Board
+            </button>
+            <button className={`tab ${activeTab === 'list' ? 'active' : ''}`} onClick={() => setActiveTab('list')}>
+              List View
+            </button>
+            <button className={`tab ${activeTab === 'projects' ? 'active' : ''}`} onClick={() => setActiveTab('projects')}>
+              Projects
+            </button>
+            <button className={`tab ${activeTab === 'achievements' ? 'active' : ''}`} onClick={() => setActiveTab('achievements')}>
+              Achievements
+            </button>
+          </div>
+
+          {activeTab === 'kanban' && (
+            <div className="kanban-board">
+              <div className="kanban-column">
+                <div className="column-header">
+                  <span>TODO</span>
+                  <span>{tasksByStatus.todo.length}</span>
+                </div>
+                <div className="column-body">
+                  {tasksByStatus.todo.map(task => (
+                    <div key={task.id} className="task-card">
+                      <div className="task-title">{task.title}</div>
+                      {task.description && (
+                        <div style={{ fontSize: '12px', opacity: 0.7, marginBottom: '10px' }}>
+                          {task.description.substring(0, 100)}{task.description.length > 100 ? '...' : ''}
+                        </div>
+                      )}
+                      <div className="task-meta">
+                        <span className={`task-priority ${getPriorityClass(task.priority)}`}>
+                          {task.priority}
+                        </span>
+                        {task.due_date && <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>}
+                      </div>
+                      <div className="task-actions">
+                        <button className="btn-small" onClick={() => handleUpdateStatus(task.id, 'in_progress')}>
+                          Start
+                        </button>
+                        <button className="btn-small" onClick={() => openTaskModal(task)}>
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="kanban-column">
+                <div className="column-header">
+                  <span>IN PROGRESS</span>
+                  <span>{tasksByStatus.in_progress.length}</span>
+                </div>
+                <div className="column-body">
+                  {tasksByStatus.in_progress.map(task => (
+                    <div key={task.id} className="task-card">
+                      <div className="task-title">{task.title}</div>
+                      {task.description && (
+                        <div style={{ fontSize: '12px', opacity: 0.7, marginBottom: '10px' }}>
+                          {task.description.substring(0, 100)}{task.description.length > 100 ? '...' : ''}
+                        </div>
+                      )}
+                      <div className="task-meta">
+                        <span className={`task-priority ${getPriorityClass(task.priority)}`}>
+                          {task.priority}
+                        </span>
+                        {task.due_date && <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>}
+                      </div>
+                      <div className="task-actions">
+                        <button className="btn-small" onClick={() => handleUpdateStatus(task.id, 'todo')}>
+                          Back
+                        </button>
+                        <button className="btn-small" onClick={() => handleUpdateStatus(task.id, 'done')}>
+                          Complete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="kanban-column">
+                <div className="column-header">
+                  <span>DONE</span>
+                  <span>{tasksByStatus.done.length}</span>
+                </div>
+                <div className="column-body">
+                  {tasksByStatus.done.map(task => (
+                    <div key={task.id} className="task-card" style={{ opacity: 0.6 }}>
+                      <div className="task-title">{task.title}</div>
+                      {task.description && (
+                        <div style={{ fontSize: '12px', opacity: 0.7, marginBottom: '10px' }}>
+                          {task.description.substring(0, 100)}{task.description.length > 100 ? '...' : ''}
+                        </div>
+                      )}
+                      <div className="task-meta">
+                        <span className={`task-priority ${getPriorityClass(task.priority)}`}>
+                          {task.priority}
+                        </span>
+                        {task.completed_at && (
+                          <span>✓ {new Date(task.completed_at).toLocaleDateString()}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'list' && (
+            <div style={{ border: '1px solid #39FF14' }}>
+              {tasks.map(task => (
+                <div key={task.id} style={{ borderBottom: '1px solid rgba(57, 255, 20, 0.2)', padding: '15px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>{task.title}</div>
+                      <div style={{ fontSize: '12px', opacity: 0.7' }}>
+                        <span className={`task-priority ${getPriorityClass(task.priority)}`} style={{ marginRight: '10px' }}>
+                          {task.priority}
+                        </span>
+                        <span style={{ marginRight: '10px' }}>Status: {task.status}</span>
+                        {task.due_date && <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <button className="btn-small" onClick={() => openTaskModal(task)}>Edit</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'projects' && (
+            <div>
+              <div className="projects-grid">
+                {projects.map(project => (
+                  <div key={project.id} className="project-card">
+                    <div className="project-name">{project.name}</div>
+                    {project.description && (
+                      <div style={{ fontSize: '12px', opacity: 0.7' }}>{project.description}</div>
+                    )}
+                  </div>
+                ))}
+                {projects.length === 0 && (
+                  <div style={{ padding: '40px', textAlign: 'center', opacity: 0.5 }}>
+                    No projects yet. Create your first project!
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'achievements' && (
+            <div className="achievements-grid">
+              {achievements.map(achievement => (
+                <div
+                  key={achievement.id}
+                  className={`achievement-card ${achievement.unlocked_at ? 'unlocked' : 'locked'}`}
+                >
+                  <div className="achievement-icon">{achievement.icon || '🏆'}</div>
+                  <div className="achievement-name">{achievement.name}</div>
+                  <div className="achievement-desc">{achievement.description}</div>
+                  {achievement.unlocked_at && (
+                    <div style={{ fontSize: '10px', marginTop: '10px', opacity: 0.5 }}>
+                      Unlocked: {new Date(achievement.unlocked_at).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {showTaskModal && (
+            <div className="modal-overlay" onClick={() => setShowTaskModal(false)}>
+              <div className="modal" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h2>{editingTask ? 'Edit Task' : 'Create New Task'}</h2>
+                  <button className="close-btn" onClick={() => setShowTaskModal(false)}>×</button>
+                </div>
+                <form onSubmit={handleTaskSubmit}>
+                  <div className="form-group">
+                    <label>Task Title</label>
+                    <input
+                      type="text"
+                      value={taskForm.title}
+                      onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Description</label>
+                    <textarea
+                      value={taskForm.description}
+                      onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
+                      rows="4"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Priority</label>
+                    <select
+                      value={taskForm.priority}
+                      onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value })}
+                    >
+                      <option value="low">Low (1 XP)</option>
+                      <option value="medium">Medium (2 XP)</option>
+                      <option value="high">High (3 XP)</option>
+                      <option value="urgent">Urgent (5 XP)</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Project</label>
+                    <select
+                      value={taskForm.project_id || ''}
+                      onChange={(e) => setTaskForm({ ...taskForm, project_id: e.target.value || null })}
+                    >
+                      <option value="">No Project</option>
+                      {projects.map(project => (
+                        <option key={project.id} value={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Due Date</label>
+                    <input
+                      type="date"
+                      value={taskForm.due_date}
+                      onChange={(e) => setTaskForm({ ...taskForm, due_date: e.target.value })}
+                    />
+                  </div>
+
+                  <button type="submit">
+                    {editingTask ? 'Update Task' : 'Create Task'}
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<TaskTrackerApp />);
+  </script>
+</body>
+</html>

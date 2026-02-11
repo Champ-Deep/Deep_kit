@@ -1,0 +1,391 @@
+/* ============================================================
+   DEEPKIT_ORCHESTRATOR - n8n Theme Override
+   ============================================================ */
+
+@import url('./deepkit-base.css');
+
+/* ============================================================
+   HIDE ORIGINAL BRANDING
+   ============================================================ */
+
+/* Hide n8n logo and branding */
+.n8n-logo,
+img[alt*="n8n"],
+[class*="n8n-logo"],
+.brand-logo,
+.logo svg {
+  display: none !important;
+}
+
+/* ============================================================
+   DEEPKIT ORCHESTRATOR HEADER
+   ============================================================ */
+
+/* Main header/navbar */
+.el-header,
+header,
+.main-header {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+}
+
+/* Add DeepKit branding */
+.logo-container::before,
+.header-logo::before {
+  content: '[ DEEPKIT // ORCHESTRATOR ]';
+  font-family: var(--dk-font-display);
+  font-size: 1rem;
+  color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+  letter-spacing: 2px;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+.el-aside,
+.sidebar,
+.main-sidebar {
+  background: var(--dk-black) !important;
+  border-right: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Menu items */
+.el-menu,
+.sidebar-menu {
+  background: var(--dk-black) !important;
+}
+
+.el-menu-item,
+.menu-item {
+  color: var(--dk-green) !important;
+  border-left: 3px solid transparent;
+  transition: var(--dk-transition);
+}
+
+.el-menu-item:hover,
+.menu-item:hover {
+  background: var(--dk-green-subtle) !important;
+  border-left-color: var(--dk-green);
+}
+
+.el-menu-item.is-active,
+.menu-item.active {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   WORKFLOW CANVAS
+   ============================================================ */
+
+/* Canvas background */
+.workflow-canvas,
+.node-view-wrapper,
+.canvas-wrapper {
+  background: var(--dk-black) !important;
+  background-image:
+    radial-gradient(var(--dk-green-dim) 1px, transparent 1px) !important;
+  background-size: 20px 20px !important;
+}
+
+/* ============================================================
+   WORKFLOW NODES
+   ============================================================ */
+
+/* Node containers */
+.node-default,
+.workflow-node,
+[class*="node-"] {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.node-default:hover,
+.workflow-node:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow) !important;
+}
+
+.node-default.selected,
+.workflow-node.selected {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow-strong) !important;
+}
+
+/* Node titles */
+.node-title,
+.node-name {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+}
+
+/* Node icons */
+.node-icon {
+  filter: brightness(0) saturate(100%) invert(88%) sepia(18%) saturate(6000%) hue-rotate(70deg) brightness(103%) contrast(104%);
+}
+
+/* Node connection lines */
+.connection-line,
+.edge-path,
+svg path[class*="connection"] {
+  stroke: var(--dk-green) !important;
+  stroke-width: 2px !important;
+}
+
+/* Connection handles */
+.connection-handle,
+.handle {
+  background: var(--dk-green) !important;
+  border: 2px solid var(--dk-black) !important;
+}
+
+/* ============================================================
+   NODE PANEL (Right Side)
+   ============================================================ */
+
+.node-settings,
+.node-panel,
+.run-data-panel {
+  background: var(--dk-gray) !important;
+  border-left: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Panel header */
+.panel-header,
+.node-settings-header {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+}
+
+/* Tabs */
+.el-tabs__item,
+.tab-item {
+  color: var(--dk-green) !important;
+}
+
+.el-tabs__item.is-active,
+.tab-item.active {
+  color: var(--dk-green) !important;
+  border-bottom: 2px solid var(--dk-green) !important;
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+
+/* Input fields */
+.el-input__inner,
+.el-textarea__inner,
+input, textarea {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+}
+
+.el-input__inner:focus,
+.el-textarea__inner:focus,
+input:focus, textarea:focus {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Select dropdowns */
+.el-select,
+.el-select-dropdown {
+  background: var(--dk-black) !important;
+}
+
+.el-select-dropdown__item {
+  color: var(--dk-green) !important;
+}
+
+.el-select-dropdown__item:hover,
+.el-select-dropdown__item.selected {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.el-button,
+button {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+}
+
+.el-button:hover,
+button:hover {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+.el-button--primary {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+.el-button--primary:hover {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+}
+
+/* Execute button */
+.execute-button,
+[class*="execute"] {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+}
+
+.execute-button::before {
+  content: '> EXECUTE_';
+}
+
+/* ============================================================
+   WORKFLOW LIST
+   ============================================================ */
+
+.workflow-list,
+.workflows-table {
+  background: var(--dk-black) !important;
+}
+
+.workflow-card,
+.workflow-item {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+}
+
+.workflow-card:hover,
+.workflow-item:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+.workflow-name {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+}
+
+/* ============================================================
+   EXECUTION DATA
+   ============================================================ */
+
+/* JSON data display */
+.json-data,
+.run-data {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+}
+
+/* Execution status */
+.execution-status.success,
+.status-success {
+  color: var(--dk-green) !important;
+}
+
+.execution-status.error,
+.status-error {
+  color: #FF4444 !important;
+}
+
+.execution-status.running,
+.status-running {
+  color: var(--dk-amber) !important;
+}
+
+/* ============================================================
+   MODALS & DIALOGS
+   ============================================================ */
+
+.el-dialog,
+.el-message-box,
+.modal {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--dk-green-glow-strong);
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+}
+
+.el-dialog__title {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   NOTIFICATIONS
+   ============================================================ */
+
+.el-notification,
+.el-message {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+}
+
+.el-notification__title,
+.el-message__content {
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   TAGS & BADGES
+   ============================================================ */
+
+.el-tag {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  border-radius: 0 !important;
+}
+
+/* ============================================================
+   LOADING STATES
+   ============================================================ */
+
+.el-loading-spinner {
+  color: var(--dk-green) !important;
+}
+
+.el-loading-text {
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+.el-scrollbar__thumb {
+  background: var(--dk-green-dim) !important;
+}
+
+.el-scrollbar__thumb:hover {
+  background: var(--dk-green) !important;
+}
+
+/* ============================================================
+   END DEEPKIT_ORCHESTRATOR THEME
+   ============================================================ */

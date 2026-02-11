@@ -1,68 +1,66 @@
 # =============================================================================
-# MODULE G: Knowledge Graphs (FalkorDB + Graphiti)
+# MODULE: DEEPKIT_GRAPH + DEEPKIT_MEMORY (FalkorDB + Graphiti)
 # =============================================================================
 # "I want AI memory and relationship tracking"
 #
-# Services: FalkorDB, FalkorDB Browser, Graphiti
+# Services: DEEPKIT_GRAPH, DEEPKIT_GRAPH_EXPLORER, DEEPKIT_MEMORY
 # Ports: 6380, 3011, 8000
-# Dependencies: Core (Ollama for AI features)
-# Note: Graphiti uses the vanilla getzep/graphiti image
+# Dependencies: Core (DEEPKIT_ENGINE for AI features)
 # =============================================================================
 
 services:
   # ---------------------------------------------------------------------------
-  # FalkorDB - Graph Database (port 6380)
+  # DEEPKIT_GRAPH - Graph Database (port 6380)
   # ---------------------------------------------------------------------------
-  falkordb:
+  deepkit-graph:
     image: falkordb/falkordb:latest
-    container_name: deepkit-falkordb
+    container_name: deepkit-graph
     restart: unless-stopped
     ports:
       - "6380:6379"
     volumes:
-      - falkordb_data:/data
+      - graph_data:/data
     networks:
       - deepkit-network
 
   # ---------------------------------------------------------------------------
-  # FalkorDB Browser - Visual Graph Explorer (port 3011)
+  # DEEPKIT_GRAPH_EXPLORER - Visual Graph Explorer (port 3011)
   # ---------------------------------------------------------------------------
-  falkordb-browser:
+  deepkit-graph-explorer:
     image: falkordb/falkordb-browser:latest
-    container_name: deepkit-falkordb-browser
+    container_name: deepkit-graph-explorer
     restart: unless-stopped
     ports:
       - "3011:3000"
     environment:
-      FALKORDB_HOST: falkordb
+      FALKORDB_HOST: deepkit-graph
       FALKORDB_PORT: 6379
     depends_on:
-      - falkordb
+      - deepkit-graph
     networks:
       - deepkit-network
 
   # ---------------------------------------------------------------------------
-  # Graphiti - Knowledge Graph Framework (port 8000)
+  # DEEPKIT_MEMORY - Knowledge Graph Framework (port 8000)
   # ---------------------------------------------------------------------------
-  # Uses vanilla getzep/graphiti - customize as needed
-  graphiti:
+  deepkit-memory:
     image: getzep/graphiti:latest
-    container_name: deepkit-graphiti
+    container_name: deepkit-memory
     restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       # Graph DB connection
-      FALKORDB_HOST: falkordb
+      FALKORDB_HOST: deepkit-graph
       FALKORDB_PORT: 6379
       # AI API Keys (optional - for enhanced features)
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
-      - falkordb
+      - deepkit-graph
     networks:
       - deepkit-network
 
 volumes:
-  falkordb_data:
-    name: deepkit-falkordb-data
+  graph_data:
+    name: deepkit-graph-data

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEEPKIT_FILE_MANAGER</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root { --phosphor: #39FF14; --bg: #000000; }
+    body { background: var(--bg); color: var(--phosphor); font-family: 'JetBrains Mono', monospace; padding: 20px; }
+    body::before {
+      content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 255, 0, 0.06));
+      z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+    }
+    .header { border-bottom: 2px solid var(--phosphor); padding-bottom: 10px; margin-bottom: 20px; }
+    .title { font-family: 'VT323', monospace; font-size: 2.5rem; text-transform: uppercase; }
+    .file-item { border-bottom: 1px solid rgba(57, 255, 20, 0.2); padding: 10px; display: flex; align-items: center; gap: 10px; }
+    .icon { font-size: 1.5rem; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const FileApp = () => {
+      const [files, setFiles] = useState([]);
+      useEffect(() => { fetchFiles(); }, []);
+      const fetchFiles = async () => {
+        const res = await fetch('/api/files');
+        const data = await res.json();
+        setFiles(data.files || []);
+      };
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="title">DEEPKIT // ARCHIVE</div>
+            <div>LOCAL FILE REGISTRY & METADATA</div>
+          </div>
+          <div><button style={{background: 'transparent', border: '1px solid', color: 'inherit', padding: '5px 15px', cursor: 'pointer'}}>UPLOAD_FILE</button></div>
+          <div style={{marginTop: '20px'}}>
+            {files.map(f => (
+              <div key={f.id} className="file-item">
+                <span className="icon">📄</span>
+                <div>
+                  <div style={{fontWeight: 'bold'}}>{f.filename}</div>
+                  <div style={{fontSize: '0.7rem', opacity: 0.6}}>{f.size_bytes} bytes | {f.mime_type}</div>
+                </div>
+              </div>
+            ))}
+            {files.length === 0 && <p>No files indexed in the DeepKit Archive.</p>}
+          </div>
+        </div>
+      );
+    };
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<FileApp />);
+  </script>
+</body>
+</html>

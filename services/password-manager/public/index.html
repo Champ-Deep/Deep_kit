@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEEPKIT_PASSWORD_MANAGER</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root { --phosphor: #39FF14; --bg: #000000; }
+    body { background: var(--bg); color: var(--phosphor); font-family: 'JetBrains Mono', monospace; padding: 20px; }
+    body::before {
+      content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 255, 0, 0.06));
+      z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+    }
+    .header { border-bottom: 2px solid var(--phosphor); padding-bottom: 10px; margin-bottom: 20px; }
+    .title { font-family: 'VT323', monospace; font-size: 2.5rem; text-transform: uppercase; }
+    .entry { border: 1px solid var(--phosphor); padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+    button { background: transparent; border: 1px solid var(--phosphor); color: var(--phosphor); padding: 5px 15px; cursor: pointer; }
+    button:hover { background: var(--phosphor); color: #000; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const PassApp = () => {
+      const [passwords, setPasswords] = useState([]);
+      useEffect(() => { fetchPasswords(); }, []);
+      const fetchPasswords = async () => {
+        const res = await fetch('/api/passwords');
+        const data = await res.json();
+        setPasswords(data.passwords || []);
+      };
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="title">DEEPKIT // VAULT</div>
+            <div>AES-256-GCM ENCRYPTED STORAGE</div>
+          </div>
+          <div style={{marginBottom: '20px'}}><button>+ NEW CREDENTIAL</button></div>
+          {passwords.map(p => (
+            <div key={p.id} className="entry">
+              <div>
+                <div style={{fontWeight: 'bold'}}>{p.title}</div>
+                <div style={{fontSize: '0.8rem', opacity: 0.7}}>{p.username}</div>
+              </div>
+              <div><button>COPY</button></div>
+            </div>
+          ))}
+          {passwords.length === 0 && <p>Vault is empty. Add your first password.</p>}
+        </div>
+      );
+    };
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<PassApp />);
+  </script>
+</body>
+</html>

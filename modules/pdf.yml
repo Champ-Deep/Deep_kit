@@ -1,20 +1,29 @@
 # =============================================================================
-# MODULE F: PDF Tools (chamPDF / Stirling PDF)
+# MODULE: DEEPKIT_DOCS (Stirling PDF)
 # =============================================================================
 # "I want to merge, split, and edit PDFs"
 #
-# Services: chamPDF (Stirling PDF)
+# Services: DEEPKIT_DOCS
 # Ports: 3005
 # Dependencies: Core (none specifically)
 # =============================================================================
 
 services:
   # ---------------------------------------------------------------------------
-  # chamPDF - PDF Manipulation (port 3005)
+  # DEEPKIT_DOCS - PDF Manipulation (port 3005)
   # ---------------------------------------------------------------------------
-  champdf:
+  deepkit-docs:
     image: frooodle/s-pdf:latest
-    container_name: deepkit-champdf
+    container_name: deepkit-docs
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=pdf"
+      - "deepkit.service.name=pdf"
+      - "deepkit.service.port=3005"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=PDF Tools & Analysis"
     restart: unless-stopped
     ports:
       - "3005:8080"
@@ -22,14 +31,19 @@ services:
       DOCKER_ENABLE_SECURITY: "false"
       INSTALL_BOOK_AND_ADVANCED_HTML_OPS: "true"
       LANGS: en_US
+      # DeepKit Branding
+      APP_NAME: "DEEPKIT_DOCS"
+      APP_HOME_NAME: "DEEPKIT_DOCS"
+      APP_HOME_DESCRIPTION: "PDF Tools - Locally Empowered"
     volumes:
-      - champdf_data:/usr/share/tessdata
-      - champdf_configs:/configs
+      - docs_tessdata:/usr/share/tessdata
+      - docs_configs:/configs
+      - ./branding/css/deepkit-docs.css:/configs/custom.css:ro
     networks:
       - deepkit-network
 
 volumes:
-  champdf_data:
-    name: deepkit-champdf-data
-  champdf_configs:
-    name: deepkit-champdf-configs
+  docs_tessdata:
+    name: deepkit-docs-tessdata
+  docs_configs:
+    name: deepkit-docs-configs

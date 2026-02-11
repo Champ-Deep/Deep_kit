@@ -1,0 +1,14 @@
+# =============================================================================
+# Traefik Dynamic Configuration
+# =============================================================================
+# Additional routing rules and middleware that aren't defined via Docker labels.
+
+http:
+  middlewares:
+    # Chain of standard security middlewares applied to all protected routes
+    deepkit-secure:
+      chain:
+        middlewares:
+          - deepkit-auth
+          - deepkit-headers
+          - deepkit-ratelimit

@@ -5,11 +5,32 @@
 -- It creates separate databases for each application that needs one.
 -- =============================================================================
 
--- Create database for n8n (workflow automation)
-CREATE DATABASE n8n;
+-- Core Services
+CREATE DATABASE n8n;         -- Workflow Automation
+CREATE DATABASE strapi;      -- Headless CMS
+CREATE DATABASE hubconfig;   -- Hub Settings
+CREATE DATABASE messenger;   -- WhatsApp/Telegram Intelligent Assistant (THE PROXY)
 
--- Create database for Strapi (CMS)
-CREATE DATABASE strapi;
+-- Productivity Suite
+CREATE DATABASE calendar;    -- Calendar & Scheduling
+CREATE DATABASE timetracker; -- Time Tracking
+CREATE DATABASE tasktracker; -- Gamified Tasks
+CREATE DATABASE filemanager; -- File Storage Metadata
 
--- Grant privileges (using the main user)
--- Note: The main POSTGRES_USER already has superuser privileges
+-- Business Suite
+CREATE DATABASE marketing;   -- Marketing 360
+CREATE DATABASE webhooks;    -- Webhook Manager
+CREATE DATABASE invoicing;   -- Invoice & Billing
+
+-- Security
+CREATE DATABASE passwords;   -- Password Manager
+
+-- Communication
+CREATE DATABASE champmail;   -- Email Automation
+
+-- Collaboration
+CREATE DATABASE cowork;      -- Unified AI Workspace
+
+-- Grant privileges (implicit for superuser, but explicit for clarity if needed)
+-- GRANT ALL PRIVILEGES ON DATABASE calendar TO deepkit;
+-- ... etc

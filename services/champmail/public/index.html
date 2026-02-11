@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEEPKIT_CHAMPMAIL</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="/css/custom.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      background: #000000;
+      color: #39FF14;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 2px solid #39FF14;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+
+    h1 {
+      font-size: 32px;
+      letter-spacing: 2px;
+      animation: flicker 3s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.95; }
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .tab {
+      background: rgba(57, 255, 20, 0.1);
+      border: 1px solid #39FF14;
+      color: #39FF14;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: rgba(57, 255, 20, 0.2);
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+    }
+
+    .tab.active {
+      background: #39FF14;
+      color: #000000;
+      font-weight: bold;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #39FF14;
+      color: #39FF14;
+      padding: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #00FF00;
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+    }
+
+    button {
+      background: rgba(57, 255, 20, 0.2);
+      border: 1px solid #39FF14;
+      color: #39FF14;
+      padding: 12px 24px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      background: #39FF14;
+      color: #000000;
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: rgba(57, 255, 20, 0.05);
+      border: 1px solid #39FF14;
+      padding: 20px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.7;
+      text-transform: uppercase;
+    }
+
+    .email-list {
+      border: 1px solid #39FF14;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .email-item {
+      border-bottom: 1px solid rgba(57, 255, 20, 0.2);
+      padding: 15px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .email-item:hover {
+      background: rgba(57, 255, 20, 0.05);
+    }
+
+    .status {
+      padding: 4px 8px;
+      border: 1px solid;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .status.sent {
+      border-color: #00FF00;
+      color: #00FF00;
+    }
+
+    .status.queued {
+      border-color: #FFB000;
+      color: #FFB000;
+    }
+
+    .status.failed {
+      border-color: #FF0000;
+      color: #FF0000;
+    }
+
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid;
+    }
+
+    .alert.success {
+      background: rgba(0, 255, 0, 0.1);
+      border-color: #00FF00;
+      color: #00FF00;
+    }
+
+    .alert.error {
+      background: rgba(255, 0, 0, 0.1);
+      border-color: #FF0000;
+      color: #FF0000;
+    }
+
+    .templates-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .template-card {
+      border: 1px solid #39FF14;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .template-card:hover {
+      background: rgba(57, 255, 20, 0.1);
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const ChampMailApp = () => {
+      const [activeTab, setActiveTab] = useState('send');
+      const [stats, setStats] = useState({ today: {}, queue: {} });
+      const [emails, setEmails] = useState([]);
+      const [templates, setTemplates] = useState([]);
+      const [alert, setAlert] = useState(null);
+
+      // Send email form state
+      const [sendForm, setSendForm] = useState({
+        to: '',
+        from: 'noreply@deepkit.local',
+        subject: '',
+        html: ''
+      });
+
+      // Bulk send form state
+      const [bulkForm, setBulkForm] = useState({
+        contacts: '',
+        from: 'noreply@deepkit.local',
+        subject: '',
+        html: ''
+      });
+
+      // Template form state
+      const [templateForm, setTemplateForm] = useState({
+        name: '',
+        subject: '',
+        html: '',
+        variables: ''
+      });
+
+      useEffect(() => {
+        loadStats();
+        loadEmails();
+        loadTemplates();
+
+        const interval = setInterval(() => {
+          loadStats();
+          if (activeTab === 'history') {
+            loadEmails();
+          }
+        }, 10000); // Refresh every 10 seconds
+
+        return () => clearInterval(interval);
+      }, [activeTab]);
+
+      const loadStats = async () => {
+        try {
+          const response = await fetch('/api/stats');
+          const data = await response.json();
+          setStats(data);
+        } catch (error) {
+          console.error('Failed to load stats:', error);
+        }
+      };
+
+      const loadEmails = async () => {
+        try {
+          const response = await fetch('/api/emails?limit=50');
+          const data = await response.json();
+          setEmails(data.emails);
+        } catch (error) {
+          console.error('Failed to load emails:', error);
+        }
+      };
+
+      const loadTemplates = async () => {
+        try {
+          const response = await fetch('/api/templates');
+          const data = await response.json();
+          setTemplates(data.templates);
+        } catch (error) {
+          console.error('Failed to load templates:', error);
+        }
+      };
+
+      const showAlert = (message, type = 'success') => {
+        setAlert({ message, type });
+        setTimeout(() => setAlert(null), 5000);
+      };
+
+      const handleSendEmail = async (e) => {
+        e.preventDefault();
+        try {
+          const response = await fetch('/api/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sendForm)
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            showAlert(`Email queued successfully! ID: ${data.emailId}`, 'success');
+            setSendForm({ to: '', from: 'noreply@deepkit.local', subject: '', html: '' });
+            loadStats();
+          } else {
+            showAlert(data.error || 'Failed to send email', 'error');
+          }
+        } catch (error) {
+          showAlert('Network error: ' + error.message, 'error');
+        }
+      };
+
+      const handleBulkSend = async (e) => {
+        e.preventDefault();
+        try {
+          // Parse contacts from CSV or JSON
+          let contacts = [];
+          try {
+            contacts = JSON.parse(bulkForm.contacts);
+          } catch {
+            // Parse as CSV: email,name
+            contacts = bulkForm.contacts.split('\n').map(line => {
+              const [email, name] = line.split(',').map(s => s.trim());
+              return { email, name: name || email };
+            }).filter(c => c.email);
+          }
+
+          const response = await fetch('/api/send-bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contacts,
+              from: bulkForm.from,
+              subject: bulkForm.subject,
+              html: bulkForm.html
+            })
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            showAlert(`${data.count} emails queued successfully!`, 'success');
+            setBulkForm({ contacts: '', from: 'noreply@deepkit.local', subject: '', html: '' });
+            loadStats();
+          } else {
+            showAlert(data.error || 'Failed to send bulk emails', 'error');
+          }
+        } catch (error) {
+          showAlert('Network error: ' + error.message, 'error');
+        }
+      };
+
+      const handleCreateTemplate = async (e) => {
+        e.preventDefault();
+        try {
+          const response = await fetch('/api/templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...templateForm,
+              variables: templateForm.variables ? templateForm.variables.split(',').map(v => v.trim()) : []
+            })
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            showAlert('Template created successfully!', 'success');
+            setTemplateForm({ name: '', subject: '', html: '', variables: '' });
+            loadTemplates();
+          } else {
+            showAlert(data.error || 'Failed to create template', 'error');
+          }
+        } catch (error) {
+          showAlert('Network error: ' + error.message, 'error');
+        }
+      };
+
+      return (
+        <div className="container">
+          <header>
+            <h1>DEEPKIT_CHAMPMAIL</h1>
+            <p style={{ opacity: 0.7, marginTop: '10px' }}>Internal Email Automation Service</p>
+          </header>
+
+          {alert && (
+            <div className={`alert ${alert.type}`}>
+              {alert.message}
+            </div>
+          )}
+
+          <div className="stats">
+            <div className="stat-card">
+              <div className="stat-value">{stats.today?.sent || 0}</div>
+              <div className="stat-label">Sent Today</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.today?.queued || 0}</div>
+              <div className="stat-label">Queued</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.today?.failed || 0}</div>
+              <div className="stat-label">Failed</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.queue?.waiting || 0}</div>
+              <div className="stat-label">Queue Waiting</div>
+            </div>
+          </div>
+
+          <div className="tabs">
+            <button className={`tab ${activeTab === 'send' ? 'active' : ''}`} onClick={() => setActiveTab('send')}>
+              Send Email
+            </button>
+            <button className={`tab ${activeTab === 'bulk' ? 'active' : ''}`} onClick={() => setActiveTab('bulk')}>
+              Bulk Send
+            </button>
+            <button className={`tab ${activeTab === 'templates' ? 'active' : ''}`} onClick={() => setActiveTab('templates')}>
+              Templates
+            </button>
+            <button className={`tab ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>
+              History
+            </button>
+          </div>
+
+          {activeTab === 'send' && (
+            <form onSubmit={handleSendEmail}>
+              <div className="form-group">
+                <label>To Email</label>
+                <input
+                  type="email"
+                  value={sendForm.to}
+                  onChange={(e) => setSendForm({ ...sendForm, to: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>From Email</label>
+                <input
+                  type="email"
+                  value={sendForm.from}
+                  onChange={(e) => setSendForm({ ...sendForm, from: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Subject</label>
+                <input
+                  type="text"
+                  value={sendForm.subject}
+                  onChange={(e) => setSendForm({ ...sendForm, subject: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>HTML Body</label>
+                <textarea
+                  value={sendForm.html}
+                  onChange={(e) => setSendForm({ ...sendForm, html: e.target.value })}
+                  required
+                  placeholder="<h1>Hello</h1><p>Email content here...</p>"
+                />
+              </div>
+
+              <button type="submit">Send Email</button>
+            </form>
+          )}
+
+          {activeTab === 'bulk' && (
+            <form onSubmit={handleBulkSend}>
+              <div className="form-group">
+                <label>Contacts (CSV or JSON)</label>
+                <textarea
+                  value={bulkForm.contacts}
+                  onChange={(e) => setBulkForm({ ...bulkForm, contacts: e.target.value })}
+                  required
+                  placeholder={'CSV format:\nemail@example.com,John Doe\nemail2@example.com,Jane Smith\n\nOr JSON:\n[{"email":"email@example.com","name":"John Doe"}]'}
+                  style={{ minHeight: '150px' }}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>From Email</label>
+                <input
+                  type="email"
+                  value={bulkForm.from}
+                  onChange={(e) => setBulkForm({ ...bulkForm, from: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Subject (use {{'{'}}{'{'}name{'}'}{'}'}  for personalization)</label>
+                <input
+                  type="text"
+                  value={bulkForm.subject}
+                  onChange={(e) => setBulkForm({ ...bulkForm, subject: e.target.value })}
+                  required
+                  placeholder="Hello {{'{'}}{'{'}name{'}'}{'}'}!"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>HTML Body (use {{'{'}}{'{'}name{'}'}{'}'}  for personalization)</label>
+                <textarea
+                  value={bulkForm.html}
+                  onChange={(e) => setBulkForm({ ...bulkForm, html: e.target.value })}
+                  required
+                  placeholder="<h1>Hello {{'{'}}{'{'}name{'}'}{'}'}!</h1><p>Content here...</p>"
+                />
+              </div>
+
+              <button type="submit">Send Bulk Emails</button>
+            </form>
+          )}
+
+          {activeTab === 'templates' && (
+            <div>
+              <form onSubmit={handleCreateTemplate} style={{ marginBottom: '40px' }}>
+                <h2 style={{ marginBottom: '20px' }}>Create Template</h2>
+
+                <div className="form-group">
+                  <label>Template Name</label>
+                  <input
+                    type="text"
+                    value={templateForm.name}
+                    onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Subject</label>
+                  <input
+                    type="text"
+                    value={templateForm.subject}
+                    onChange={(e) => setTemplateForm({ ...templateForm, subject: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Variables (comma-separated, e.g., name,company,title)</label>
+                  <input
+                    type="text"
+                    value={templateForm.variables}
+                    onChange={(e) => setTemplateForm({ ...templateForm, variables: e.target.value })}
+                    placeholder="name,company,title"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>HTML Body</label>
+                  <textarea
+                    value={templateForm.html}
+                    onChange={(e) => setTemplateForm({ ...templateForm, html: e.target.value })}
+                    required
+                    placeholder="<h1>Hello {{'{'}}{'{'}name{'}'}{'}'}!</h1>"
+                  />
+                </div>
+
+                <button type="submit">Create Template</button>
+              </form>
+
+              <h2 style={{ marginBottom: '20px' }}>Saved Templates</h2>
+              <div className="templates-grid">
+                {templates.map(template => (
+                  <div key={template.id} className="template-card">
+                    <h3>{template.name}</h3>
+                    <p style={{ opacity: 0.7, marginTop: '5px' }}>{template.subject}</p>
+                    {template.variables && template.variables.length > 0 && (
+                      <p style={{ opacity: 0.5, marginTop: '10px', fontSize: '12px' }}>
+                        Variables: {template.variables.join(', ')}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'history' && (
+            <div className="email-list">
+              {emails.map(email => (
+                <div key={email.id} className="email-item">
+                  <span className={`status ${email.status}`}>{email.status}</span>
+                  <div>
+                    <div><strong>To:</strong> {email.to_address}</div>
+                    <div style={{ opacity: 0.7 }}><strong>Subject:</strong> {email.subject}</div>
+                    <div style={{ opacity: 0.5, fontSize: '12px', marginTop: '5px' }}>
+                      {new Date(email.created_at).toLocaleString()}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right', fontSize: '12px' }}>
+                    {email.sent_at && <div>Sent: {new Date(email.sent_at).toLocaleTimeString()}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<ChampMailApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>

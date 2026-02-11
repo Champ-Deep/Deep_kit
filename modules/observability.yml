@@ -1,0 +1,113 @@
+# =============================================================================
+# MODULE: DEEPKIT_OBSERVABILITY (Loki + Grafana + Prometheus + Promtail)
+# =============================================================================
+# "Eyes on every system. No blind spots in the Arsenal."
+#
+# Services: DEEPKIT_LOKI, DEEPKIT_PROMTAIL, DEEPKIT_GRAFANA, DEEPKIT_PROMETHEUS
+# Ports: 9004 (Grafana Dashboard)
+# Dependencies: Core (deepkit-network)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # DEEPKIT_LOKI - Log Aggregation Engine
+  # ---------------------------------------------------------------------------
+  # Receives logs from Promtail, stores and indexes them.
+  # Lightweight alternative to Elasticsearch - only indexes labels, not content.
+  deepkit-loki:
+    image: grafana/loki:2.9.0
+    container_name: deepkit-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki_data:/loki
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3100/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - deepkit-network
+
+  # ---------------------------------------------------------------------------
+  # DEEPKIT_PROMTAIL - Log Collector Agent
+  # ---------------------------------------------------------------------------
+  # Scrapes Docker container logs and ships them to Loki.
+  # Labels each stream by container name for filtering.
+  deepkit-promtail:
+    image: grafana/promtail:2.9.0
+    container_name: deepkit-promtail
+    restart: unless-stopped
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/promtail-config.yml:/etc/promtail/config.yml:ro
+    depends_on:
+      - deepkit-loki
+    networks:
+      - deepkit-network
+
+  # ---------------------------------------------------------------------------
+  # DEEPKIT_PROMETHEUS - Metrics Collection (port 9090 internal)
+  # ---------------------------------------------------------------------------
+  # Scrapes /metrics endpoints from all DeepKit services.
+  # Provides time-series data for Grafana dashboards.
+  deepkit-prometheus:
+    image: prom/prometheus:latest
+    container_name: deepkit-prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=30d"
+      - "--storage.tsdb.retention.size=5GB"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9090/-/healthy || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - deepkit-network
+
+  # ---------------------------------------------------------------------------
+  # DEEPKIT_GRAFANA - Observability Dashboard (port 9004)
+  # ---------------------------------------------------------------------------
+  # Unified dashboards for logs (Loki), metrics (Prometheus), and uptime.
+  deepkit-grafana:
+    image: grafana/grafana:latest
+    container_name: deepkit-grafana
+    restart: unless-stopped
+    ports:
+      - "9004:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-deepkit-monitor}
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:9004
+      # Auto-provision Loki and Prometheus as data sources
+      - GF_DATASOURCES_DEFAULT_NAME=Loki
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - deepkit-loki
+      - deepkit-prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      # Grafana has its own auth, no need for Traefik middleware
+    networks:
+      - deepkit-network
+
+volumes:
+  loki_data:
+    name: deepkit-loki-data
+  prometheus_data:
+    name: deepkit-prometheus-data
+  grafana_data:
+    name: deepkit-grafana-data

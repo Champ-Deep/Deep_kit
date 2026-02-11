@@ -1,28 +1,37 @@
 # =============================================================================
-# MODULE H: Vector Search (Qdrant)
+# MODULE: DEEPKIT_VECTOR (Qdrant)
 # =============================================================================
 # "I want semantic search and RAG capabilities"
 #
-# Services: Qdrant
+# Services: DEEPKIT_VECTOR
 # Ports: 6333
-# Dependencies: Core (Ollama for embeddings)
+# Dependencies: Core (DEEPKIT_ENGINE for embeddings)
 # =============================================================================
 
 services:
   # ---------------------------------------------------------------------------
-  # Qdrant - Vector Database (port 6333)
+  # DEEPKIT_VECTOR - Vector Database (port 6333)
   # ---------------------------------------------------------------------------
-  qdrant:
+  deepkit-vector:
     image: qdrant/qdrant:latest
-    container_name: deepkit-qdrant
+    container_name: deepkit-vector
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=vector"
+      - "deepkit.service.name=vector"
+      - "deepkit.service.port=6333"
+      - "deepkit.health.path=/readyz"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE VAULT"
+      - "deepkit.service.description=Vector Database"
     restart: unless-stopped
     ports:
       - "6333:6333"
     volumes:
-      - qdrant_data:/qdrant/storage
+      - vector_data:/qdrant/storage
     networks:
       - deepkit-network
 
 volumes:
-  qdrant_data:
-    name: deepkit-qdrant-data
+  vector_data:
+    name: deepkit-vector-data

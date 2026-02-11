@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepKit Link Shortener</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      background: #0A0B10;
+      color: #00F2FF;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.03) 50%,
+        transparent 50%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: scanline 8s linear infinite;
+    }
+
+    @keyframes scanline {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(4px); }
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(112, 0, 255, 0.1);
+      border: 2px solid #7000FF;
+      border-radius: 8px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #7000FF;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 20px rgba(112, 0, 255, 0.5);
+    }
+
+    .subtitle {
+      color: #00F2FF;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(112, 0, 255, 0.1);
+      border: 2px solid #7000FF;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      color: #7000FF;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      color: #00F2FF;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .panel {
+      background: rgba(0, 242, 255, 0.05);
+      border: 2px solid #00F2FF;
+      border-radius: 8px;
+      padding: 2rem;
+    }
+
+    .panel-header {
+      font-size: 1.2rem;
+      color: #00F2FF;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      color: #00F2FF;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: rgba(0, 242, 255, 0.1);
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #7000FF;
+      box-shadow: 0 0 10px rgba(112, 0, 255, 0.3);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+    }
+
+    .button {
+      background: #7000FF;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .button:hover {
+      background: #8F00FF;
+      box-shadow: 0 0 20px rgba(112, 0, 255, 0.5);
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button-secondary {
+      background: transparent;
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+    }
+
+    .button-secondary:hover {
+      background: rgba(0, 242, 255, 0.1);
+      box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+    }
+
+    .link-item {
+      background: rgba(112, 0, 255, 0.1);
+      border: 1px solid #7000FF;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .link-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    .link-code {
+      color: #39FF14;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .link-url {
+      color: #00F2FF;
+      font-size: 0.9rem;
+      margin: 0.5rem 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .link-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 0.5rem;
+    }
+
+    .link-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(57, 255, 20, 0.2);
+      border: 1px solid #39FF14;
+      color: #39FF14;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+
+    .badge-expired {
+      background: rgba(255, 0, 85, 0.2);
+      border-color: #FF0055;
+      color: #FF0055;
+    }
+
+    .badge-protected {
+      background: rgba(112, 0, 255, 0.2);
+      border-color: #7000FF;
+      color: #7000FF;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .chart-container {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .tab {
+      background: transparent;
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      background: #7000FF;
+      border-color: #7000FF;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(112, 0, 255, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const API_BASE = window.location.origin;
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('create');
+      const [links, setLinks] = useState([]);
+      const [stats, setStats] = useState({ totalLinks: 0, totalClicks: 0, linksToday: 0, clicksToday: 0 });
+      const [loading, setLoading] = useState(false);
+      const [selectedLink, setSelectedLink] = useState(null);
+      const [analytics, setAnalytics] = useState(null);
+
+      // Form state
+      const [originalUrl, setOriginalUrl] = useState('');
+      const [customCode, setCustomCode] = useState('');
+      const [password, setPassword] = useState('');
+      const [expiresAt, setExpiresAt] = useState('');
+      const [autoQR, setAutoQR] = useState(true);
+
+      useEffect(() => {
+        loadLinks();
+        loadStats();
+      }, []);
+
+      const loadLinks = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/links`);
+          const data = await response.json();
+          setLinks(data.links || []);
+        } catch (error) {
+          console.error('Failed to load links:', error);
+        }
+      };
+
+      const loadStats = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/links/stats/global`);
+          const data = await response.json();
+          setStats(data);
+        } catch (error) {
+          console.error('Failed to load stats:', error);
+        }
+      };
+
+      const createLink = async () => {
+        if (!originalUrl) {
+          alert('Please enter a URL');
+          return;
+        }
+
+        setLoading(true);
+        try {
+          const response = await fetch(`${API_BASE}/api/links`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              originalUrl,
+              customCode: customCode || undefined,
+              password: password || undefined,
+              expiresAt: expiresAt || undefined,
+              autoQR
+            })
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to create link');
+          }
+
+          const result = await response.json();
+          alert(`Link created: ${API_BASE}${result.shortUrl}`);
+
+          // Reset form
+          setOriginalUrl('');
+          setCustomCode('');
+          setPassword('');
+          setExpiresAt('');
+
+          loadLinks();
+          loadStats();
+        } catch (error) {
+          alert(`Error: ${error.message}`);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const deleteLink = async (id) => {
+        if (!confirm('Delete this link?')) return;
+
+        try {
+          const response = await fetch(`${API_BASE}/api/links/${id}`, {
+            method: 'DELETE'
+          });
+
+          if (response.ok) {
+            loadLinks();
+            loadStats();
+          }
+        } catch (error) {
+          alert('Failed to delete link');
+        }
+      };
+
+      const viewAnalytics = async (link) => {
+        setSelectedLink(link);
+        setActiveTab('analytics');
+
+        try {
+          const response = await fetch(`${API_BASE}/api/links/${link.id}/analytics`);
+          const data = await response.json();
+          setAnalytics(data);
+        } catch (error) {
+          console.error('Failed to load analytics:', error);
+        }
+      };
+
+      const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        alert('Copied to clipboard!');
+      };
+
+      const renderCreateTab = () => (
+        <div className="grid">
+          <div className="panel">
+            <div className="panel-header">Create Short Link</div>
+
+            <div className="form-group">
+              <label>Original URL</label>
+              <input
+                type="url"
+                value={originalUrl}
+                onChange={(e) => setOriginalUrl(e.target.value)}
+                placeholder="https://example.com/very/long/url"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Custom Code (Optional)</label>
+              <input
+                type="text"
+                value={customCode}
+                onChange={(e) => setCustomCode(e.target.value)}
+                placeholder="my-link (leave empty for auto-generate)"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Password Protection (Optional)</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Expiration Date (Optional)</label>
+              <input
+                type="datetime-local"
+                value={expiresAt}
+                onChange={(e) => setExpiresAt(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <div className="checkbox-group">
+                <input
+                  type="checkbox"
+                  checked={autoQR}
+                  onChange={(e) => setAutoQR(e.target.checked)}
+                />
+                <label style={{ margin: 0 }}>Auto-generate QR Code</label>
+              </div>
+            </div>
+
+            <button className="button" onClick={createLink} disabled={loading}>
+              {loading ? 'Creating...' : 'Create Short Link'}
+            </button>
+          </div>
+
+          <div className="panel">
+            <div className="panel-header">Recent Links</div>
+            {links.slice(0, 5).length === 0 ? (
+              <div className="empty-state">No links created yet</div>
+            ) : (
+              links.slice(0, 5).map((link) => (
+                <div key={link.id} className="link-item">
+                  <div className="link-header">
+                    <div className="link-code">/{link.short_code}</div>
+                    <div>
+                      {link.password_hash && <span className="badge badge-protected">Protected</span>}
+                      {link.expires_at && new Date(link.expires_at) < new Date() && (
+                        <span className="badge badge-expired">Expired</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="link-url">{link.original_url}</div>
+                  <div className="link-actions">
+                    <button
+                      className="button-secondary"
+                      onClick={() => copyToClipboard(`${API_BASE}/s/${link.short_code}`)}
+                    >
+                      Copy
+                    </button>
+                    <button
+                      className="button-secondary"
+                      onClick={() => viewAnalytics(link)}
+                    >
+                      Analytics
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      );
+
+      const renderLinksTab = () => (
+        <div className="panel">
+          <div className="panel-header">All Links ({links.length})</div>
+          {links.length === 0 ? (
+            <div className="empty-state">No links created yet</div>
+          ) : (
+            links.map((link) => (
+              <div key={link.id} className="link-item">
+                <div className="link-header">
+                  <div className="link-code">/{link.short_code}</div>
+                  <div>
+                    {link.password_hash && <span className="badge badge-protected">Protected</span>}
+                    {link.expires_at && new Date(link.expires_at) < new Date() && (
+                      <span className="badge badge-expired">Expired</span>
+                    )}
+                  </div>
+                </div>
+                <div className="link-url">{link.original_url}</div>
+                <div className="link-meta">
+                  <span>Created: {new Date(link.created_at).toLocaleDateString()}</span>
+                  {link.expires_at && <span>Expires: {new Date(link.expires_at).toLocaleDateString()}</span>}
+                </div>
+                <div className="link-actions">
+                  <button
+                    className="button-secondary"
+                    onClick={() => copyToClipboard(`${API_BASE}/s/${link.short_code}`)}
+                  >
+                    Copy
+                  </button>
+                  <button
+                    className="button-secondary"
+                    onClick={() => viewAnalytics(link)}
+                  >
+                    Analytics
+                  </button>
+                  <button
+                    className="button-secondary"
+                    style={{ borderColor: '#FF0055', color: '#FF0055' }}
+                    onClick={() => deleteLink(link.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      );
+
+      const renderAnalyticsTab = () => {
+        if (!selectedLink || !analytics) {
+          return (
+            <div className="panel">
+              <div className="empty-state">Select a link to view analytics</div>
+            </div>
+          );
+        }
+
+        return (
+          <div>
+            <div className="panel" style={{ marginBottom: '2rem' }}>
+              <div className="panel-header">Analytics: /{selectedLink.short_code}</div>
+              <div className="link-url">{analytics.link.original_url}</div>
+
+              <div className="stats-grid" style={{ marginTop: '2rem' }}>
+                <div className="stat-card">
+                  <div className="stat-value">{analytics.totalClicks}</div>
+                  <div className="stat-label">Total Clicks</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-value">{analytics.clicksByCountry.length}</div>
+                  <div className="stat-label">Countries</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-value">{analytics.recentClicks.length}</div>
+                  <div className="stat-label">Recent Activity</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid">
+              <div className="panel">
+                <div className="panel-header">Clicks by Country</div>
+                {analytics.clicksByCountry.length === 0 ? (
+                  <div className="empty-state">No data yet</div>
+                ) : (
+                  analytics.clicksByCountry.slice(0, 10).map((item) => (
+                    <div key={item.country} className="link-item">
+                      <div className="link-header">
+                        <span>{item.country}</span>
+                        <span className="badge">{item.count} clicks</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="panel">
+                <div className="panel-header">Clicks by Device</div>
+                {analytics.clicksByDevice.map((item) => (
+                  <div key={item.device} className="link-item">
+                    <div className="link-header">
+                      <span>{item.device}</span>
+                      <span className="badge">{item.count} clicks</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <h1>🔗 Link Shortener</h1>
+            <div className="subtitle">URL Shortening with Analytics & QR Integration</div>
+          </div>
+
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-value">{stats.totalLinks}</div>
+              <div className="stat-label">Total Links</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.totalClicks}</div>
+              <div className="stat-label">Total Clicks</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.linksToday}</div>
+              <div className="stat-label">Links Today</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.clicksToday}</div>
+              <div className="stat-label">Clicks Today</div>
+            </div>
+          </div>
+
+          <div className="tabs">
+            <button
+              className={`tab ${activeTab === 'create' ? 'active' : ''}`}
+              onClick={() => setActiveTab('create')}
+            >
+              Create
+            </button>
+            <button
+              className={`tab ${activeTab === 'links' ? 'active' : ''}`}
+              onClick={() => setActiveTab('links')}
+            >
+              All Links
+            </button>
+            <button
+              className={`tab ${activeTab === 'analytics' ? 'active' : ''}`}
+              onClick={() => setActiveTab('analytics')}
+            >
+              Analytics
+            </button>
+          </div>
+
+          {activeTab === 'create' && renderCreateTab()}
+          {activeTab === 'links' && renderLinksTab()}
+          {activeTab === 'analytics' && renderAnalyticsTab()}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>

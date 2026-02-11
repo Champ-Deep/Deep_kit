@@ -1,0 +1,391 @@
+/**
+ * DEEPKIT_CHAMPMAIL - CRT Theme Override
+ * Email Automation Service Branding
+ */
+
+:root {
+  --dk-green: #39FF14;
+  --dk-green-dim: #00AA00;
+  --dk-green-bright: #00FF00;
+  --dk-black: #000000;
+  --dk-gray: #1A1A1A;
+  --dk-amber: #FFB000;
+  --dk-red: #FF0044;
+}
+
+/* Global styles */
+* {
+  font-family: 'JetBrains Mono', 'Courier New', 'SF Mono', Monaco, monospace !important;
+}
+
+body {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+}
+
+/* CRT Scanline effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  z-index: 9999;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(10px); }
+}
+
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--dk-green) !important;
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+/* Links */
+a {
+  color: var(--dk-green) !important;
+  text-decoration: none !important;
+  transition: all 0.2s;
+}
+
+a:hover {
+  color: var(--dk-green-bright) !important;
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.7);
+}
+
+/* Buttons */
+button,
+.btn,
+[type="button"],
+[type="submit"] {
+  background: rgba(57, 255, 20, 0.1) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: none !important;
+}
+
+button:hover,
+.btn:hover {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.5) !important;
+  transform: translateY(-1px);
+}
+
+button:active,
+.btn:active {
+  transform: translateY(0);
+}
+
+button:disabled,
+.btn:disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  padding: 10px !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--dk-green-bright) !important;
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.5) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--dk-green-dim) !important;
+  opacity: 0.5;
+}
+
+/* Tables */
+table {
+  border: 1px solid var(--dk-green) !important;
+  border-collapse: collapse;
+}
+
+th {
+  background: rgba(57, 255, 20, 0.1) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  padding: 10px !important;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+td {
+  border: 1px solid rgba(57, 255, 20, 0.2) !important;
+  color: var(--dk-green) !important;
+  padding: 10px !important;
+}
+
+tr:hover {
+  background: rgba(57, 255, 20, 0.05) !important;
+}
+
+/* Cards */
+.card,
+.panel,
+.box {
+  background: rgba(57, 255, 20, 0.05) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  box-shadow: none !important;
+}
+
+/* Status indicators */
+.status,
+.badge,
+.tag {
+  border: 1px solid var(--dk-green) !important;
+  background: transparent !important;
+  color: var(--dk-green) !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  text-transform: uppercase;
+}
+
+.status.sent,
+.badge.success,
+.tag.is-success {
+  border-color: var(--dk-green-bright) !important;
+  color: var(--dk-green-bright) !important;
+}
+
+.status.queued,
+.badge.warning,
+.tag.is-warning {
+  border-color: var(--dk-amber) !important;
+  color: var(--dk-amber) !important;
+}
+
+.status.failed,
+.badge.error,
+.tag.is-danger {
+  border-color: var(--dk-red) !important;
+  color: var(--dk-red) !important;
+}
+
+/* Stat cards */
+.stat-card {
+  border: 2px solid var(--dk-green) !important;
+  background: rgba(57, 255, 20, 0.05) !important;
+  padding: 20px !important;
+}
+
+.stat-value {
+  color: var(--dk-green) !important;
+  font-size: 36px !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+}
+
+.stat-label {
+  color: var(--dk-green) !important;
+  opacity: 0.7;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+/* Tabs */
+.tabs {
+  border-bottom: 2px solid var(--dk-green) !important;
+}
+
+.tab,
+.tabs li {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--dk-green-dim) !important;
+}
+
+.tab:hover,
+.tabs li:hover {
+  background: rgba(57, 255, 20, 0.1) !important;
+  border-color: var(--dk-green) !important;
+  color: var(--dk-green) !important;
+}
+
+.tab.active,
+.tabs li.is-active {
+  background: var(--dk-green) !important;
+  border-color: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  font-weight: bold;
+}
+
+/* Alerts */
+.alert,
+.notification,
+.message {
+  border: 1px solid !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.alert.success,
+.notification.is-success,
+.message.is-success {
+  border-color: var(--dk-green) !important;
+  color: var(--dk-green) !important;
+}
+
+.alert.error,
+.notification.is-danger,
+.message.is-danger {
+  border-color: var(--dk-red) !important;
+  color: var(--dk-red) !important;
+}
+
+.alert.warning,
+.notification.is-warning,
+.message.is-warning {
+  border-color: var(--dk-amber) !important;
+  color: var(--dk-amber) !important;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dk-black);
+  border: 1px solid var(--dk-green);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dk-green);
+  border: 1px solid var(--dk-black);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dk-green-bright);
+}
+
+/* Flicker animation for headers */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+  51% { opacity: 1; }
+}
+
+h1 {
+  animation: flicker 3s infinite;
+}
+
+/* Glow effect on hover */
+.email-item:hover,
+.template-card:hover {
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.3) !important;
+}
+
+/* Form groups */
+.form-group label,
+.field label {
+  color: var(--dk-green) !important;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+/* Loading indicators */
+.spinner,
+.loader,
+.loading {
+  border-color: var(--dk-green) transparent var(--dk-green) transparent !important;
+}
+
+/* Modals */
+.modal,
+.dialog {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  box-shadow: 0 0 50px rgba(57, 255, 20, 0.3) !important;
+}
+
+.modal-header,
+.dialog-header {
+  border-bottom: 1px solid var(--dk-green) !important;
+  background: rgba(57, 255, 20, 0.05) !important;
+}
+
+.modal-footer,
+.dialog-footer {
+  border-top: 1px solid var(--dk-green) !important;
+  background: rgba(57, 255, 20, 0.05) !important;
+}
+
+/* Email list specific */
+.email-list {
+  border: 1px solid var(--dk-green) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.email-item {
+  border-bottom: 1px solid rgba(57, 255, 20, 0.2) !important;
+  transition: all 0.2s;
+}
+
+.email-item:hover {
+  background: rgba(57, 255, 20, 0.05) !important;
+  border-left: 3px solid var(--dk-green) !important;
+}
+
+/* Templates grid */
+.template-card {
+  border: 1px solid var(--dk-green) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.template-card:hover {
+  background: rgba(57, 255, 20, 0.1) !important;
+  transform: translateY(-2px);
+}
+
+/* Disable smooth scrolling for authentic CRT feel */
+html {
+  scroll-behavior: auto !important;
+}
+
+/* Override any conflicting styles */
+body * {
+  border-radius: 0 !important; /* Sharp corners only */
+}

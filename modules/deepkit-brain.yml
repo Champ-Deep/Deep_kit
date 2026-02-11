@@ -1,0 +1,22 @@
+services:
+  deepkit-brain:
+    build: ./backend/deepkit-brain
+    container_name: deepkit-brain
+    restart: unless-stopped
+    ports:
+      - "11500:11500"
+    volumes:
+      - ~/.deepkit:/root/.deepkit
+    environment:
+      - PORT=11500
+      - OLLAMA_HOST=http://deepkit-engine:11434
+      - NODE_ENV=${NODE_ENV:-production}
+    networks:
+      - deepkit-network
+    depends_on:
+      - deepkit-engine
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

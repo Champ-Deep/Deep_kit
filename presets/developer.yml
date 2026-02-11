@@ -4,23 +4,32 @@
 # For building AI applications with knowledge graphs and vector search.
 #
 # Included:
-#   - Core (PostgreSQL, Redis, Ollama, Portainer)
-#   - Module A: n8n (automation)
-#   - Module B: Open WebUI (AI chat)
-#   - Module G: Knowledge Graphs (FalkorDB + Graphiti)
-#   - Module H: Vector Search (Qdrant)
-#   - Module J: Database Admin (Adminer)
+#   - Core (DEEPKIT_STORE, DEEPKIT_CACHE, DEEPKIT_ENGINE)
+#   - DEEPKIT_CORE (command center - AI chat + generative UI)
+#   - DEEPKIT_ORCHESTRATOR (workflow automation)
+#   - DEEPKIT_CHAT (AI conversation)
+#   - DEEPKIT_GRAPH + DEEPKIT_MEMORY (knowledge graphs)
+#   - DEEPKIT_VECTOR (semantic search)
+#   - DEEPKIT_DATA (database admin)
+#   - COWORK (unified AI workspace)
+#   - API_TESTING (API tester)
+#   - WEBHOOK_MANAGER (webhook management)
+#   - TASK_TRACKER (gamified tasks)
 #
-# Total: 11 services
-# Ports: 5432, 6379, 11434, 9000, 5678, 3001, 6380, 3011, 8000, 6333, 9003
+# Total: 14 services
 #
 # Usage: ./install.sh --preset developer
 # =============================================================================
 
 include:
   - path: ../docker-compose.yml
+  - path: ../modules/deepkit-core.yml
   - path: ../modules/automation.yml
   - path: ../modules/chat.yml
   - path: ../modules/knowledge.yml
   - path: ../modules/vector.yml
   - path: ../modules/admin.yml
+  - path: ../modules/cowork.yml
+  - path: ../modules/api-testing.yml
+  - path: ../modules/webhook-manager.yml
+  - path: ../modules/task-tracker.yml

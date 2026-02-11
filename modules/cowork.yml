@@ -1,0 +1,63 @@
+services:
+  cowork:
+    build: ./services/cowork
+    container_name: deepkit-cowork
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=cowork"
+      - "deepkit.service.name=cowork"
+      - "deepkit.service.port=3030"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=Team Collaboration"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.cowork.rule=PathPrefix(`/cowork`)"
+      - "traefik.http.routers.cowork.entrypoints=web"
+      - "traefik.http.routers.cowork.middlewares=deepkit-auth"
+      - "traefik.http.services.cowork.loadbalancer.server.port=3030"
+    restart: unless-stopped
+    ports:
+      - "3030:3030"
+    environment:
+      - PORT=3030
+      - SERVICE_NAME=cowork
+      - NODE_ENV=${NODE_ENV:-production}
+      - POSTGRES_HOST=deepkit-store
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=cowork
+      - POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+      - OLLAMA_URL=http://deepkit-engine:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2}
+      - TOOLS_REGISTRY_PATH=/app/tools-registry/tools.json
+    volumes:
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+      - ./branding/css/deepkit-cowork.css:/app/public/css/custom.css:ro
+      - ./branding/components/hardware-pulse.js:/app/public/js/hardware-pulse.js:ro
+      - ./backend/deepkit-brain/tools-registry:/app/tools-registry:ro
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+      deepkit-engine:
+        condition: service_started
+    networks:
+      - deepkit-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3030/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

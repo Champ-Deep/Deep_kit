@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepKit Request Tracker</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: #0A0B10;
+      color: #00F2FF;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.03) 50%, transparent 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: scanline 8s linear infinite;
+    }
+    @keyframes scanline { to { transform: translateY(4px); } }
+    .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(112,0,255,0.1);
+      border: 2px solid #7000FF;
+      border-radius: 8px;
+    }
+    h1 { font-size: 2.5rem; color: #7000FF; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 0 20px rgba(112,0,255,0.5); }
+    .subtitle { color: #00F2FF; font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: rgba(112,0,255,0.1);
+      border: 2px solid #7000FF;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .stat-value { font-size: 2.5rem; color: #7000FF; font-weight: bold; }
+    .stat-label { color: #00F2FF; font-size: 0.8rem; text-transform: uppercase; margin-top: 0.5rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+    .panel {
+      background: rgba(0,242,255,0.05);
+      border: 2px solid #00F2FF;
+      border-radius: 8px;
+      padding: 2rem;
+    }
+    .panel-header { font-size: 1.2rem; color: #00F2FF; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; color: #00F2FF; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
+    input, select, textarea {
+      width: 100%;
+      background: rgba(0,242,255,0.1);
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #7000FF; box-shadow: 0 0 10px rgba(112,0,255,0.3); }
+    .button {
+      background: #7000FF;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      width: 100%;
+    }
+    .button:hover { background: #8F00FF; box-shadow: 0 0 20px rgba(112,0,255,0.5); }
+    .button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .button-secondary {
+      background: transparent;
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+    }
+    .ticket-item {
+      background: rgba(112,0,255,0.1);
+      border: 1px solid #7000FF;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .ticket-item:hover { background: rgba(112,0,255,0.2); border-color: #00F2FF; }
+    .ticket-number { color: #39FF14; font-weight: bold; font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .ticket-subject { color: #00F2FF; font-size: 1rem; margin: 0.5rem 0; }
+    .ticket-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 0.5rem;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(57,255,20,0.2);
+      border: 1px solid #39FF14;
+      color: #39FF14;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      margin-right: 0.5rem;
+    }
+    .badge-new { background: rgba(0,242,255,0.2); border-color: #00F2FF; color: #00F2FF; }
+    .badge-progress { background: rgba(255,165,0,0.2); border-color: #FFA500; color: #FFA500; }
+    .badge-resolved { background: rgba(57,255,20,0.2); border-color: #39FF14; color: #39FF14; }
+    .badge-high { background: rgba(255,0,85,0.2); border-color: #FF0055; color: #FF0055; }
+    .badge-critical { background: rgba(255,0,0,0.3); border-color: #FF0000; color: #FF0000; }
+    .comment-item {
+      background: rgba(0,242,255,0.05);
+      border: 1px solid #00F2FF;
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+    .comment-author { color: #7000FF; font-weight: bold; font-size: 0.9rem; }
+    .comment-text { color: #00F2FF; margin: 0.5rem 0; font-size: 0.9rem; }
+    .comment-time { color: rgba(255,255,255,0.5); font-size: 0.7rem; }
+    .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; }
+    .tab {
+      background: transparent;
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    .tab.active { background: #7000FF; border-color: #7000FF; color: #fff; box-shadow: 0 0 20px rgba(112,0,255,0.5); }
+    .empty-state { text-align: center; padding: 3rem; color: rgba(255,255,255,0.5); }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const API_BASE = window.location.origin;
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('tickets');
+      const [tickets, setTickets] = useState([]);
+      const [departments, setDepartments] = useState([]);
+      const [selectedTicket, setSelectedTicket] = useState(null);
+      const [comments, setComments] = useState([]);
+      const [loading, setLoading] = useState(false);
+      
+      // Form state
+      const [subject, setSubject] = useState('');
+      const [description, setDescription] = useState('');
+      const [departmentId, setDepartmentId] = useState('');
+      const [priority, setPriority] = useState('Medium');
+      const [requesterName, setRequesterName] = useState('');
+      const [requesterEmail, setRequesterEmail] = useState('');
+      
+      // Comment form
+      const [commentAuthor, setCommentAuthor] = useState('');
+      const [commentText, setCommentText] = useState('');
+
+      useEffect(() => {
+        loadTickets();
+        loadDepartments();
+      }, []);
+
+      const loadTickets = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/tickets`);
+          const data = await response.json();
+          setTickets(data.tickets || []);
+        } catch (error) {
+          console.error('Failed to load tickets:', error);
+        }
+      };
+
+      const loadDepartments = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/departments`);
+          const data = await response.json();
+          setDepartments(data.departments || []);
+          if (data.departments.length > 0) setDepartmentId(data.departments[0].id);
+        } catch (error) {
+          console.error('Failed to load departments:', error);
+        }
+      };
+
+      const loadComments = async (ticketId) => {
+        try {
+          const response = await fetch(`${API_BASE}/api/tickets/${ticketId}/comments`);
+          const data = await response.json();
+          setComments(data.comments || []);
+        } catch (error) {
+          console.error('Failed to load comments:', error);
+        }
+      };
+
+      const createTicket = async () => {
+        if (!subject || !departmentId) {
+          alert('Please enter subject and select department');
+          return;
+        }
+
+        setLoading(true);
+        try {
+          const response = await fetch(`${API_BASE}/api/tickets`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subject,
+              description,
+              departmentId: parseInt(departmentId),
+              priority,
+              requesterName: requesterName || undefined,
+              requesterEmail: requesterEmail || undefined
+            })
+          });
+
+          if (!response.ok) throw new Error('Failed to create ticket');
+
+          const ticket = await response.json();
+          alert(`Ticket created: ${ticket.ticket_number}`);
+          
+          setSubject('');
+          setDescription('');
+          setRequesterName('');
+          setRequesterEmail('');
+          
+          loadTickets();
+          setActiveTab('tickets');
+        } catch (error) {
+          alert(`Error: ${error.message}`);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const viewTicket = async (ticket) => {
+        setSelectedTicket(ticket);
+        setActiveTab('details');
+        await loadComments(ticket.id);
+      };
+
+      const addComment = async () => {
+        if (!commentAuthor || !commentText || !selectedTicket) return;
+
+        try {
+          const response = await fetch(`${API_BASE}/api/tickets/${selectedTicket.id}/comments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              author: commentAuthor,
+              comment: commentText
+            })
+          });
+
+          if (response.ok) {
+            setCommentAuthor('');
+            setCommentText('');
+            await loadComments(selectedTicket.id);
+          }
+        } catch (error) {
+          alert('Failed to add comment');
+        }
+      };
+
+      const updateStatus = async (status) => {
+        if (!selectedTicket) return;
+
+        try {
+          const response = await fetch(`${API_BASE}/api/tickets/${selectedTicket.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+          });
+
+          if (response.ok) {
+            const updated = await response.json();
+            setSelectedTicket(updated);
+            loadTickets();
+          }
+        } catch (error) {
+          alert('Failed to update status');
+        }
+      };
+
+      const getStatusBadgeClass = (status) => {
+        if (status === 'New') return 'badge-new';
+        if (status === 'In Progress') return 'badge-progress';
+        if (status === 'Resolved' || status === 'Closed') return 'badge-resolved';
+        return '';
+      };
+
+      const getPriorityBadgeClass = (priority) => {
+        if (priority === 'High') return 'badge-high';
+        if (priority === 'Critical') return 'badge-critical';
+        return '';
+      };
+
+      const stats = {
+        total: tickets.length,
+        new: tickets.filter(t => t.status === 'New').length,
+        progress: tickets.filter(t => t.status === 'In Progress').length,
+        resolved: tickets.filter(t => t.status === 'Resolved' || t.status === 'Closed').length
+      };
+
+      const renderTicketsTab = () => (
+        <div className="panel">
+          <div className="panel-header">All Tickets ({tickets.length})</div>
+          {tickets.length === 0 ? (
+            <div className="empty-state">No tickets yet</div>
+          ) : (
+            tickets.map(ticket => (
+              <div key={ticket.id} className="ticket-item" onClick={() => viewTicket(ticket)}>
+                <div className="ticket-number">{ticket.ticket_number}</div>
+                <span className={`badge ${getStatusBadgeClass(ticket.status)}`}>{ticket.status}</span>
+                <span className={`badge ${getPriorityBadgeClass(ticket.priority)}`}>{ticket.priority}</span>
+                <div className="ticket-subject">{ticket.subject}</div>
+                <div className="ticket-meta">
+                  <span>Created: {new Date(ticket.created_at).toLocaleDateString()}</span>
+                  {ticket.requester_name && <span>By: {ticket.requester_name}</span>}
+                  {ticket.assigned_to && <span>Assigned: {ticket.assigned_to}</span>}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      );
+
+      const renderCreateTab = () => (
+        <div className="grid">
+          <div className="panel">
+            <div className="panel-header">Create Ticket</div>
+            
+            <div className="form-group">
+              <label>Subject</label>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Brief description of the issue"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Detailed description..."
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Department</label>
+              <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}>
+                {departments.map(dept => (
+                  <option key={dept.id} value={dept.id}>{dept.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Priority</label>
+              <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Your Name (Optional)</label>
+              <input
+                type="text"
+                value={requesterName}
+                onChange={(e) => setRequesterName(e.target.value)}
+                placeholder="John Doe"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Your Email (Optional)</label>
+              <input
+                type="email"
+                value={requesterEmail}
+                onChange={(e) => setRequesterEmail(e.target.value)}
+                placeholder="john@example.com"
+              />
+            </div>
+
+            <button className="button" onClick={createTicket} disabled={loading}>
+              {loading ? 'Creating...' : 'Create Ticket'}
+            </button>
+          </div>
+
+          <div className="panel">
+            <div className="panel-header">Recent Tickets</div>
+            {tickets.slice(0, 5).map(ticket => (
+              <div key={ticket.id} className="ticket-item" onClick={() => viewTicket(ticket)}>
+                <div className="ticket-number">{ticket.ticket_number}</div>
+                <span className={`badge ${getStatusBadgeClass(ticket.status)}`}>{ticket.status}</span>
+                <div className="ticket-subject">{ticket.subject}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+      const renderDetailsTab = () => {
+        if (!selectedTicket) {
+          return <div className="panel"><div className="empty-state">Select a ticket</div></div>;
+        }
+
+        return (
+          <div>
+            <div className="panel" style={{ marginBottom: '2rem' }}>
+              <div className="panel-header">{selectedTicket.ticket_number}</div>
+              <div className="ticket-subject" style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>
+                {selectedTicket.subject}
+              </div>
+              <span className={`badge ${getStatusBadgeClass(selectedTicket.status)}`}>{selectedTicket.status}</span>
+              <span className={`badge ${getPriorityBadgeClass(selectedTicket.priority)}`}>{selectedTicket.priority}</span>
+              
+              {selectedTicket.description && (
+                <div style={{ margin: '1rem 0', padding: '1rem', background: 'rgba(0,242,255,0.05)', borderRadius: '4px' }}>
+                  {selectedTicket.description}
+                </div>
+              )}
+
+              <div className="ticket-meta" style={{ marginTop: '1rem' }}>
+                <span>Created: {new Date(selectedTicket.created_at).toLocaleString()}</span>
+                {selectedTicket.requester_email && <span>Email: {selectedTicket.requester_email}</span>}
+              </div>
+
+              <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem' }}>
+                <button className="button-secondary" onClick={() => updateStatus('In Progress')}>
+                  Mark In Progress
+                </button>
+                <button className="button-secondary" onClick={() => updateStatus('Resolved')}>
+                  Mark Resolved
+                </button>
+                <button className="button-secondary" onClick={() => updateStatus('Closed')}>
+                  Close
+                </button>
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="panel-header">Comments ({comments.length})</div>
+              
+              {comments.map(comment => (
+                <div key={comment.id} className="comment-item">
+                  <div className="comment-author">{comment.author}</div>
+                  <div className="comment-text">{comment.comment}</div>
+                  <div className="comment-time">{new Date(comment.created_at).toLocaleString()}</div>
+                </div>
+              ))}
+
+              <div style={{ marginTop: '1.5rem' }}>
+                <div className="form-group">
+                  <label>Your Name</label>
+                  <input
+                    type="text"
+                    value={commentAuthor}
+                    onChange={(e) => setCommentAuthor(e.target.value)}
+                    placeholder="Your name"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Comment</label>
+                  <textarea
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Add a comment..."
+                  />
+                </div>
+                <button className="button" onClick={addComment}>Add Comment</button>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <h1>🎫 Request Tracker</h1>
+            <div className="subtitle">Full-Featured Support Ticketing Platform</div>
+          </div>
+
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-value">{stats.total}</div>
+              <div className="stat-label">Total Tickets</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.new}</div>
+              <div className="stat-label">New</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.progress}</div>
+              <div className="stat-label">In Progress</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.resolved}</div>
+              <div className="stat-label">Resolved</div>
+            </div>
+          </div>
+
+          <div className="tabs">
+            <button className={`tab ${activeTab === 'tickets' ? 'active' : ''}`} onClick={() => setActiveTab('tickets')}>
+              All Tickets
+            </button>
+            <button className={`tab ${activeTab === 'create' ? 'active' : ''}`} onClick={() => setActiveTab('create')}>
+              Create Ticket
+            </button>
+            <button className={`tab ${activeTab === 'details' ? 'active' : ''}`} onClick={() => setActiveTab('details')}>
+              Details
+            </button>
+          </div>
+
+          {activeTab === 'tickets' && renderTicketsTab()}
+          {activeTab === 'create' && renderCreateTab()}
+          {activeTab === 'details' && renderDetailsTab()}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>

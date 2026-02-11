@@ -1,32 +1,42 @@
 # =============================================================================
-# MODULE C: Document Research (Local NotebookLM)
+# MODULE: DEEPKIT_RESEARCH (Local NotebookLM)
 # =============================================================================
 # "I want to upload PDFs and research documents"
 #
-# Services: Local NotebookLM
+# Services: DEEPKIT_RESEARCH
 # Ports: 3002
-# Dependencies: Core (Ollama)
+# Dependencies: Core (DEEPKIT_ENGINE)
 # =============================================================================
 
 services:
   # ---------------------------------------------------------------------------
-  # Local NotebookLM - Document Research (port 3002)
+  # DEEPKIT_RESEARCH - Document Research (port 3002)
   # ---------------------------------------------------------------------------
-  notebooklm:
+  deepkit-research:
     image: ghcr.io/notebooklm-local/notebooklm:latest
-    container_name: deepkit-notebooklm
+    container_name: deepkit-research
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=research"
+      - "deepkit.service.name=research"
+      - "deepkit.service.port=3002"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=Deep Research Agent"
     restart: unless-stopped
     ports:
       - "3002:3000"
     environment:
-      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_BASE_URL: http://deepkit-engine:11434
     volumes:
-      - notebooklm_data:/app/data
+      - research_data:/app/data
+      - ./branding/css/deepkit-research.css:/app/static/css/custom.css:ro
     depends_on:
-      - ollama
+      - deepkit-engine
     networks:
       - deepkit-network
 
 volumes:
-  notebooklm_data:
-    name: deepkit-notebooklm-data
+  research_data:
+    name: deepkit-research-data

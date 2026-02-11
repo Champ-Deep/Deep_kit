@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # =============================================================================
-# DEEP STARTER KIT - Interactive Installer
+# DEEPKIT - Interactive Installer
 # =============================================================================
+# "Your Personal AI. Locally Contained. Locally Empowered."
+#
 # A friendly, guided installation for your AI & Automation toolkit.
 # Designed for no-code users - just follow the prompts!
 #
@@ -46,7 +48,7 @@ clear_screen() {
 
 print_banner() {
     echo ""
-    echo -e "${PURPLE}${BOLD}"
+    echo -e "${GREEN}${BOLD}"
     echo "  ╔═══════════════════════════════════════════════════════════════╗"
     echo "  ║                                                               ║"
     echo "  ║   ██████╗ ███████╗███████╗██████╗    ██╗  ██╗██╗████████╗    ║"
@@ -56,7 +58,7 @@ print_banner() {
     echo "  ║   ██████╔╝███████╗███████╗██║        ██║  ██╗██║   ██║       ║"
     echo "  ║   ╚═════╝ ╚══════╝╚══════╝╚═╝        ╚═╝  ╚═╝╚═╝   ╚═╝       ║"
     echo "  ║                                                               ║"
-    echo "  ║         Your AI & Automation Toolkit                          ║"
+    echo "  ║   [ SYSTEM_READY ] .. Your Personal AI. Locally Empowered.    ║"
     echo "  ║                                                               ║"
     echo "  ╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -199,15 +201,15 @@ show_welcome() {
     print_banner
 
     echo ""
-    echo -e "  ${WHITE}${BOLD}Welcome to Deep Starter Kit!${NC}"
+    echo -e "  ${WHITE}${BOLD}Welcome to DEEPKIT!${NC}"
     echo ""
     echo -e "  ${DIM}This installer will help you set up your own AI & automation"
     echo -e "  toolkit. We'll guide you through every step.${NC}"
     echo ""
-    echo -e "  ${CYAN}What you'll get:${NC}"
-    echo -e "    • Local AI chat (like ChatGPT, but private)"
-    echo -e "    • Workflow automation (connect apps, automate tasks)"
-    echo -e "    • PDF tools (merge, split, convert)"
+    echo -e "  ${GREEN}What you'll get:${NC}"
+    echo -e "    • DEEPKIT_CHAT - Local AI chat (like ChatGPT, but private)"
+    echo -e "    • DEEPKIT_ORCHESTRATOR - Workflow automation"
+    echo -e "    • DEEPKIT_DOCS - PDF tools (merge, split, convert)"
     echo -e "    • And more based on your needs..."
     echo ""
 
@@ -225,20 +227,20 @@ show_preset_menu() {
     echo ""
     echo ""
     echo -e "  ${GREEN}${BOLD}[1]${NC} ${WHITE}Minimal${NC} ${GREEN}(Recommended for beginners)${NC}"
-    echo -e "      ${DIM}n8n automation + AI chat + PDF tools${NC}"
-    echo -e "      ${DIM}7 services • Perfect for getting started${NC}"
+    echo -e "      ${DIM}DEEPKIT_ORCHESTRATOR + DEEPKIT_CHAT + DEEPKIT_DOCS${NC}"
+    echo -e "      ${DIM}6 services • Perfect for getting started${NC}"
     echo ""
     echo -e "  ${CYAN}${BOLD}[2]${NC} ${WHITE}Creator${NC}"
-    echo -e "      ${DIM}+ Document research + Content management${NC}"
-    echo -e "      ${DIM}9 services • Great for content creators & marketers${NC}"
+    echo -e "      ${DIM}+ DEEPKIT_RESEARCH + DEEPKIT_CONTENT${NC}"
+    echo -e "      ${DIM}8 services • Great for content creators & marketers${NC}"
     echo ""
     echo -e "  ${PURPLE}${BOLD}[3]${NC} ${WHITE}Business${NC}"
-    echo -e "      ${DIM}+ CRM + Monitoring${NC}"
-    echo -e "      ${DIM}12 services • For managing customers & operations${NC}"
+    echo -e "      ${DIM}+ DEEPKIT_SALES + DEEPKIT_PULSE${NC}"
+    echo -e "      ${DIM}11 services • For managing customers & operations${NC}"
     echo ""
     echo -e "  ${YELLOW}${BOLD}[4]${NC} ${WHITE}Developer${NC}"
-    echo -e "      ${DIM}+ Knowledge graphs + Vector database${NC}"
-    echo -e "      ${DIM}11 services • For building AI applications${NC}"
+    echo -e "      ${DIM}+ DEEPKIT_GRAPH + DEEPKIT_VECTOR${NC}"
+    echo -e "      ${DIM}10 services • For building AI applications${NC}"
     echo ""
     echo -e "  ${BLUE}${BOLD}[5]${NC} ${WHITE}Custom${NC}"
     echo -e "      ${DIM}Choose exactly which modules to install${NC}"
@@ -257,17 +259,17 @@ show_preset_menu() {
                 ;;
             2)
                 SELECTED_PRESET="creator"
-                SELECTED_MODULES=("automation" "chat" "research" "cms" "pdf")
+                SELECTED_MODULES=("automation" "chat" "research" "cms" "pdf" "marketing360" "link-shortener")
                 return
                 ;;
             3)
                 SELECTED_PRESET="business"
-                SELECTED_MODULES=("automation" "chat" "cms" "crm" "pdf" "monitoring")
+                SELECTED_MODULES=("automation" "chat" "cms" "crm" "pdf" "monitoring" "champmail" "cowork" "invoicing" "calendar" "marketing360" "task-tracker" "time-tracker")
                 return
                 ;;
             4)
                 SELECTED_PRESET="developer"
-                SELECTED_MODULES=("automation" "chat" "knowledge" "vector" "admin")
+                SELECTED_MODULES=("automation" "chat" "knowledge" "vector" "admin" "cowork" "api-testing" "webhook-manager" "task-tracker")
                 return
                 ;;
             5)
@@ -290,46 +292,76 @@ show_custom_menu() {
     echo -e "  ${WHITE}${BOLD}Custom Module Selection${NC}"
     echo ""
     echo -e "  ${DIM}Core services are always installed:${NC}"
-    echo -e "  ${GREEN}✓${NC} PostgreSQL (database)"
-    echo -e "  ${GREEN}✓${NC} Redis (caching)"
-    echo -e "  ${GREEN}✓${NC} Ollama (local AI)"
-    echo -e "  ${GREEN}✓${NC} Portainer (Docker management)"
+    echo -e "  ${GREEN}✓${NC} DEEPKIT_STORE (PostgreSQL)"
+    echo -e "  ${GREEN}✓${NC} DEEPKIT_CACHE (Redis)"
+    echo -e "  ${GREEN}✓${NC} DEEPKIT_ENGINE (Ollama)"
     echo ""
     echo -e "  ${WHITE}Select additional modules (enter letters, e.g., 'a b f'):${NC}"
     echo ""
-    echo -e "  ${CYAN}[A]${NC} Workflow Automation (n8n)"
+    echo -e "  ${CYAN}[A]${NC} DEEPKIT_ORCHESTRATOR (Workflow Automation)"
     echo -e "      ${DIM}Automate tasks, connect apps, build workflows${NC}"
     echo ""
-    echo -e "  ${CYAN}[B]${NC} AI Chat Interface (Open WebUI)"
+    echo -e "  ${CYAN}[B]${NC} DEEPKIT_CHAT (AI Conversation)"
     echo -e "      ${DIM}ChatGPT-like interface for your local AI${NC}"
     echo ""
-    echo -e "  ${CYAN}[C]${NC} Document Research (Local NotebookLM)"
+    echo -e "  ${CYAN}[C]${NC} DEEPKIT_RESEARCH (Document Analysis)"
     echo -e "      ${DIM}Upload PDFs, ask questions, generate summaries${NC}"
     echo ""
-    echo -e "  ${CYAN}[D]${NC} Content Management (Strapi CMS)"
+    echo -e "  ${CYAN}[D]${NC} DEEPKIT_CONTENT (CMS)"
     echo -e "      ${DIM}Manage blog posts, pages, and content${NC}"
     echo ""
-    echo -e "  ${CYAN}[E]${NC} Customer Management (EspoCRM)"
+    echo -e "  ${CYAN}[E]${NC} DEEPKIT_SALES (CRM)"
     echo -e "      ${DIM}Track contacts, deals, and customers${NC}"
     echo ""
-    echo -e "  ${CYAN}[F]${NC} PDF Tools (chamPDF)"
+    echo -e "  ${CYAN}[F]${NC} DEEPKIT_DOCS (PDF Tools)"
     echo -e "      ${DIM}Merge, split, convert, and edit PDFs${NC}"
     echo ""
-    echo -e "  ${CYAN}[G]${NC} Knowledge Graphs (FalkorDB + Graphiti)"
+    echo -e "  ${CYAN}[G]${NC} DEEPKIT_GRAPH + DEEPKIT_MEMORY (Knowledge)"
     echo -e "      ${DIM}AI memory and relationship tracking${NC}"
     echo ""
-    echo -e "  ${CYAN}[H]${NC} Vector Search (Qdrant)"
+    echo -e "  ${CYAN}[H]${NC} DEEPKIT_VECTOR (Semantic Search)"
     echo -e "      ${DIM}Semantic search and RAG capabilities${NC}"
     echo ""
-    echo -e "  ${CYAN}[I]${NC} Monitoring (Uptime Kuma)"
+    echo -e "  ${CYAN}[I]${NC} DEEPKIT_PULSE (Monitoring)"
     echo -e "      ${DIM}Monitor service uptime and health${NC}"
     echo ""
-    echo -e "  ${CYAN}[J]${NC} Database Admin (Adminer)"
+    echo -e "  ${CYAN}[J]${NC} DEEPKIT_DATA (Database Admin)"
     echo -e "      ${DIM}Visual interface to manage databases${NC}"
+    echo ""
+    echo -e "  ${CYAN}[K]${NC} CHAMPMAIL (Email Automation)"
+    echo -e "      ${DIM}Send emails with templates and queue system${NC}"
+    echo ""
+    echo -e "  ${CYAN}[L]${NC} COWORK (Unified AI Workspace)"
+    echo -e "      ${DIM}AI assistant with access to all 26 tools${NC}"
+    echo ""
+    echo -e "  ${WHITE}${BOLD}── Productivity Suite ──${NC}"
+    echo ""
+    echo -e "  ${CYAN}[M]${NC} INVOICING (Invoice & Billing)"
+    echo -e "      ${DIM}Create invoices, track payments${NC}"
+    echo ""
+    echo -e "  ${CYAN}[N]${NC} CALENDAR (Smart Scheduling)"
+    echo -e "      ${DIM}Events, reminders, scheduling${NC}"
+    echo ""
+    echo -e "  ${CYAN}[O]${NC} MARKETING360 (AI Marketing)"
+    echo -e "      ${DIM}Campaigns, contacts, analytics${NC}"
+    echo ""
+    echo -e "  ${CYAN}[P]${NC} TASK_TRACKER (Gamified Tasks)"
+    echo -e "      ${DIM}Task management with XP and levels${NC}"
+    echo ""
+    echo -e "  ${CYAN}[Q]${NC} TIME_TRACKER (Time Tracking)"
+    echo -e "      ${DIM}Track time entries and projects${NC}"
+    echo ""
+    echo -e "  ${WHITE}${BOLD}── Security & Utilities ──${NC}"
+    echo ""
+    echo -e "  ${CYAN}[R]${NC} PASSWORD_MANAGER (Encrypted Vault)"
+    echo -e "      ${DIM}AES-256 encrypted password storage${NC}"
+    echo ""
+    echo -e "  ${CYAN}[S]${NC} WEBHOOK_MANAGER (Webhook Hub)"
+    echo -e "      ${DIM}Manage and route webhooks${NC}"
     echo ""
     echo ""
 
-    echo -ne "  ${CYAN}Enter module letters (e.g., 'a b f') or 'all':${NC} "
+    echo -ne "  ${CYAN}Enter module letters (e.g., 'a b f k m o') or 'all':${NC} "
     read -r selection
 
     # Parse selection
@@ -337,7 +369,7 @@ show_custom_menu() {
     selection=$(echo "$selection" | tr '[:upper:]' '[:lower:]')
 
     if [[ "$selection" == "all" ]]; then
-        SELECTED_MODULES=("automation" "chat" "research" "cms" "crm" "pdf" "knowledge" "vector" "monitoring" "admin")
+        SELECTED_MODULES=("automation" "chat" "research" "cms" "crm" "pdf" "knowledge" "vector" "monitoring" "admin" "champmail" "cowork" "invoicing" "calendar" "marketing360" "task-tracker" "time-tracker" "password-manager" "webhook-manager")
     else
         for letter in $selection; do
             case $letter in
@@ -351,6 +383,15 @@ show_custom_menu() {
                 h) SELECTED_MODULES+=("vector") ;;
                 i) SELECTED_MODULES+=("monitoring") ;;
                 j) SELECTED_MODULES+=("admin") ;;
+                k) SELECTED_MODULES+=("champmail") ;;
+                l) SELECTED_MODULES+=("cowork") ;;
+                m) SELECTED_MODULES+=("invoicing") ;;
+                n) SELECTED_MODULES+=("calendar") ;;
+                o) SELECTED_MODULES+=("marketing360") ;;
+                p) SELECTED_MODULES+=("task-tracker") ;;
+                q) SELECTED_MODULES+=("time-tracker") ;;
+                r) SELECTED_MODULES+=("password-manager") ;;
+                s) SELECTED_MODULES+=("webhook-manager") ;;
             esac
         done
     fi
@@ -358,7 +399,7 @@ show_custom_menu() {
     # Always recommend at least automation and chat
     if [ ${#SELECTED_MODULES[@]} -eq 0 ]; then
         echo ""
-        echo -e "  ${YELLOW}No modules selected. Adding recommended: n8n + Open WebUI + chamPDF${NC}"
+        echo -e "  ${YELLOW}No modules selected. Adding recommended: DEEPKIT_ORCHESTRATOR + DEEPKIT_CHAT + DEEPKIT_DOCS${NC}"
         SELECTED_MODULES=("automation" "chat" "pdf")
     fi
 }
@@ -372,33 +413,53 @@ show_confirmation() {
     echo ""
     echo -e "  ${DIM}Here's what will be installed:${NC}"
     echo ""
-    echo -e "  ${GREEN}Core Services:${NC}"
-    echo -e "    • PostgreSQL (database)"
-    echo -e "    • Redis (caching)"
-    echo -e "    • Ollama (local AI)"
-    echo -e "    • Portainer (Docker management)"
+    echo -e "  ${GREEN}Core Services (always included):${NC}"
+    echo -e "    • DEEPKIT_STORE (PostgreSQL)"
+    echo -e "    • DEEPKIT_CACHE (Redis)"
+    echo -e "    • DEEPKIT_ENGINE (Ollama)"
+    echo -e "    • DEEPKIT_MESSENGER (AI Command Center)"
     echo ""
 
     if [ ${#SELECTED_MODULES[@]} -gt 0 ]; then
         echo -e "  ${CYAN}Selected Modules:${NC}"
         for module in "${SELECTED_MODULES[@]}"; do
             case $module in
-                automation) echo -e "    • n8n (workflow automation)" ;;
-                chat) echo -e "    • Open WebUI (AI chat)" ;;
-                research) echo -e "    • Local NotebookLM (document research)" ;;
-                cms) echo -e "    • Strapi CMS (content management)" ;;
-                crm) echo -e "    • EspoCRM (customer management)" ;;
-                pdf) echo -e "    • chamPDF (PDF tools)" ;;
-                knowledge) echo -e "    • FalkorDB + Graphiti (knowledge graphs)" ;;
-                vector) echo -e "    • Qdrant (vector search)" ;;
-                monitoring) echo -e "    • Uptime Kuma (monitoring)" ;;
-                admin) echo -e "    • Adminer (database admin)" ;;
+                automation) echo -e "    • DEEPKIT_ORCHESTRATOR (workflow automation)" ;;
+                chat) echo -e "    • DEEPKIT_CHAT (AI conversation)" ;;
+                research) echo -e "    • DEEPKIT_RESEARCH (document analysis)" ;;
+                cms) echo -e "    • DEEPKIT_CONTENT (CMS)" ;;
+                crm) echo -e "    • DEEPKIT_SALES (CRM)" ;;
+                pdf) echo -e "    • DEEPKIT_DOCS (PDF tools)" ;;
+                knowledge) echo -e "    • DEEPKIT_GRAPH + DEEPKIT_MEMORY (knowledge)" ;;
+                vector) echo -e "    • DEEPKIT_VECTOR (semantic search)" ;;
+                monitoring) echo -e "    • DEEPKIT_PULSE (monitoring)" ;;
+                admin) echo -e "    • DEEPKIT_DATA (database admin)" ;;
+                champmail) echo -e "    • CHAMPMAIL (email automation)" ;;
+                cowork) echo -e "    • COWORK (unified AI workspace)" ;;
+                invoicing) echo -e "    • INVOICING (invoice & billing)" ;;
+                calendar) echo -e "    • CALENDAR (smart scheduling)" ;;
+                marketing360) echo -e "    • MARKETING360 (AI marketing)" ;;
+                task-tracker) echo -e "    • TASK_TRACKER (gamified tasks)" ;;
+                time-tracker) echo -e "    • TIME_TRACKER (time tracking)" ;;
+                password-manager) echo -e "    • PASSWORD_MANAGER (encrypted vault)" ;;
+                webhook-manager) echo -e "    • WEBHOOK_MANAGER (webhook hub)" ;;
+                api-testing) echo -e "    • API_TESTING (API tester)" ;;
+                link-shortener) echo -e "    • LINK_SHORTENER (URL management)" ;;
+                qr-generator) echo -e "    • QR_GENERATOR (QR codes)" ;;
+                utm-tracker) echo -e "    • UTM_TRACKER (marketing analytics)" ;;
+                request-tracker) echo -e "    • REQUEST_TRACKER (support tickets)" ;;
+                gateway) echo -e "    • GATEWAY (Traefik reverse proxy)" ;;
+                observability) echo -e "    • OBSERVABILITY (Loki + Prometheus + Grafana)" ;;
+                deepkit-bridge) echo -e "    • N8N_BRIDGE (event bus → n8n)" ;;
+                super-admin) echo -e "    • SUPER_ADMIN (admin panel)" ;;
+                deepkit-forms) echo -e "    • DEEPKIT_FORMS (form builder)" ;;
+                recorder) echo -e "    • RECORDER (screen capture)" ;;
             esac
         done
         echo ""
     fi
 
-    local total_services=$((4 + ${#SELECTED_MODULES[@]}))
+    local total_services=$((3 + ${#SELECTED_MODULES[@]}))
     # Adjust for modules that have multiple services
     for module in "${SELECTED_MODULES[@]}"; do
         case $module in
@@ -439,63 +500,49 @@ show_confirmation() {
 setup_environment() {
     print_step "Setting Up Configuration"
 
+    # Generate .env.example from registry
+    node scripts/generate-env-template.js > .env.example
+    print_success "Generated configuration template"
+
     if [ -f .env ]; then
-        print_info "Found existing configuration"
+        print_info "Found existing configuration (.env)"
         echo ""
         echo -ne "  ${CYAN}Keep existing settings? [Y/n]:${NC} "
         read -r keep
         keep=${keep:-Y}
 
         if [[ "$keep" =~ ^[Yy]$ ]]; then
-            print_success "Keeping existing configuration"
-            return
+            print_info "Validating existing configuration..."
+            if node scripts/validate-env.js; then
+                print_success "Existing configuration is valid"
+                # Still try to generate missing secrets if any
+                node scripts/generate-secrets.js
+                return
+            else
+                print_warning "Existing configuration has issues"
+                cp .env ".env.backup.$(date +%Y%m%d_%H%M%S)"
+                print_info "Backed up existing configuration"
+            fi
         else
             cp .env ".env.backup.$(date +%Y%m%d_%H%M%S)"
             print_info "Backed up existing configuration"
         fi
     fi
 
-    print_info "Creating secure configuration..."
+    print_info "Creating secure configuration from registry..."
     cp .env.example .env
 
-    # Generate core passwords
-    local postgres_pwd=$(generate_password)
-    sed -i.bak "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$postgres_pwd/" .env
-    print_success "Generated database password"
+    # Generate all secrets from registry
+    node scripts/generate-secrets.js
+    print_success "Generated secure secrets"
 
-    # Generate n8n encryption key (if automation module selected)
-    if [[ " ${SELECTED_MODULES[*]} " =~ " automation " ]]; then
-        local n8n_key=$(generate_key)
-        sed -i.bak "s/^N8N_ENCRYPTION_KEY=.*/N8N_ENCRYPTION_KEY=$n8n_key/" .env
-        print_success "Generated n8n encryption key"
+    # Validate final .env
+    if node scripts/validate-env.js; then
+        print_success "Configuration complete and validated!"
+    else
+        print_error "Configuration validation failed. Please check .env manually."
+        exit 1
     fi
-
-    # Generate Strapi secrets (if cms module selected)
-    if [[ " ${SELECTED_MODULES[*]} " =~ " cms " ]]; then
-        local strapi_jwt=$(generate_key)
-        local strapi_admin=$(generate_key)
-        local strapi_keys="$(generate_key),$(generate_key)"
-        sed -i.bak "s/^STRAPI_JWT_SECRET=.*/STRAPI_JWT_SECRET=$strapi_jwt/" .env
-        sed -i.bak "s/^STRAPI_ADMIN_JWT_SECRET=.*/STRAPI_ADMIN_JWT_SECRET=$strapi_admin/" .env
-        sed -i.bak "s/^STRAPI_APP_KEYS=.*/STRAPI_APP_KEYS=$strapi_keys/" .env
-        print_success "Generated Strapi secrets"
-    fi
-
-    # Generate CRM passwords (if crm module selected)
-    if [[ " ${SELECTED_MODULES[*]} " =~ " crm " ]]; then
-        local maria_root=$(generate_password)
-        local maria_pwd=$(generate_password)
-        local espo_pwd=$(generate_password)
-        sed -i.bak "s/^MARIADB_ROOT_PASSWORD=.*/MARIADB_ROOT_PASSWORD=$maria_root/" .env
-        sed -i.bak "s/^ESPOCRM_DB_PASSWORD=.*/ESPOCRM_DB_PASSWORD=$maria_pwd/" .env
-        sed -i.bak "s/^ESPOCRM_ADMIN_PASSWORD=.*/ESPOCRM_ADMIN_PASSWORD=$espo_pwd/" .env
-        print_success "Generated CRM passwords"
-    fi
-
-    # Clean up backup files
-    rm -f .env.bak
-
-    print_success "Configuration complete!"
 }
 
 # =============================================================================
@@ -503,7 +550,8 @@ setup_environment() {
 # =============================================================================
 
 build_compose_command() {
-    local cmd="docker compose -f docker-compose.yml"
+    # DeepKit Core (Messenger) is always included as the command center
+    local cmd="docker compose -f docker-compose.yml -f modules/deepkit-core.yml"
 
     for module in "${SELECTED_MODULES[@]}"; do
         cmd="$cmd -f modules/${module}.yml"
@@ -548,7 +596,7 @@ start_services() {
     local max_attempts=30
 
     while [ $attempts -lt $max_attempts ]; do
-        if docker compose exec -T postgres pg_isready -U deepkit &>/dev/null 2>&1; then
+        if docker compose exec -T deepkit-store pg_isready -U deepkit &>/dev/null 2>&1; then
             break
         fi
         attempts=$((attempts + 1))
@@ -563,16 +611,47 @@ start_services() {
         print_success "Services are ready!"
     fi
 
-    # Download an AI model if chat module is selected
-    if [[ " ${SELECTED_MODULES[*]} " =~ " chat " ]]; then
+    # DeepKit Core (Messenger) always needs an AI model
+    echo ""
+    print_info "Downloading AI model (llama3.2)..."
+    echo -e "  ${DIM}This is a one-time download and may take a few minutes.${NC}"
+
+    sleep 5  # Wait for DEEPKIT_ENGINE to be ready
+
+    # Pull the model with progress feedback
+    local pull_attempts=0
+    local max_pull_attempts=3
+    while [ $pull_attempts -lt $max_pull_attempts ]; do
+        if docker compose exec -T deepkit-engine ollama pull llama3.2:latest 2>&1 | tail -10; then
+            print_success "AI model ready!"
+            break
+        fi
+        pull_attempts=$((pull_attempts + 1))
+        if [ $pull_attempts -lt $max_pull_attempts ]; then
+            print_warning "Retrying model download (attempt $((pull_attempts + 1))/$max_pull_attempts)..."
+            sleep 3
+        fi
+    done
+
+    if [ $pull_attempts -eq $max_pull_attempts ]; then
+        print_warning "Model download may not have completed. You can manually run:"
+        echo -e "  ${YELLOW}docker exec deepkit-engine ollama pull llama3.2:latest${NC}"
+    fi
+
+    # Import starter n8n workflows if automation module is included
+    if [[ " ${SELECTED_MODULES[*]} " =~ " automation " ]]; then
         echo ""
-        print_info "Downloading AI model (llama3.2)..."
-        echo -e "  ${DIM}This is a one-time download and may take a few minutes.${NC}"
+        print_info "Setting up automation workflows..."
 
-        sleep 5  # Wait for Ollama to be ready
-        docker compose exec -T ollama ollama pull llama3.2:latest 2>&1 | tail -5 || true
+        # Wait for n8n to be ready
+        sleep 10
 
-        print_success "AI model ready!"
+        # Import workflows will be handled by n8n's import on first run
+        # The workflow templates are in config/n8n-workflows/
+        if [ -d "config/n8n-workflows" ]; then
+            print_success "Automation workflow templates available"
+            echo -e "  ${DIM}Import them from n8n: Settings → Import from File${NC}"
+        fi
     fi
 }
 
@@ -585,73 +664,150 @@ show_completion() {
     print_banner
 
     echo ""
-    echo -e "  ${GREEN}${BOLD}Installation Complete!${NC}"
+    echo -e "  ${GREEN}${BOLD}[ INSTALLATION_COMPLETE ]${NC}"
     echo ""
-    echo -e "  ${WHITE}Your services are now running. Here's how to access them:${NC}"
-    echo ""
-
-    # Always show core
-    echo -e "  ${PURPLE}${BOLD}Core Services:${NC}"
-    echo -e "    Portainer (Docker UI)  ${BLUE}http://localhost:9000${NC}"
+    echo -e "  ${WHITE}Your DEEPKIT services are now running. Here's how to access them:${NC}"
     echo ""
 
     # Show module-specific services
     for module in "${SELECTED_MODULES[@]}"; do
         case $module in
             automation)
-                echo -e "  ${CYAN}${BOLD}Workflow Automation:${NC}"
-                echo -e "    n8n                    ${BLUE}http://localhost:5678${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_ORCHESTRATOR:${NC}"
+                echo -e "    Workflow Automation    ${GREEN}http://localhost:5678${NC}"
                 echo ""
                 ;;
             chat)
-                echo -e "  ${CYAN}${BOLD}AI Chat:${NC}"
-                echo -e "    Open WebUI             ${BLUE}http://localhost:3001${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_CHAT:${NC}"
+                echo -e "    AI Conversation        ${GREEN}http://localhost:3001${NC}"
                 echo ""
                 ;;
             research)
-                echo -e "  ${CYAN}${BOLD}Document Research:${NC}"
-                echo -e "    Local NotebookLM       ${BLUE}http://localhost:3002${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_RESEARCH:${NC}"
+                echo -e "    Document Analysis      ${GREEN}http://localhost:3002${NC}"
                 echo ""
                 ;;
             cms)
-                echo -e "  ${CYAN}${BOLD}Content Management:${NC}"
-                echo -e "    Strapi CMS             ${BLUE}http://localhost:3003${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_CONTENT:${NC}"
+                echo -e "    Content Management     ${GREEN}http://localhost:3003${NC}"
                 echo ""
                 ;;
             crm)
-                echo -e "  ${CYAN}${BOLD}Customer Management:${NC}"
-                echo -e "    EspoCRM                ${BLUE}http://localhost:3004${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_SALES:${NC}"
+                echo -e "    CRM                    ${GREEN}http://localhost:3004${NC}"
                 echo -e "    ${DIM}Login: admin / (see .env for password)${NC}"
                 echo ""
                 ;;
             pdf)
-                echo -e "  ${CYAN}${BOLD}PDF Tools:${NC}"
-                echo -e "    chamPDF                ${BLUE}http://localhost:3005${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_DOCS:${NC}"
+                echo -e "    PDF Tools              ${GREEN}http://localhost:3005${NC}"
                 echo ""
                 ;;
             knowledge)
-                echo -e "  ${CYAN}${BOLD}Knowledge Graphs:${NC}"
-                echo -e "    FalkorDB Browser       ${BLUE}http://localhost:3011${NC}"
-                echo -e "    Graphiti API           ${BLUE}http://localhost:8000${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_GRAPH:${NC}"
+                echo -e "    Graph Explorer         ${GREEN}http://localhost:3011${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_MEMORY:${NC}"
+                echo -e "    Knowledge API          ${GREEN}http://localhost:8000${NC}"
                 echo ""
                 ;;
             vector)
-                echo -e "  ${CYAN}${BOLD}Vector Search:${NC}"
-                echo -e "    Qdrant                 ${BLUE}http://localhost:6333${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_VECTOR:${NC}"
+                echo -e "    Semantic Search        ${GREEN}http://localhost:6333${NC}"
                 echo ""
                 ;;
             monitoring)
-                echo -e "  ${CYAN}${BOLD}Monitoring:${NC}"
-                echo -e "    Uptime Kuma            ${BLUE}http://localhost:9002${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_PULSE:${NC}"
+                echo -e "    System Monitoring      ${GREEN}http://localhost:9002${NC}"
                 echo ""
                 ;;
             admin)
-                echo -e "  ${CYAN}${BOLD}Database Admin:${NC}"
-                echo -e "    Adminer                ${BLUE}http://localhost:9003${NC}"
+                echo -e "  ${CYAN}${BOLD}DEEPKIT_DATA:${NC}"
+                echo -e "    Database Admin         ${GREEN}http://localhost:9003${NC}"
+                echo ""
+                ;;
+            champmail)
+                echo -e "  ${CYAN}${BOLD}CHAMPMAIL:${NC}"
+                echo -e "    Email Automation       ${GREEN}http://localhost:3025${NC}"
+                echo -e "    ${DIM}Send emails with templates and queue system${NC}"
+                echo ""
+                ;;
+            cowork)
+                echo -e "  ${CYAN}${BOLD}COWORK:${NC}"
+                echo -e "    Unified AI Workspace   ${GREEN}http://localhost:3030${NC}"
+                echo -e "    ${DIM}AI assistant with access to all 26 tools${NC}"
+                echo ""
+                ;;
+            invoicing)
+                echo -e "  ${CYAN}${BOLD}INVOICING:${NC}"
+                echo -e "    Invoice & Billing      ${GREEN}http://localhost:7715${NC}"
+                echo ""
+                ;;
+            calendar)
+                echo -e "  ${CYAN}${BOLD}CALENDAR:${NC}"
+                echo -e "    Smart Scheduling       ${GREEN}http://localhost:7714${NC}"
+                echo ""
+                ;;
+            marketing360)
+                echo -e "  ${CYAN}${BOLD}MARKETING360:${NC}"
+                echo -e "    AI Marketing           ${GREEN}http://localhost:7712${NC}"
+                echo ""
+                ;;
+            task-tracker)
+                echo -e "  ${CYAN}${BOLD}TASK_TRACKER:${NC}"
+                echo -e "    Gamified Tasks         ${GREEN}http://localhost:7718${NC}"
+                echo ""
+                ;;
+            time-tracker)
+                echo -e "  ${CYAN}${BOLD}TIME_TRACKER:${NC}"
+                echo -e "    Time Tracking          ${GREEN}http://localhost:7719${NC}"
+                echo ""
+                ;;
+            password-manager)
+                echo -e "  ${CYAN}${BOLD}PASSWORD_MANAGER:${NC}"
+                echo -e "    Encrypted Vault        ${GREEN}http://localhost:7716${NC}"
+                echo ""
+                ;;
+            webhook-manager)
+                echo -e "  ${CYAN}${BOLD}WEBHOOK_MANAGER:${NC}"
+                echo -e "    Webhook Hub            ${GREEN}http://localhost:7721${NC}"
+                echo ""
+                ;;
+            api-testing)
+                echo -e "  ${CYAN}${BOLD}API_TESTING:${NC}"
+                echo -e "    API Tester             ${GREEN}http://localhost:7717${NC}"
+                echo ""
+                ;;
+            link-shortener)
+                echo -e "  ${CYAN}${BOLD}LINK_SHORTENER:${NC}"
+                echo -e "    URL Management         ${GREEN}http://localhost:3013${NC}"
                 echo ""
                 ;;
         esac
     done
+
+    # Messenger (DeepKit Core) is always included
+    echo -e "  ${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "  ${GREEN}${BOLD}YOUR AI COMMAND CENTER:${NC}"
+    echo ""
+    echo -e "    ${CYAN}${BOLD}DEEPKIT MESSENGER${NC}"
+    echo -e "    ${GREEN}→ http://localhost:7777${NC}"
+    echo ""
+    echo -e "    ${DIM}Chat with your sovereign AI assistant. Ask it to:${NC}"
+    echo -e "    ${DIM}• \"list my services\" — see your arsenal${NC}"
+    echo -e "    ${DIM}• \"check hardware stats\" — monitor resources${NC}"
+    echo -e "    ${DIM}• \"system status\" — overall health check${NC}"
+    echo ""
+    echo -e "  ${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+    # Arsenal summary
+    local total_services=$((4 + ${#SELECTED_MODULES[@]}))
+    echo ""
+    echo -e "  ${WHITE}${BOLD}Arsenal Summary:${NC}"
+    echo -e "    Services deployed: ${CYAN}~${total_services}${NC}"
+    echo -e "    Core: PostgreSQL, Redis, Ollama, Messenger"
+    echo -e "    Modules: ${#SELECTED_MODULES[@]} selected"
+    echo ""
 
     echo ""
     echo -e "  ${WHITE}${BOLD}Quick Commands:${NC}"
@@ -687,12 +843,12 @@ main() {
                 shift 2
                 ;;
             --help|-h)
-                echo "Deep Starter Kit Installer"
+                echo "DEEPKIT Installer"
                 echo ""
                 echo "Usage: ./install.sh [OPTIONS]"
                 echo ""
                 echo "Options:"
-                echo "  --preset NAME    Install a preset (minimal, creator, business, developer)"
+                echo "  --preset NAME    Install a preset (minimal, creator, business, developer, full)"
                 echo "  --help           Show this help message"
                 echo ""
                 echo "Examples:"
@@ -716,19 +872,19 @@ main() {
                 ;;
             creator)
                 SELECTED_PRESET="creator"
-                SELECTED_MODULES=("automation" "chat" "research" "cms" "pdf")
+                SELECTED_MODULES=("automation" "chat" "research" "cms" "pdf" "marketing360" "link-shortener")
                 ;;
             business)
                 SELECTED_PRESET="business"
-                SELECTED_MODULES=("automation" "chat" "cms" "crm" "pdf" "monitoring")
+                SELECTED_MODULES=("automation" "chat" "cms" "crm" "pdf" "monitoring" "champmail" "cowork" "invoicing" "calendar" "marketing360" "task-tracker" "time-tracker")
                 ;;
             developer)
                 SELECTED_PRESET="developer"
-                SELECTED_MODULES=("automation" "chat" "knowledge" "vector" "admin")
+                SELECTED_MODULES=("automation" "chat" "knowledge" "vector" "admin" "cowork" "api-testing" "webhook-manager" "task-tracker")
                 ;;
             full)
                 SELECTED_PRESET="full"
-                SELECTED_MODULES=("automation" "chat" "research" "cms" "crm" "pdf" "knowledge" "vector" "monitoring" "admin")
+                SELECTED_MODULES=("automation" "chat" "research" "cms" "crm" "pdf" "knowledge" "vector" "monitoring" "admin" "champmail" "cowork" "gateway" "observability" "deepkit-bridge" "invoicing" "calendar" "marketing360" "task-tracker" "time-tracker" "password-manager" "file-manager" "webhook-manager" "link-shortener" "qr-generator" "utm-tracker" "request-tracker" "super-admin" "deepkit-forms" "api-testing" "recorder")
                 ;;
             *)
                 echo "Unknown preset: $preset_mode"

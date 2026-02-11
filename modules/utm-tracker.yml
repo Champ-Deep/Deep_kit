@@ -1,0 +1,69 @@
+# =============================================================================
+# MODULE: UTM_TRACKER
+# =============================================================================
+# "I want to build and track campaign URLs"
+#
+# Services: UTM Tracker
+# Ports: 3007
+# Dependencies: PostgreSQL, Redis (event bus)
+# Database: PostgreSQL (campaigns, utm_clicks tables)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # UTM TRACKER - Campaign URL Builder & Analytics (port 3007)
+  # ---------------------------------------------------------------------------
+  utm-tracker:
+    build: ./services/utm-tracker
+    container_name: deepkit-utm-tracker
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=utm-tracker"
+      - "deepkit.service.name=utm-tracker"
+      - "deepkit.service.port=3007"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=Campaign URL Builder & Analytics"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.utm-tracker.rule=PathPrefix(`/utm`)"
+      - "traefik.http.routers.utm-tracker.entrypoints=web"
+      - "traefik.http.routers.utm-tracker.middlewares=deepkit-auth"
+      - "traefik.http.services.utm-tracker.loadbalancer.server.port=3007"
+    restart: unless-stopped
+    ports:
+      - "3007:3007"
+    environment:
+      - PORT=3007
+      - SERVICE_NAME=utm-tracker
+      - NODE_ENV=${NODE_ENV:-production}
+      - POSTGRES_HOST=${POSTGRES_HOST:-deepkit-store}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_DB=${POSTGRES_DB:-deepkit}
+      - POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+      - TZ=${TIMEZONE:-UTC}
+    volumes:
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    networks:
+      - deepkit-network
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3007/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

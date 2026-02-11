@@ -1,0 +1,28 @@
+# DeepKit Ralph Loop Progress
+
+## Objective
+Implement the next highest priority task: **Establish the Redis Event Bus (Integration Fabric)** and verify communication between services.
+
+## Status
+- [x] Initialize progress tracking
+- [x] Create Event Bus reference implementation (Redis Pub/Sub)
+- [x] Integrate Event Bus into DeepKit Hub (Subscriber)
+- [x] Integrate Event Bus into Task Tracker (Publisher)
+- [x] Verify message passing (Task Created -> Hub Log)
+- [x] Fix all container healthchecks and DB env vars.
+- [x] Move all services to 77xx "least used" ports.
+- [x] SYSTEM_RESTORED
+
+## Log
+- [x] Analyzed project documentation and determined priority.
+- [x] Implemented `backend/lib/deepkit-fabric/event-bus.js`.
+- [x] Ported Event Bus to TS for Task Tracker.
+- [x] Updated Hub to subscribe to `FIREHOSE`.
+- [x] Updated Task Tracker to publish `TASK_CREATED`.
+- [x] Fixed Hub container crash (added config volume and fixed paths).
+- [x] Rebuilt Task Tracker to include new source code.
+- [x] Verified cross-app communication via Redis Event Bus.
+- [x] Verified ports are in 77xx range.
+- [x] Corrected Healthcheck quoting in all Dockerfiles.
+- [x] Added missing PostgreSQL env vars to all module YAMLs.
+- [x] Verified all 16 containers are HEALTHY.

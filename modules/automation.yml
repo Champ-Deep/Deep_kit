@@ -1,53 +1,75 @@
 # =============================================================================
-# MODULE A: Workflow Automation (n8n)
+# MODULE: DEEPKIT_ORCHESTRATOR (n8n)
 # =============================================================================
 # "I want to automate tasks and connect apps"
 #
-# Services: n8n
+# Services: DEEPKIT_ORCHESTRATOR
 # Ports: 5678
-# Dependencies: Core (PostgreSQL, Redis)
+# Dependencies: Core (DEEPKIT_STORE, DEEPKIT_CACHE)
 # =============================================================================
 
 services:
   # ---------------------------------------------------------------------------
-  # n8n - Visual Workflow Automation (port 5678)
+  # DEEPKIT_ORCHESTRATOR - Visual Workflow Automation (port 5678)
   # ---------------------------------------------------------------------------
-  n8n:
+  deepkit-orchestrator:
     image: n8nio/n8n:latest
-    container_name: deepkit-n8n
+    container_name: deepkit-orchestrator
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=automation"
+      - "deepkit.service.name=automation"
+      - "deepkit.service.port=5678"
+      - "deepkit.health.path=/healthz"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE ENGINE"
+      - "deepkit.service.description=Workflow Automation"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.automation.rule=PathPrefix(`/n8n`)"
+      - "traefik.http.routers.automation.entrypoints=web"
+      - "traefik.http.routers.automation.middlewares=deepkit-auth"
+      - "traefik.http.services.automation.loadbalancer.server.port=5678"
     restart: unless-stopped
     ports:
       - "5678:5678"
     environment:
-      # Database (uses shared PostgreSQL)
+      # Database (uses shared DEEPKIT_STORE)
       DB_TYPE: postgresdb
-      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_HOST: deepkit-store
       DB_POSTGRESDB_PORT: 5432
       DB_POSTGRESDB_DATABASE: n8n
       DB_POSTGRESDB_USER: ${POSTGRES_USER:-deepkit}
       DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
       # Security
       N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:?N8N_ENCRYPTION_KEY is required}
-      # Queue (uses shared Redis)
-      QUEUE_BULL_REDIS_HOST: redis
+      # Queue (uses shared DEEPKIT_CACHE)
+      QUEUE_BULL_REDIS_HOST: deepkit-cache
       QUEUE_BULL_REDIS_PORT: 6379
+      QUEUE_BULL_REDIS_PASSWORD: ${REDIS_PASSWORD}
       EXECUTIONS_MODE: queue
       # Settings
       GENERIC_TIMEZONE: ${TIMEZONE:-UTC}
       N8N_DIAGNOSTICS_ENABLED: "false"
       # AI Integration
       N8N_AI_ENABLED: "true"
-      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_HOST: http://deepkit-engine:11434
     volumes:
-      - n8n_data:/home/node/.n8n
+      - orchestrator_data:/home/node/.n8n
+      - ./branding/css/deepkit-orchestrator.css:/home/node/.n8n/custom.css:ro
     depends_on:
-      postgres:
+      deepkit-store:
         condition: service_healthy
-      redis:
+      deepkit-cache:
         condition: service_healthy
     networks:
       - deepkit-network
 
 volumes:
-  n8n_data:
-    name: deepkit-n8n-data
+  orchestrator_data:
+    name: deepkit-orchestrator-data
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

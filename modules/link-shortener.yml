@@ -1,0 +1,70 @@
+# =============================================================================
+# MODULE: LINK_SHORTENER
+# =============================================================================
+# "I want to shorten URLs with analytics and QR codes"
+#
+# Services: Link Shortener
+# Ports: 3013
+# Dependencies: PostgreSQL, Redis (event bus)
+# Database: PostgreSQL (short_links, link_clicks tables)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # LINK SHORTENER - URL Shortening Service (port 3013)
+  # ---------------------------------------------------------------------------
+  link-shortener:
+    build: ./services/link-shortener
+    container_name: deepkit-link-shortener
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=link-shortener"
+      - "deepkit.service.name=link-shortener"
+      - "deepkit.service.port=3013"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=URL Shortener Service"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.link-shortener.rule=PathPrefix(`/links`)"
+      - "traefik.http.routers.link-shortener.entrypoints=web"
+      - "traefik.http.routers.link-shortener.middlewares=deepkit-auth"
+      - "traefik.http.services.link-shortener.loadbalancer.server.port=3013"
+    restart: unless-stopped
+    ports:
+      - "3013:3013"
+    environment:
+      - PORT=3013
+      - SERVICE_NAME=link-shortener
+      - NODE_ENV=${NODE_ENV:-production}
+      - BASE_URL=http://localhost:3013
+      - POSTGRES_HOST=${POSTGRES_HOST:-deepkit-store}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_DB=${POSTGRES_DB:-deepkit}
+      - POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+      - TZ=${TIMEZONE:-UTC}
+    volumes:
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    networks:
+      - deepkit-network
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3013/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

@@ -1,0 +1,270 @@
+/* ============================================================
+   DEEPKIT_CHAT - Open WebUI Theme Override
+   ============================================================ */
+
+@import url('./deepkit-base.css');
+
+/* ============================================================
+   HIDE ORIGINAL BRANDING
+   ============================================================ */
+
+/* Hide Open WebUI logo and branding */
+.open-webui-logo,
+img[alt*="Open WebUI"],
+img[alt*="openwebui"],
+[class*="open-webui"],
+.brand-logo,
+.app-logo {
+  display: none !important;
+}
+
+/* Hide any "Open WebUI" text */
+*:not(script):not(style) {
+  font-family: var(--dk-font-body) !important;
+}
+
+/* ============================================================
+   DEEPKIT CHAT HEADER
+   ============================================================ */
+
+/* Override main header */
+header, .header, nav {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+}
+
+/* Add DeepKit branding to header */
+header::before,
+nav::before {
+  content: '[ DEEPKIT // CHAT ]';
+  font-family: var(--dk-font-display);
+  font-size: 1.2rem;
+  color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+  letter-spacing: 2px;
+  padding: 0.5rem 1rem;
+}
+
+/* ============================================================
+   CHAT INTERFACE
+   ============================================================ */
+
+/* Main chat area */
+.chat-container,
+.messages-container,
+main {
+  background: var(--dk-black) !important;
+}
+
+/* Message bubbles */
+.message,
+.chat-message,
+[class*="message"] {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+  color: var(--dk-green) !important;
+  margin: 0.5rem 0;
+  padding: 1rem;
+}
+
+/* User messages */
+.user-message,
+.message-user,
+[class*="user"] .message {
+  border-left: 3px solid var(--dk-amber) !important;
+}
+
+/* AI/Assistant messages */
+.assistant-message,
+.message-assistant,
+[class*="assistant"] .message {
+  border-left: 3px solid var(--dk-green) !important;
+}
+
+/* ============================================================
+   INPUT AREA
+   ============================================================ */
+
+/* Chat input */
+textarea,
+.chat-input,
+[class*="input"] textarea {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+}
+
+textarea:focus,
+.chat-input:focus {
+  box-shadow: var(--dk-green-glow) !important;
+  outline: none !important;
+}
+
+textarea::placeholder {
+  color: var(--dk-green-dim) !important;
+  content: '> ENTER_COMMAND...' !important;
+}
+
+/* Send button */
+button[type="submit"],
+.send-button,
+[class*="send"] button {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  border: none !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+button[type="submit"]:hover,
+.send-button:hover {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+  border: 2px solid var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow) !important;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+aside,
+.sidebar,
+[class*="sidebar"] {
+  background: var(--dk-black) !important;
+  border-right: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Conversation list */
+.conversation-item,
+.chat-item,
+[class*="conversation"] {
+  background: var(--dk-gray) !important;
+  border: 1px solid transparent !important;
+  color: var(--dk-green) !important;
+  margin: 0.25rem 0;
+  transition: var(--dk-transition);
+}
+
+.conversation-item:hover,
+.chat-item:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+.conversation-item.active,
+.chat-item.active {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* New chat button */
+.new-chat-button,
+[class*="new-chat"] {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+}
+
+.new-chat-button::before {
+  content: '+ NEW_SESSION';
+}
+
+/* ============================================================
+   MODEL SELECTOR
+   ============================================================ */
+
+select,
+.model-selector,
+[class*="model-select"] {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   CODE BLOCKS
+   ============================================================ */
+
+pre, code,
+.code-block,
+[class*="code"] {
+  background: #0a0a0a !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+}
+
+/* Syntax highlighting overrides */
+.hljs-keyword { color: var(--dk-amber) !important; }
+.hljs-string { color: #98FB98 !important; }
+.hljs-comment { color: var(--dk-green-dim) !important; }
+.hljs-function { color: var(--dk-green) !important; }
+
+/* ============================================================
+   SETTINGS MODAL
+   ============================================================ */
+
+.modal,
+.settings-modal,
+[class*="modal"] {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow-strong);
+}
+
+.modal-header::before {
+  content: '[ SYSTEM_CONFIG ]';
+  font-family: var(--dk-font-display);
+  color: var(--dk-green);
+}
+
+/* ============================================================
+   LOADING STATES
+   ============================================================ */
+
+.loading,
+.typing-indicator,
+[class*="loading"] {
+  color: var(--dk-green) !important;
+}
+
+.typing-indicator::after {
+  content: 'PROCESSING...';
+  animation: loading-dots 1.5s infinite;
+  font-family: var(--dk-font-body);
+}
+
+/* ============================================================
+   ICONS
+   ============================================================ */
+
+svg, .icon {
+  color: var(--dk-green) !important;
+  fill: currentColor !important;
+}
+
+/* ============================================================
+   CUSTOM DEEPKIT ELEMENTS
+   ============================================================ */
+
+/* Terminal prompt style for chat */
+.message-user::before {
+  content: 'USER > ';
+  color: var(--dk-amber);
+  font-family: var(--dk-font-display);
+}
+
+.message-assistant::before {
+  content: 'DEEPKIT > ';
+  color: var(--dk-green);
+  font-family: var(--dk-font-display);
+}
+
+/* ============================================================
+   END DEEPKIT_CHAT THEME
+   ============================================================ */

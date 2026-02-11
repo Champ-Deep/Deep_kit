@@ -1,0 +1,47 @@
+services:
+  super-admin:
+    build: ./services/super-admin
+    container_name: deepkit-super-admin
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=super-admin"
+      - "deepkit.service.name=super-admin"
+      - "deepkit.service.port=7722"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE MONITOR"
+      - "deepkit.service.description=Super Admin Panel"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.super-admin.rule=PathPrefix(`/admin`)"
+      - "traefik.http.routers.super-admin.entrypoints=web"
+      - "traefik.http.routers.super-admin.middlewares=deepkit-auth"
+      - "traefik.http.services.super-admin.loadbalancer.server.port=7722"
+    restart: unless-stopped
+    ports:
+      - "7722:7722"
+    environment:
+      - PORT=7722
+      - SERVICE_NAME=super-admin
+      - NODE_ENV=${NODE_ENV:-production}
+      - POSTGRES_HOST=deepkit-store
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+    volumes:
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+    networks:
+      - deepkit-network
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

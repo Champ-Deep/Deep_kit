@@ -1,0 +1,55 @@
+services:
+  marketing360:
+    build: ./services/marketing360
+    container_name: deepkit-marketing360
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=marketing360"
+      - "deepkit.service.name=marketing360"
+      - "deepkit.service.port=7712"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=Marketing Analytics"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.marketing360.rule=PathPrefix(`/marketing360`)"
+      - "traefik.http.routers.marketing360.entrypoints=web"
+      - "traefik.http.routers.marketing360.middlewares=deepkit-auth"
+      - "traefik.http.services.marketing360.loadbalancer.server.port=7712"
+    restart: unless-stopped
+    ports:
+      - "7712:7712"
+    environment:
+      - PORT=7712
+      - SERVICE_NAME=marketing360
+      - NODE_ENV=${NODE_ENV:-production}
+      - POSTGRES_HOST=deepkit-store
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=marketing
+      - POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - META_ACCESS_TOKEN=${META_ACCESS_TOKEN}
+      - LINKEDIN_ACCESS_TOKEN=${LINKEDIN_ACCESS_TOKEN}
+      - TWITTER_API_KEY=${TWITTER_API_KEY}
+      - TWITTER_API_SECRET=${TWITTER_API_SECRET}
+      - WHATSAPP_PHONE_NUMBER_ID=${WHATSAPP_PHONE_NUMBER_ID}
+      - WHATSAPP_ACCESS_TOKEN=${WHATSAPP_ACCESS_TOKEN}
+    volumes:
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+    networks:
+      - deepkit-network
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

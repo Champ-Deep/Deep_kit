@@ -1,0 +1,64 @@
+# =============================================================================
+# MODULE: QR_GENERATOR
+# =============================================================================
+# "I want to generate persistent QR codes"
+#
+# Services: QR Generator
+# Ports: 3010
+# Dependencies: Redis (event bus)
+# Storage: ~/.deepkit/qr-generator.db (SQLite), ~/DeepKit/QRCodes/ (files)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # QR GENERATOR - QR Code Generation Service (port 3010)
+  # ---------------------------------------------------------------------------
+  qr-generator:
+    build: ./services/qr-generator
+    container_name: deepkit-qr-generator
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=qr-generator"
+      - "deepkit.service.name=qr-generator"
+      - "deepkit.service.port=3010"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=QR Code Generator"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.qr-generator.rule=PathPrefix(`/qr`)"
+      - "traefik.http.routers.qr-generator.entrypoints=web"
+      - "traefik.http.routers.qr-generator.middlewares=deepkit-auth"
+      - "traefik.http.services.qr-generator.loadbalancer.server.port=3010"
+    restart: unless-stopped
+    ports:
+      - "3010:3010"
+    volumes:
+      - ~/.deepkit:/root/.deepkit
+      - ~/DeepKit/QRCodes:/root/DeepKit/QRCodes
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    environment:
+      - PORT=3010
+      - SERVICE_NAME=qr-generator
+      - NODE_ENV=${NODE_ENV:-production}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+      - TZ=${TIMEZONE:-UTC}
+    networks:
+      - deepkit-network
+    depends_on:
+      deepkit-cache:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3010/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

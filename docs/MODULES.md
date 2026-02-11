@@ -1,42 +1,39 @@
-# Modules Guide
+# DEEPKIT Modules Guide
 
-Deep Starter Kit is modular - you only install what you need. This guide explains each module.
+> "Your Personal AI. Locally Contained. Locally Empowered."
+
+DEEPKIT is modular - you only install what you need. This guide explains each module.
 
 ---
 
 ## Core Services (Always Installed)
 
-These 4 services form the foundation and are always included:
+These 3 services form the foundation and are always included:
 
-### PostgreSQL (Database)
+### DEEPKIT_STORE (PostgreSQL)
 - **What it does**: Stores all your data reliably
-- **Port**: 5432 (internal, not web-accessible)
-- **Why it's included**: Required by n8n, Strapi, and other apps
+- **Port**: 5432 (internal)
+- **Why it's included**: Required by DEEPKIT_ORCHESTRATOR, DEEPKIT_CONTENT, and other apps
 
-### Redis (Cache)
+### DEEPKIT_CACHE (Redis)
 - **What it does**: Speeds up your applications
 - **Port**: 6379 (internal)
 - **Why it's included**: Makes everything faster, handles job queues
 
-### Ollama (Local AI)
-- **What it does**: Runs AI models on your computer
+### DEEPKIT_ENGINE (Ollama)
+- **What it does**: Runs AI models locally on your computer
 - **Port**: 11434
 - **Why it's included**: Powers all AI features without cloud costs
 - **Note**: First run downloads a ~4GB model
 
-### Portainer (Docker Management)
-- **What it does**: Visual interface to manage your Docker containers
-- **URL**: http://localhost:9000
-- **Why it's included**: Makes it easy to see what's running
-
 ---
 
-## Module A: Workflow Automation (n8n)
+## DEEPKIT_ORCHESTRATOR (Workflow Automation)
 
 **"I want to automate tasks and connect apps"**
 
-### What is n8n?
-n8n is like Zapier or Make, but runs on your computer. Connect apps, automate workflows, no coding required.
+### What is it?
+DEEPKIT_ORCHESTRATOR is your visual workflow automation engine. Connect apps, automate workflows, no coding required.
 
 ### URL
 http://localhost:5678
@@ -60,12 +57,12 @@ http://localhost:5678
 
 ---
 
-## Module B: AI Chat (Open WebUI)
+## DEEPKIT_CHAT (AI Conversation Interface)
 
 **"I want to chat with local AI models"**
 
-### What is Open WebUI?
-It's like ChatGPT, but the AI runs on your computer. Your conversations stay private.
+### What is it?
+DEEPKIT_CHAT is your private AI conversation interface. Like ChatGPT, but everything runs locally on your computer. Your conversations stay private.
 
 ### URL
 http://localhost:3001
@@ -83,17 +80,17 @@ http://localhost:3001
 
 ### Tips
 - Be specific in your questions for better answers
-- The AI model runs locally, so responses may be slower than cloud services
+- The AI model runs locally via DEEPKIT_ENGINE
 - You can upload documents for the AI to analyze
 
 ---
 
-## Module C: Document Research (Local NotebookLM)
+## DEEPKIT_RESEARCH (Document Analysis)
 
 **"I want to upload PDFs and research documents"**
 
-### What is Local NotebookLM?
-Upload documents, PDFs, or text files. Ask questions about them. Get summaries.
+### What is it?
+DEEPKIT_RESEARCH lets you upload documents, PDFs, or text files. Ask questions about them. Get summaries.
 
 ### URL
 http://localhost:3002
@@ -111,12 +108,12 @@ http://localhost:3002
 
 ---
 
-## Module D: Content Management (Strapi CMS)
+## DEEPKIT_CONTENT (Content Management)
 
 **"I want to manage blog posts, pages, and content"**
 
-### What is Strapi?
-A headless CMS - create and manage content that can be used anywhere (websites, apps, etc.)
+### What is it?
+DEEPKIT_CONTENT is a headless CMS - create and manage content that can be used anywhere (websites, apps, etc.)
 
 ### URL
 http://localhost:3003
@@ -139,12 +136,12 @@ http://localhost:3003
 
 ---
 
-## Module E: Customer Management (EspoCRM)
+## DEEPKIT_SALES (Customer Management)
 
 **"I want to track contacts, deals, and customers"**
 
-### What is EspoCRM?
-A full-featured CRM for tracking leads, contacts, deals, and customer relationships.
+### What is it?
+DEEPKIT_SALES is a full-featured CRM for tracking leads, contacts, deals, and customer relationships.
 
 ### URL
 http://localhost:3004
@@ -166,16 +163,16 @@ http://localhost:3004
 4. Create deals in the pipeline
 
 ### Note
-This module includes MariaDB database (port 3306) which EspoCRM requires.
+This module includes MariaDB database (port 3306) which DEEPKIT_SALES requires.
 
 ---
 
-## Module F: PDF Tools (chamPDF)
+## DEEPKIT_DOCS (PDF Tools)
 
 **"I want to merge, split, and edit PDFs"**
 
-### What is chamPDF?
-A complete PDF toolkit - merge, split, compress, convert, and more.
+### What is it?
+DEEPKIT_DOCS is a complete PDF toolkit - merge, split, compress, convert, and more.
 
 ### URL
 http://localhost:3005
@@ -196,16 +193,16 @@ http://localhost:3005
 
 ---
 
-## Module G: Knowledge Graphs (FalkorDB + Graphiti)
+## DEEPKIT_GRAPH + DEEPKIT_MEMORY (Knowledge Graphs)
 
 **"I want AI memory and relationship tracking"**
 
-### What is this?
+### What is it?
 A graph database and knowledge framework for building AI applications with memory and relationships.
 
 ### URLs
-- FalkorDB Browser: http://localhost:3011
-- Graphiti API: http://localhost:8000
+- DEEPKIT_GRAPH_EXPLORER: http://localhost:3011
+- DEEPKIT_MEMORY API: http://localhost:8000
 
 ### Examples of what you can do:
 - Store relationships between entities
@@ -214,20 +211,20 @@ A graph database and knowledge framework for building AI applications with memor
 - Build knowledge bases
 
 ### Getting Started
-1. Open FalkorDB Browser to explore the graph visually
-2. Use Graphiti API to add and query knowledge
+1. Open DEEPKIT_GRAPH_EXPLORER to explore the graph visually
+2. Use DEEPKIT_MEMORY API to add and query knowledge
 
 ### Note
 This is more advanced - best for developers building AI applications.
 
 ---
 
-## Module H: Vector Search (Qdrant)
+## DEEPKIT_VECTOR (Semantic Search)
 
 **"I want semantic search and RAG capabilities"**
 
-### What is Qdrant?
-A vector database for storing embeddings and doing semantic (meaning-based) search.
+### What is it?
+DEEPKIT_VECTOR is a vector database for storing embeddings and doing semantic (meaning-based) search.
 
 ### URL
 http://localhost:6333
@@ -240,20 +237,20 @@ http://localhost:6333
 
 ### Getting Started
 1. This is primarily an API service
-2. Connect from n8n or your applications
-3. Use with embedding models from Ollama
+2. Connect from DEEPKIT_ORCHESTRATOR or your applications
+3. Use with embedding models from DEEPKIT_ENGINE
 
 ### Note
 This is more advanced - best for developers building AI applications.
 
 ---
 
-## Module I: Monitoring (Uptime Kuma)
+## DEEPKIT_PULSE (System Monitoring)
 
 **"I want to monitor uptime and service health"**
 
-### What is Uptime Kuma?
-A monitoring tool to check if your services are running and alert you if they go down.
+### What is it?
+DEEPKIT_PULSE monitors your services, checks if they're running, and alerts you if anything goes down.
 
 ### URL
 http://localhost:9002
@@ -267,17 +264,17 @@ http://localhost:9002
 ### Getting Started
 1. Go to http://localhost:9002
 2. Create an account
-3. Add monitors for your services
+3. Add monitors for your DEEPKIT services
 4. Set up notifications (email, Slack, etc.)
 
 ---
 
-## Module J: Database Admin (Adminer)
+## DEEPKIT_DATA (Database Admin)
 
 **"I want a visual interface to manage databases"**
 
-### What is Adminer?
-A simple, powerful database management tool. Works with PostgreSQL, MySQL, and more.
+### What is it?
+DEEPKIT_DATA is a simple, powerful database management tool. Works with PostgreSQL, MySQL, and more.
 
 ### URL
 http://localhost:9003
@@ -291,7 +288,7 @@ http://localhost:9003
 ### Getting Started
 1. Go to http://localhost:9003
 2. Select "PostgreSQL" as system
-3. Server: postgres
+3. Server: deepkit-store
 4. Username: deepkit
 5. Password: (from your .env file)
 6. Database: deepkit (or n8n, strapi, etc.)
@@ -301,19 +298,19 @@ http://localhost:9003
 ## Module Combinations
 
 ### Minimal (Recommended Start)
-- Core + Automation + AI Chat + PDF Tools
+- Core + DEEPKIT_ORCHESTRATOR + DEEPKIT_CHAT + DEEPKIT_DOCS
 - Best for: Getting started, automating tasks
 
 ### Creator
-- Core + Automation + AI Chat + Research + CMS + PDF Tools
+- Core + DEEPKIT_ORCHESTRATOR + DEEPKIT_CHAT + DEEPKIT_RESEARCH + DEEPKIT_CONTENT + DEEPKIT_DOCS
 - Best for: Content creators, marketers
 
 ### Business
-- Core + Automation + AI Chat + CMS + CRM + PDF Tools + Monitoring
+- Core + DEEPKIT_ORCHESTRATOR + DEEPKIT_CHAT + DEEPKIT_CONTENT + DEEPKIT_SALES + DEEPKIT_DOCS + DEEPKIT_PULSE
 - Best for: Managing customers and operations
 
 ### Developer
-- Core + Automation + AI Chat + Knowledge + Vector + Admin
+- Core + DEEPKIT_ORCHESTRATOR + DEEPKIT_CHAT + DEEPKIT_GRAPH + DEEPKIT_VECTOR + DEEPKIT_DATA
 - Best for: Building AI applications
 
 ### Full Stack
@@ -340,7 +337,7 @@ docker compose -f docker-compose.yml -f modules/cms.yml -f modules/crm.yml up -d
 
 - Check the [Quick Start Guide](QUICKSTART.md)
 - Look at the logs: `docker compose logs -f [service-name]`
-- Visit Portainer at http://localhost:9000 to see container status
+- Use Docker Desktop to see container status
 - Contact us: deep@championsmail.com
 
 ---

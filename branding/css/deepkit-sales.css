@@ -1,0 +1,425 @@
+/* ============================================================
+   DEEPKIT_SALES - EspoCRM Theme Override
+   ============================================================ */
+
+@import url('./deepkit-base.css');
+
+/* ============================================================
+   HIDE ORIGINAL BRANDING
+   ============================================================ */
+
+/* Hide EspoCRM logo */
+.logo,
+img[alt*="EspoCRM"],
+img[alt*="espocrm"],
+[class*="espo-logo"],
+.navbar-brand img {
+  display: none !important;
+}
+
+/* ============================================================
+   DEEPKIT SALES HEADER
+   ============================================================ */
+
+/* Main navbar */
+.navbar,
+.navbar-default,
+header {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+}
+
+/* Add DeepKit branding */
+.navbar-brand::before {
+  content: '[ DEEPKIT // SALES ]';
+  font-family: var(--dk-font-display);
+  font-size: 1rem;
+  color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+  letter-spacing: 2px;
+}
+
+/* Nav links */
+.navbar-nav > li > a,
+.nav-link {
+  color: var(--dk-green) !important;
+}
+
+.navbar-nav > li > a:hover,
+.nav-link:hover {
+  color: var(--dk-green) !important;
+  text-shadow: var(--dk-green-glow);
+  background: var(--dk-green-subtle) !important;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+.side-menu,
+.side-panel,
+.sidebar {
+  background: var(--dk-black) !important;
+  border-right: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Menu items */
+.side-menu li a,
+.nav-tabs > li > a {
+  color: var(--dk-green) !important;
+  background: transparent !important;
+  border-left: 3px solid transparent;
+}
+
+.side-menu li a:hover,
+.nav-tabs > li > a:hover {
+  background: var(--dk-green-subtle) !important;
+  border-left-color: var(--dk-green);
+}
+
+.side-menu li.active a,
+.nav-tabs > li.active > a {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+
+body,
+.main-content,
+.content-wrapper {
+  background: var(--dk-black) !important;
+}
+
+/* Page headers */
+.page-header,
+.header-panel {
+  background: var(--dk-gray) !important;
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+}
+
+.page-header h3,
+.page-header h4 {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   RECORD LISTS
+   ============================================================ */
+
+.list-container,
+.list-group {
+  background: var(--dk-black) !important;
+}
+
+.list-group-item,
+.record-row {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  margin-bottom: 0.25rem;
+}
+
+.list-group-item:hover,
+.record-row:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* ============================================================
+   DATA TABLES
+   ============================================================ */
+
+.table,
+table {
+  background: var(--dk-black) !important;
+}
+
+.table th,
+th {
+  background: var(--dk-gray) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+.table td,
+td {
+  color: var(--dk-green) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+.table > tbody > tr:hover,
+tr:hover {
+  background: var(--dk-green-subtle) !important;
+}
+
+/* Selected rows */
+.table > tbody > tr.active,
+tr.selected {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   DETAIL VIEW
+   ============================================================ */
+
+.detail-view,
+.record-detail {
+  background: var(--dk-black) !important;
+}
+
+/* Panels */
+.panel,
+.detail-panel {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+}
+
+.panel-heading {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+}
+
+.panel-body {
+  background: var(--dk-gray) !important;
+}
+
+/* Field labels */
+.field-label,
+.control-label {
+  color: var(--dk-green-dim) !important;
+  font-family: var(--dk-font-body) !important;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+/* Field values */
+.field-value,
+.form-control-static {
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+
+input, textarea, select,
+.form-control {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+}
+
+input:focus, textarea:focus, select:focus,
+.form-control:focus {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn,
+button {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+  text-transform: uppercase;
+}
+
+.btn:hover,
+button:hover {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+.btn-primary {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+.btn-primary:hover {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+}
+
+.btn-danger {
+  border-color: #FF4444 !important;
+  color: #FF4444 !important;
+}
+
+.btn-danger:hover {
+  background: #FF4444 !important;
+  color: var(--dk-black) !important;
+}
+
+/* Action buttons */
+.btn-action {
+  font-family: var(--dk-font-display) !important;
+}
+
+/* ============================================================
+   KANBAN / PIPELINE VIEW
+   ============================================================ */
+
+.kanban-board,
+.pipeline-view {
+  background: var(--dk-black) !important;
+}
+
+.kanban-column,
+.pipeline-stage {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+.kanban-column-header,
+.stage-header {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+}
+
+.kanban-card,
+.deal-card {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+}
+
+.kanban-card:hover,
+.deal-card:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+
+.modal-content {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--dk-green-glow-strong);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+  background: var(--dk-black) !important;
+}
+
+.modal-title {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--dk-green-dim) !important;
+  background: var(--dk-black) !important;
+}
+
+/* ============================================================
+   DROPDOWN MENUS
+   ============================================================ */
+
+.dropdown-menu {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+}
+
+.dropdown-menu > li > a {
+  color: var(--dk-green) !important;
+}
+
+.dropdown-menu > li > a:hover {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   CALENDAR
+   ============================================================ */
+
+.calendar,
+.fc {
+  background: var(--dk-black) !important;
+}
+
+.fc-event {
+  background: var(--dk-green) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  border-radius: 0 !important;
+}
+
+.fc-day-header {
+  background: var(--dk-gray) !important;
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   NOTIFICATIONS
+   ============================================================ */
+
+.alert,
+.notification {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+  color: var(--dk-green) !important;
+}
+
+.alert-danger {
+  border-color: #FF4444 !important;
+  color: #FF4444 !important;
+}
+
+.alert-warning {
+  border-color: var(--dk-amber) !important;
+  color: var(--dk-amber) !important;
+}
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.badge,
+.label {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  border-radius: 0 !important;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+footer {
+  background: var(--dk-black) !important;
+  border-top: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green-dim) !important;
+}
+
+/* ============================================================
+   END DEEPKIT_SALES THEME
+   ============================================================ */

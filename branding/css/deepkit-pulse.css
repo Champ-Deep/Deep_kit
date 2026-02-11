@@ -1,0 +1,429 @@
+/* ============================================================
+   DEEPKIT_PULSE - Uptime Kuma Theme Override
+   ============================================================ */
+
+@import url('./deepkit-base.css');
+
+/* ============================================================
+   HIDE ORIGINAL BRANDING
+   ============================================================ */
+
+/* Hide Uptime Kuma logo */
+.logo,
+img[alt*="Uptime Kuma"],
+img[alt*="kuma"],
+[class*="kuma-logo"] {
+  display: none !important;
+}
+
+/* ============================================================
+   DEEPKIT PULSE HEADER
+   ============================================================ */
+
+/* Main header */
+header, .navbar {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+}
+
+/* Add DeepKit branding */
+.navbar-brand::before,
+.logo-text::before {
+  content: '[ DEEPKIT // PULSE ]';
+  font-family: var(--dk-font-display);
+  font-size: 1.2rem;
+  color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+  letter-spacing: 2px;
+}
+
+/* Hide original title */
+.navbar-brand span,
+.logo-text {
+  font-size: 0 !important;
+}
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+
+body, .main-container {
+  background: var(--dk-black) !important;
+}
+
+.content-wrapper {
+  background: var(--dk-black) !important;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+.sidebar,
+.monitor-list-wrapper {
+  background: var(--dk-black) !important;
+  border-right: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Monitor list items */
+.monitor-list-item,
+.item {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+  margin: 0.25rem 0;
+  transition: var(--dk-transition);
+}
+
+.monitor-list-item:hover,
+.item:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+.monitor-list-item.active,
+.item.active {
+  border-color: var(--dk-green) !important;
+  background: var(--dk-green-subtle) !important;
+}
+
+/* Monitor name */
+.monitor-name,
+.item-name {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+}
+
+/* ============================================================
+   STATUS INDICATORS
+   ============================================================ */
+
+/* Up/Online status */
+.badge-up,
+.status-up,
+.up,
+[class*="status-1"],
+[class*="up"] {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  border-radius: 0 !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+}
+
+/* Down/Offline status */
+.badge-down,
+.status-down,
+.down,
+[class*="status-0"],
+[class*="down"] {
+  background: #FF4444 !important;
+  color: var(--dk-black) !important;
+  border-radius: 0 !important;
+  font-family: var(--dk-font-display) !important;
+}
+
+/* Pending status */
+.badge-pending,
+.status-pending,
+.pending {
+  background: var(--dk-amber) !important;
+  color: var(--dk-black) !important;
+  border-radius: 0 !important;
+}
+
+/* Maintenance status */
+.badge-maintenance,
+.status-maintenance,
+.maintenance {
+  background: #888888 !important;
+  color: var(--dk-black) !important;
+  border-radius: 0 !important;
+}
+
+/* Status pulse animation */
+.status-up::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--dk-green);
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(57, 255, 20, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); }
+}
+
+/* ============================================================
+   MONITOR DETAIL VIEW
+   ============================================================ */
+
+.monitor-detail,
+.detail-page {
+  background: var(--dk-black) !important;
+}
+
+/* Stats cards */
+.stats-card,
+.stat-card,
+.card {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+}
+
+.stats-card:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Stat values */
+.stat-value,
+.big-number {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  font-size: 2rem;
+  text-shadow: var(--dk-green-glow);
+}
+
+/* Stat labels */
+.stat-label {
+  color: var(--dk-green-dim) !important;
+  font-family: var(--dk-font-body) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   UPTIME CHART
+   ============================================================ */
+
+.chart-wrapper,
+.uptime-chart {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Chart colors override */
+.chart-up,
+[fill="#5CDD8B"] {
+  fill: var(--dk-green) !important;
+}
+
+.chart-down,
+[fill="#DC3545"] {
+  fill: #FF4444 !important;
+}
+
+/* ============================================================
+   HEARTBEAT BAR
+   ============================================================ */
+
+.heartbeat-bar,
+.beat-bar {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+.beat,
+.heartbeat {
+  border-radius: 0 !important;
+}
+
+.beat.up,
+.heartbeat.up {
+  background: var(--dk-green) !important;
+}
+
+.beat.down,
+.heartbeat.down {
+  background: #FF4444 !important;
+}
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+
+input, select, textarea,
+.form-control {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+}
+
+input:focus, select:focus, textarea:focus,
+.form-control:focus {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Form labels */
+label,
+.form-label {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn,
+button {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+  text-transform: uppercase;
+}
+
+.btn:hover,
+button:hover {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+.btn-primary {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+.btn-primary:hover {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+}
+
+.btn-danger {
+  border-color: #FF4444 !important;
+  color: #FF4444 !important;
+}
+
+.btn-danger:hover {
+  background: #FF4444 !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+
+.modal-content {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--dk-green-glow-strong);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+}
+
+.modal-title {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--dk-green-dim) !important;
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+
+.alert {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+  color: var(--dk-green) !important;
+}
+
+.alert-danger {
+  border-color: #FF4444 !important;
+  color: #FF4444 !important;
+}
+
+.alert-warning {
+  border-color: var(--dk-amber) !important;
+  color: var(--dk-amber) !important;
+}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+
+table {
+  background: var(--dk-black) !important;
+}
+
+th {
+  background: var(--dk-gray) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+td {
+  color: var(--dk-green) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+tr:hover {
+  background: var(--dk-green-subtle) !important;
+}
+
+/* ============================================================
+   STATUS PAGE
+   ============================================================ */
+
+.status-page {
+  background: var(--dk-black) !important;
+}
+
+.status-page-header::before {
+  content: '[ SYSTEM_STATUS ]';
+  font-family: var(--dk-font-display);
+  color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+}
+
+/* Group headers */
+.group-title {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+footer {
+  background: var(--dk-black) !important;
+  border-top: 1px solid var(--dk-green-dim) !important;
+}
+
+footer::after {
+  content: '[ DEEPKIT_PULSE // SYSTEM_MONITOR ]';
+  font-family: var(--dk-font-display);
+  color: var(--dk-green-dim);
+}
+
+/* ============================================================
+   END DEEPKIT_PULSE THEME
+   ============================================================ */

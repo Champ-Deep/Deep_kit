@@ -1,0 +1,346 @@
+/* ============================================================
+   DEEPKIT_DOCS - Stirling PDF Theme Override
+   ============================================================ */
+
+@import url('./deepkit-base.css');
+
+/* ============================================================
+   HIDE ORIGINAL BRANDING
+   ============================================================ */
+
+/* Hide Stirling PDF logo and branding */
+.stirling-logo,
+img[alt*="Stirling"],
+img[alt*="stirling"],
+[class*="stirling"],
+.brand-logo,
+.logo-container img {
+  display: none !important;
+}
+
+/* ============================================================
+   DEEPKIT DOCS HEADER
+   ============================================================ */
+
+/* Main header override */
+header, .navbar, .top-bar {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+}
+
+/* Add DeepKit branding */
+.navbar-brand::before,
+.logo-text::before,
+header .brand::before {
+  content: '[ DEEPKIT // DOCS ]';
+  font-family: var(--dk-font-display);
+  font-size: 1.2rem;
+  color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+  letter-spacing: 2px;
+}
+
+/* Hide original brand text */
+.navbar-brand span,
+.logo-text span,
+.app-name {
+  font-size: 0 !important;
+  color: transparent !important;
+}
+
+/* ============================================================
+   MAIN CONTAINER
+   ============================================================ */
+
+body, .main-content, .container {
+  background: var(--dk-black) !important;
+}
+
+/* ============================================================
+   TOOL CARDS
+   ============================================================ */
+
+.tool-card,
+.feature-card,
+.operation-card,
+[class*="card"] {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+  transition: var(--dk-transition);
+}
+
+.tool-card:hover,
+.feature-card:hover,
+.operation-card:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+  transform: translateY(-2px);
+}
+
+/* Card titles */
+.card-title,
+.tool-name,
+.feature-name {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Card icons */
+.card-icon,
+.tool-icon {
+  color: var(--dk-green) !important;
+  filter: drop-shadow(0 0 5px var(--dk-green));
+}
+
+/* ============================================================
+   FILE UPLOAD AREA
+   ============================================================ */
+
+.dropzone,
+.file-upload,
+.upload-area,
+[class*="drop"] {
+  background: var(--dk-gray) !important;
+  border: 2px dashed var(--dk-green) !important;
+  border-radius: 0 !important;
+  color: var(--dk-green) !important;
+}
+
+.dropzone:hover,
+.file-upload:hover {
+  background: var(--dk-green-subtle) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Upload text replacement */
+.upload-text::before,
+.dropzone-text::before {
+  content: '[ INPUT_SOURCE ]';
+  font-family: var(--dk-font-display);
+}
+
+.upload-text,
+.dropzone-text {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+}
+
+/* File list */
+.file-list,
+.uploaded-files {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+.file-item {
+  background: var(--dk-gray) !important;
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   OPERATION BUTTONS
+   ============================================================ */
+
+/* Primary action buttons */
+.btn-primary,
+.process-btn,
+.execute-btn,
+[class*="submit"] {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-primary:hover,
+.process-btn:hover,
+.execute-btn:hover {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Secondary buttons */
+.btn-secondary,
+.btn-outline {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+}
+
+/* Download button */
+.download-btn,
+[class*="download"] {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+.download-btn::before {
+  content: 'OUTPUT_STREAM: ';
+}
+
+/* ============================================================
+   SIDEBAR / NAVIGATION
+   ============================================================ */
+
+.sidebar,
+.nav-sidebar,
+aside {
+  background: var(--dk-black) !important;
+  border-right: 1px solid var(--dk-green-dim) !important;
+}
+
+.nav-link,
+.sidebar-item {
+  color: var(--dk-green) !important;
+  border-left: 3px solid transparent;
+  transition: var(--dk-transition);
+}
+
+.nav-link:hover,
+.sidebar-item:hover {
+  background: var(--dk-green-subtle) !important;
+  border-left-color: var(--dk-green);
+}
+
+.nav-link.active,
+.sidebar-item.active {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   FORM CONTROLS
+   ============================================================ */
+
+input, select, textarea {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Range sliders */
+input[type="range"] {
+  accent-color: var(--dk-green);
+}
+
+/* Checkboxes */
+input[type="checkbox"] {
+  accent-color: var(--dk-green);
+}
+
+/* ============================================================
+   PROGRESS INDICATORS
+   ============================================================ */
+
+.progress,
+.progress-bar {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+.progress-bar-fill,
+.progress-bar > div {
+  background: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Processing text */
+.processing-text::after {
+  content: 'PROCESSING...';
+  animation: loading-dots 1.5s infinite;
+}
+
+/* ============================================================
+   PDF VIEWER
+   ============================================================ */
+
+.pdf-viewer,
+.preview-container {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Page thumbnails */
+.page-thumbnail,
+.pdf-page {
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+.page-thumbnail:hover,
+.page-thumbnail.selected {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+
+.modal,
+.modal-content {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow-strong);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+}
+
+.modal-title::before {
+  content: '[ ';
+}
+
+.modal-title::after {
+  content: ' ]';
+}
+
+/* ============================================================
+   TOOLTIPS
+   ============================================================ */
+
+.tooltip,
+[data-tooltip] {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+footer {
+  background: var(--dk-black) !important;
+  border-top: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green-dim) !important;
+}
+
+/* Hide Stirling footer text */
+footer *:not(.dk-footer) {
+  visibility: hidden;
+}
+
+footer::after {
+  content: '[ DEEPKIT_DOCS // v1.0 ]';
+  visibility: visible;
+  font-family: var(--dk-font-display);
+  color: var(--dk-green-dim);
+}
+
+/* ============================================================
+   END DEEPKIT_DOCS THEME
+   ============================================================ */

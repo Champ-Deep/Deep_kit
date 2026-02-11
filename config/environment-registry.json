@@ -1,0 +1,171 @@
+{
+  "version": "1.0.0",
+  "categories": {
+    "core_infrastructure": {
+      "variables": {
+        "POSTGRES_USER": {
+          "type": "string",
+          "required": true,
+          "default": "deepkit",
+          "description": "PostgreSQL database username",
+          "validation": {
+            "minLength": 3,
+            "maxLength": 63,
+            "pattern": "^[a-z][a-z0-9_]*$"
+          }
+        },
+        "POSTGRES_PASSWORD": {
+          "type": "secret",
+          "required": true,
+          "default": null,
+          "description": "PostgreSQL database password",
+          "validation": {
+            "minLength": 16,
+            "maxLength": 128,
+            "entropy": 80
+          },
+          "generateOnInstall": true,
+          "rotatable": true
+        },
+        "POSTGRES_DB": {
+          "type": "string",
+          "required": true,
+          "default": "deepkit",
+          "description": "Default PostgreSQL database name"
+        },
+        "POSTGRES_HOST": {
+          "type": "string",
+          "required": true,
+          "default": "deepkit-store",
+          "description": "PostgreSQL container hostname"
+        },
+        "POSTGRES_PORT": {
+          "type": "integer",
+          "required": true,
+          "default": 5432,
+          "validation": {
+            "min": 1024,
+            "max": 65535
+          }
+        },
+        "REDIS_HOST": {
+          "type": "string",
+          "required": true,
+          "default": "deepkit-cache"
+        },
+        "REDIS_PORT": {
+          "type": "integer",
+          "required": true,
+          "default": 6379
+        },
+        "REDIS_PASSWORD": {
+          "type": "secret",
+          "required": true,
+          "default": null,
+          "description": "Redis authentication password",
+          "validation": {
+            "minLength": 16,
+            "maxLength": 128,
+            "entropy": 80
+          },
+          "generateOnInstall": true,
+          "rotatable": true
+        },
+        "NODE_ENV": {
+          "type": "enum",
+          "required": true,
+          "default": "production",
+          "options": ["development", "production", "test"]
+        },
+        "TIMEZONE": {
+          "type": "string",
+          "required": false,
+          "default": "UTC",
+          "description": "System timezone (IANA format)"
+        }
+      }
+    },
+    "security_secrets": {
+      "variables": {
+        "DEEPKIT_INTERNAL_TOKEN": {
+          "type": "secret",
+          "required": true,
+          "default": null,
+          "description": "Service-to-service authentication token",
+          "validation": {
+            "exactLength": 64,
+            "hexadecimal": true
+          },
+          "generateOnInstall": true,
+          "usedBy": ["all-services"]
+        },
+        "GATEWAY_AUTH_USERS": {
+          "type": "string",
+          "required": true,
+          "default": null,
+          "description": "Traefik BasicAuth credentials (htpasswd format: user:$apr1$hash)",
+          "generateOnInstall": false
+        },
+        "GRAFANA_PASSWORD": {
+          "type": "secret",
+          "required": false,
+          "default": null,
+          "description": "Grafana admin panel password",
+          "validation": {
+            "minLength": 12
+          },
+          "generateOnInstall": true,
+          "usedBy": ["observability"]
+        },
+        "ENCRYPTION_KEY": {
+          "type": "secret",
+          "required": true,
+          "default": null,
+          "validation": {
+            "exactLength": 64,
+            "hexadecimal": true
+          },
+          "generateOnInstall": true,
+          "usedBy": ["password-manager"]
+        },
+        "N8N_ENCRYPTION_KEY": {
+          "type": "secret",
+          "required": true,
+          "default": null,
+          "validation": {
+            "minLength": 32
+          },
+          "generateOnInstall": true,
+          "usedBy": ["automation"]
+        },
+        "STRAPI_JWT_SECRET": {
+          "type": "secret",
+          "required": true,
+          "default": null,
+          "validation": {
+            "minLength": 32
+          },
+          "generateOnInstall": true,
+          "usedBy": ["content"]
+        }
+      }
+    },
+    "external_apis": {
+      "variables": {
+        "GEMINI_API_KEY": {
+          "type": "secret",
+          "required": false,
+          "default": null,
+          "description": "Google Gemini API key for AI features",
+          "usedBy": ["marketing360", "chat", "research"]
+        },
+        "OPENAI_API_KEY": {
+          "type": "secret",
+          "required": false,
+          "default": null,
+          "usedBy": ["chat", "research", "cowork"]
+        }
+      }
+    }
+  }
+}

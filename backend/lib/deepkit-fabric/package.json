@@ -1,0 +1,29 @@
+{
+  "name": "deepkit-fabric",
+  "version": "1.0.0",
+  "description": "DeepKit shared service library - auth, logging, metrics, event bus, health checks",
+  "main": "bundle/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && node scripts/bundle.js",
+    "build:types": "tsc",
+    "bundle": "node scripts/bundle.js",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "prom-client": "^15.1.0",
+    "redis": "^4.6.0",
+    "uuid": "^9.0.0"
+  },
+  "peerDependencies": {
+    "express": "^4.18.0",
+    "pg": "^8.11.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.0",
+    "esbuild": "^0.27.2",
+    "typescript": "^5.3.0"
+  }
+}

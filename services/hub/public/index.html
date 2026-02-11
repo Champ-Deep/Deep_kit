@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepKit Hub - Command Center</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --cyber-teal: #00FFD1;
+      --cyber-teal-dim: rgba(0, 255, 209, 0.4);
+      --cyber-teal-bright: #00FFF0;
+      --dk-black: #000000;
+      --dk-gray-dark: #0A0A0A;
+      --dk-gray-medium: #1A1A1A;
+      --green-online: #39FF14;
+      --red-error: #FF0044;
+      --amber-warning: #FFB000;
+      --glow-opacity: 0.03;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', 'Courier New', 'SF Mono', Monaco, monospace;
+      background: #000000;
+      background-image:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, var(--cyber-teal-dim), transparent, var(--cyber-teal-dim));
+      background-size: 100% 2px, 3px 100%;
+      color: var(--cyber-teal);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Enhanced CRT Scanline effect */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 209, var(--glow-opacity)) 0px,
+        rgba(0, 255, 209, var(--glow-opacity)) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 9999;
+      animation: scanline 8s linear infinite;
+    }
+
+    @keyframes scanline {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(10px); }
+    }
+
+    /* Main container */
+    .hub-container {
+      display: grid;
+      grid-template-columns: 280px 1fr 320px;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+      gap: 0;
+    }
+
+    /* Header spans all columns */
+    .hub-header {
+      grid-column: 1 / -1;
+      background: rgba(0, 255, 209, 0.05);
+      border-bottom: 2px solid var(--cyber-teal);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hub-title {
+      font-family: 'VT323', monospace;
+      font-size: 2.5rem;
+      color: var(--cyber-teal);
+      text-transform: uppercase;
+      letter-spacing: 8px;
+      text-shadow: 0 0 20px rgba(0, 255, 209, 0.6), 0 0 40px rgba(0, 255, 209, 0.3);
+      animation: flicker 3s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.95; }
+      51% { opacity: 1; }
+    }
+
+    .hub-subtitle {
+      font-size: 0.75rem;
+      color: rgba(0, 255, 209, 0.6);
+      letter-spacing: 2px;
+      margin-top: 0.25rem;
+    }
+
+    .hub-status-bar {
+      display: flex;
+      gap: 2rem;
+      font-size: 0.8rem;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.online { background: var(--green-online); }
+    .status-dot.offline { background: var(--red-error); }
+    .status-dot.idle { background: var(--cyber-teal-dim); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.8); }
+    }
+
+    /* System Log Sidebar (Left) */
+    .system-log {
+      background: var(--dk-gray-dark);
+      border-right: 2px solid var(--cyber-teal-dim);
+      padding: 1.5rem 1rem;
+      overflow-y: auto;
+      max-height: calc(100vh - 100px);
+    }
+
+    .log-header {
+      font-size: 0.9rem;
+      color: var(--cyber-teal);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--cyber-teal-dim);
+    }
+
+    .log-entry {
+      font-size: 0.7rem;
+      line-height: 1.6;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      background: rgba(0, 255, 209, 0.02);
+      border-left: 2px solid var(--cyber-teal-dim);
+      animation: logFadeIn 0.3s ease-out;
+    }
+
+    @keyframes logFadeIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .log-timestamp {
+      color: rgba(0, 255, 209, 0.4);
+      margin-right: 0.5rem;
+    }
+
+    .log-message {
+      color: rgba(0, 255, 209, 0.8);
+    }
+
+    /* Services Grid (Center) */
+    .services-grid-container {
+      background: var(--dk-black);
+      padding: 2rem;
+      overflow-y: auto;
+      max-height: calc(100vh - 100px);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 1400px) {
+      .services-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .zone-header {
+      grid-column: 1 / -1;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--cyber-teal-dim);
+    }
+
+    .zone-title {
+      font-size: 1rem;
+      color: var(--cyber-teal);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px rgba(0, 255, 209, 0.4);
+    }
+
+    /* Service Card */
+    .service-card {
+      background: rgba(0, 255, 209, 0.03);
+      border: 2px solid var(--cyber-teal-dim);
+      padding: 0.75rem;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card:hover {
+      border-color: var(--cyber-teal);
+      background: rgba(0, 255, 209, 0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(0, 255, 209, 0.4);
+    }
+
+    .service-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+      color: var(--cyber-teal);
+      filter: drop-shadow(0 0 5px rgba(0, 255, 209, 0.5));
+    }
+
+    .service-name {
+      font-size: 0.85rem;
+      color: var(--cyber-teal);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+    .service-port {
+      font-size: 0.7rem;
+      color: rgba(0, 255, 209, 0.5);
+      margin-bottom: 0.75rem;
+    }
+
+    .service-status {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .service-status.online {
+      background: rgba(57, 255, 20, 0.15);
+      color: var(--green-online);
+      border: 1px solid var(--green-online);
+    }
+
+    .service-status.offline {
+      background: rgba(255, 0, 68, 0.15);
+      color: var(--red-error);
+      border: 1px solid var(--red-error);
+    }
+
+    .service-status.pending {
+      background: rgba(0, 255, 209, 0.15);
+      color: var(--cyber-teal);
+      border: 1px solid var(--cyber-teal);
+    }
+
+    /* Segmented Bar */
+    .segmented-bar {
+      display: flex;
+      gap: 2px;
+      height: 4px;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    .segment {
+      flex: 1;
+      background-color: rgba(0, 255, 209, 0.2);
+      transition: background-color 0.3s;
+    }
+
+    .segment.active {
+      background-color: var(--cyber-teal);
+      box-shadow: 0 0 4px rgba(0, 255, 209, 0.8);
+    }
+
+    /* Right Sidebar */
+    .right-sidebar {
+      background: var(--dk-gray-dark);
+      border-left: 2px solid var(--cyber-teal-dim);
+      padding: 1.5rem 1rem;
+      overflow-y: auto;
+      max-height: calc(100vh - 100px);
+    }
+
+    .sidebar-section {
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.85rem;
+      color: var(--cyber-teal);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--cyber-teal-dim);
+    }
+
+    /* Hardware Pulse Widget */
+    .hardware-bars {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      height: 120px;
+      padding: 1rem 0.5rem;
+    }
+
+    .vertical-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .vertical-bar-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: var(--cyber-teal);
+    }
+
+    .vertical-bar-container {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 2px;
+      height: 80px;
+      width: 16px;
+    }
+
+    .vertical-segment {
+      height: 100%;
+      background-color: rgba(0, 255, 209, 0.2);
+      transition: background-color 0.3s;
+    }
+
+    .vertical-segment.active {
+      background-color: var(--cyber-teal);
+      box-shadow: 0 0 4px rgba(0, 255, 209, 0.8);
+    }
+
+    .vertical-bar-value {
+      font-size: 0.7rem;
+      color: var(--cyber-teal);
+      font-weight: bold;
+    }
+
+    /* Harbor Dock Status */
+    .dock-status {
+      background: rgba(0, 255, 209, 0.03);
+      padding: 1rem;
+      border: 1px solid var(--cyber-teal-dim);
+      margin-top: 1rem;
+    }
+
+    .dock-port {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(0, 255, 209, 0.1);
+    }
+
+    .dock-port:last-child {
+      border-bottom: none;
+    }
+
+    .dock-port-name {
+      color: rgba(0, 255, 209, 0.7);
+    }
+
+    .dock-port-status {
+      color: var(--green-online);
+      font-weight: 600;
+    }
+
+    /* Mascot */
+    .mascot-container {
+      padding: 2rem 1rem;
+      text-align: center;
+      border-top: 1px solid var(--cyber-teal-dim);
+      margin-top: 2rem;
+    }
+
+    .mascot-grid {
+      width: 192px;
+      height: 192px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(12, 1fr);
+      gap: 1px;
+      position: relative;
+    }
+
+    .mascot-pixel {
+      opacity: 0.9;
+    }
+
+    .mascot-pixel.bg {
+      background-color: var(--cyber-teal);
+    }
+
+    .mascot-pixel.eye {
+      background-color: var(--dk-black);
+    }
+
+    .mascot-pixel.glow {
+      background-color: var(--cyber-teal);
+      animation: pulse 2s infinite;
+    }
+
+    /* Grid positioning classes */
+    .row-1 { grid-row: 2; }
+    .row-2 { grid-row: 3; }
+    .row-3 { grid-row: 4; }
+    .row-4-6 { grid-row: 5 / 8; }
+    .row-5-6 { grid-row: 7 / 9; }
+
+    .col-1-2 { grid-column: 1 / 3; }
+    .col-4 { grid-column: 4; }
+    .col-5 { grid-column: 5; }
+    .col-5-8 { grid-column: 5 / 9; }
+    .col-8 { grid-column: 8; }
+    .col-9 { grid-column: 9; }
+    .col-4-9 { grid-column: 4 / 10; }
+    .col-11-12 { grid-column: 11 / 13; }
+
+    .mascot-name {
+      margin-top: 1rem;
+      font-family: 'VT323', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--cyber-teal);
+      text-shadow: 0 0 8px rgba(0, 255, 209, 0.6);
+    }
+
+    /* Loading state */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      font-size: 3rem;
+      color: var(--cyber-teal);
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      color: var(--cyber-teal);
+      letter-spacing: 3px;
+      animation: pulse 2s infinite;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--dk-black);
+      border: 1px solid var(--cyber-teal-dim);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--cyber-teal-dim);
+      border: 1px solid var(--dk-black);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cyber-teal);
+      box-shadow: 0 0 10px rgba(0, 255, 209, 0.5);
+    }
+
+    /* Modal styles */
+    .dk-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      backdrop-filter: blur(4px);
+    }
+
+    .dk-modal-content {
+      background: var(--dk-gray-dark);
+      border: 2px solid var(--cyber-teal);
+      box-shadow: 0 0 30px rgba(0, 255, 209, 0.5);
+      max-width: 90vw;
+      max-height: 90vh;
+      width: 1000px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dk-modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--cyber-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dk-modal-header h2 {
+      font-family: 'VT323', monospace;
+      font-size: 1.8rem;
+      color: var(--cyber-teal);
+      text-shadow: 0 0 10px rgba(0, 255, 209, 0.5);
+      margin: 0;
+    }
+
+    .dk-modal-close {
+      background: none;
+      border: 1px solid var(--cyber-teal);
+      color: var(--cyber-teal);
+      font-size: 1.5rem;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dk-modal-close:hover {
+      background: var(--cyber-teal);
+      color: var(--dk-black);
+    }
+
+    .dk-modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .diagnostic-section {
+      margin-bottom: 2rem;
+    }
+
+    .diagnostic-section h3 {
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      color: var(--amber-warning);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .diagnostic-data,
+    .diagnostic-logs {
+      background: #000;
+      border: 1px solid rgba(0, 255, 209, 0.2);
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--green-online);
+      overflow-x: auto;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .diagnostic-logs {
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .dk-btn-copy {
+      background: var(--dk-gray-medium);
+      border: 1px solid var(--cyber-teal);
+      color: var(--cyber-teal);
+      padding: 0.5rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      transition: all 0.3s;
+    }
+
+    .dk-btn-copy:hover {
+      background: var(--cyber-teal);
+      color: var(--dk-black);
+    }
+
+    .diagnostic-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .dk-btn {
+      background: var(--dk-gray-medium);
+      border: 1px solid var(--cyber-teal);
+      color: var(--cyber-teal);
+      padding: 0.75rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    .dk-btn:hover {
+      background: var(--cyber-teal);
+      color: var(--dk-black);
+    }
+
+    .diagnostic-hint {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.6rem;
+      color: var(--amber-warning);
+      opacity: 0.7;
+      animation: pulse 2s infinite;
+    }
+
+    /* Theme settings specific styles */
+    .settings-btn {
+      background: var(--dk-gray-medium);
+      border: 1px solid var(--cyber-teal);
+      color: var(--cyber-teal);
+      padding: 0.5rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .preset-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .preset-btn {
+      background: var(--dk-gray-medium);
+      border: 1px solid rgba(0, 255, 209, 0.2);
+      color: var(--cyber-teal);
+      padding: 0.75rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    .preset-btn.active {
+      background: var(--cyber-teal);
+      color: var(--dk-black);
+      border-color: var(--cyber-teal);
+    }
+
+    .toggle-control {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .color-picker {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .color-picker input[type="color"] {
+      width: 60px;
+      height: 40px;
+      border: 1px solid var(--cyber-teal);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .intensity-slider {
+      width: 100%;
+      height: 4px;
+      background: var(--dk-gray-medium);
+      outline: none;
+      appearance: none;
+    }
+
+    .intensity-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--cyber-teal);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 255, 209, 0.8);
+    }
+
+    /* Theme toggle classes */
+    body.scanlines-off::before {
+      display: none !important;
+    }
+
+    body.glow-off * {
+      text-shadow: none !important;
+      box-shadow: none !important;
+    }
+
+    body.rgb-ghosting {
+      text-shadow:
+        2px 0 0 rgba(255, 0, 0, 0.3),
+        -2px 0 0 rgba(0, 255, 255, 0.3) !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Service icons mapping (Material Icons)
+    const SERVICE_ICONS = {
+      'chat': 'forum',
+      'research': 'search',
+      'content': 'description',
+      'crm': 'people',
+      'pdf': 'picture_as_pdf',
+      'marketing360': 'campaign',
+      'calendar': 'calendar_today',
+      'invoicing': 'receipt',
+      'password-manager': 'lock',
+      'api-testing': 'bug_report',
+      'task-tracker': 'task_alt',
+      'time-tracker': 'schedule',
+      'file-manager': 'folder',
+      'webhook-manager': 'webhook',
+      'super-admin': 'settings',
+      'request-tracker': 'assignment',
+      'champmail': 'email',
+      'cowork': 'smart_toy',
+      'automation': 'account_tree',
+      'memory': 'psychology',
+      'vector': 'grid_on',
+      'ollama': 'pets',
+      'pulse': 'favorite',
+      'admin-db': 'storage',
+      'postgres': 'dns',
+      'redis': 'bolt',
+      'neo4j': 'hub'
+    };
+
+    // Service zones
+    const SERVICE_ZONES = {
+      'THE FACE': ['chat', 'research', 'content', 'crm', 'pdf', 'marketing360', 'calendar',
+                   'invoicing', 'password-manager', 'api-testing', 'task-tracker', 'time-tracker',
+                   'file-manager', 'webhook-manager', 'super-admin', 'request-tracker',
+                   'champmail', 'cowork'],
+      'THE ENGINE': ['automation'],
+      'THE VAULT': ['memory', 'vector'],
+      'THE BRAIN': ['ollama'],
+      'MONITORING': ['pulse', 'admin-db'],
+      'CORE': ['postgres', 'redis', 'neo4j']
+    };
+
+    function SegmentedBar({ percentage, segments = 5 }) {
+      const activeSegments = Math.floor((percentage / 100) * segments);
+
+      return (
+        <div className="segmented-bar">
+          {[...Array(segments)].map((_, i) => (
+            <div
+              key={i}
+              className={`segment ${i < activeSegments ? 'active' : ''}`}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    function VerticalBar({ label, value }) {
+      const segments = 10;
+      const activeSegments = Math.floor((value / 100) * segments);
+
+      return (
+        <div className="vertical-bar">
+          <div className="vertical-bar-label">{label}</div>
+          <div className="vertical-bar-container">
+            {[...Array(segments)].map((_, i) => (
+              <div
+                key={i}
+                className={`vertical-segment ${(segments - i - 1) < activeSegments ? 'active' : ''}`}
+              />
+            ))}
+          </div>
+          <div className="vertical-bar-value">{value}%</div>
+        </div>
+      );
+    }
+
+    function DiagnosticModal({ service, onClose }) {
+      const [logs, setLogs] = useState('Loading logs...');
+      const [healthData, setHealthData] = useState(null);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        async function fetchDiagnostics() {
+          try {
+            const [logsRes, healthRes] = await Promise.all([
+              fetch(`/api/services/${service.name}/logs?tail=50`),
+              fetch(`/api/services/${service.name}/health`)
+            ]);
+
+            const logsData = await logsRes.json();
+            const healthData = await healthRes.json();
+
+            setLogs(logsData.logs);
+            setHealthData(healthData);
+          } catch (error) {
+            setLogs(`Error fetching logs: ${error.message}`);
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        fetchDiagnostics();
+      }, [service]);
+
+      const copyLogs = () => {
+        navigator.clipboard.writeText(logs);
+      };
+
+      return (
+        <div className="dk-modal-overlay" onClick={onClose}>
+          <div className="dk-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="dk-modal-header">
+              <h2>🔍 DIAGNOSTICS: {service.name.toUpperCase()}</h2>
+              <button className="dk-modal-close" onClick={onClose}>✕</button>
+            </div>
+
+            <div className="dk-modal-body">
+              <div className="diagnostic-section">
+                <h3>Health Check Status</h3>
+                {healthData && (
+                  <pre className="diagnostic-data">
+                    {JSON.stringify(healthData, null, 2)}
+                  </pre>
+                )}
+              </div>
+
+              <div className="diagnostic-section">
+                <h3>Container Logs (Last 50 Lines)</h3>
+                <button className="dk-btn-copy" onClick={copyLogs}>
+                  📋 Copy Logs
+                </button>
+                <pre className="diagnostic-logs">{logs}</pre>
+              </div>
+
+              <div className="diagnostic-actions">
+                <a href={`http://localhost:${service.port}`} target="_blank" className="dk-btn">
+                  🌐 Open Service
+                </a>
+                <button className="dk-btn" onClick={() => window.location.reload()}>
+                  🔄 Refresh Status
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function ThemeSettingsPanel({ isOpen, onClose }) {
+      const [settings, setSettings] = useState({
+        theme_preset: 'classic-crt',
+        scanlines_enabled: true,
+        rgb_ghosting_enabled: false,
+        glow_enabled: true,
+        phosphor_color: '#39FF14',
+        glow_intensity: 50
+      });
+
+      useEffect(() => {
+        if (isOpen) {
+          fetchSettings();
+        }
+      }, [isOpen]);
+
+      const fetchSettings = async () => {
+        try {
+          const response = await fetch('/api/theme/settings');
+          if (response.ok) {
+            const data = await response.json();
+            setSettings(data);
+          }
+        } catch (error) {
+          console.error('Failed to fetch theme settings');
+        }
+      };
+
+      const saveSettings = async () => {
+        await fetch('/api/theme/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settings)
+        });
+
+        applyTheme(settings);
+      };
+
+      const applyTheme = (theme) => {
+        document.documentElement.style.setProperty('--cyber-teal', theme.phosphor_color);
+        
+        // Update derived rgba colors
+        const r = parseInt(theme.phosphor_color.slice(1, 3), 16);
+        const g = parseInt(theme.phosphor_color.slice(3, 5), 16);
+        const b = parseInt(theme.phosphor_color.slice(5, 7), 16);
+        document.documentElement.style.setProperty('--cyber-teal-dim', `rgba(${r}, ${g}, ${b}, 0.1)`);
+        
+        document.documentElement.style.setProperty('--glow-intensity', `${theme.glow_intensity}%`);
+
+        document.body.classList.toggle('scanlines-off', !theme.scanlines_enabled);
+        document.body.classList.toggle('glow-off', !theme.glow_enabled);
+        document.body.classList.toggle('rgb-ghosting', theme.rgb_ghosting_enabled);
+      };
+
+      const presets = {
+        'classic-crt': { phosphor_color: '#39FF14', scanlines_enabled: true, glow_enabled: true },
+        'amber-terminal': { phosphor_color: '#FFB000', scanlines_enabled: true, glow_enabled: true },
+        'cyan-modern': { phosphor_color: '#00F0FF', scanlines_enabled: false, glow_enabled: true },
+        'clean-minimal': { phosphor_color: '#FFFFFF', scanlines_enabled: false, glow_enabled: false }
+      };
+
+      const handlePresetChange = (preset) => {
+        setSettings({ ...settings, theme_preset: preset, ...presets[preset] });
+      };
+
+      if (!isOpen) return null;
+
+      return (
+        <div className="dk-modal-overlay" onClick={onClose}>
+          <div className="dk-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="dk-modal-header">
+              <h2>⚙️ VISUAL SETTINGS</h2>
+              <button className="dk-modal-close" onClick={onClose}>✕</button>
+            </div>
+
+            <div className="dk-modal-body">
+              <div className="settings-section">
+                <h3>Theme Presets</h3>
+                <div className="preset-buttons">
+                  {Object.keys(presets).map(preset => (
+                    <button
+                      key={preset}
+                      className={`preset-btn ${settings.theme_preset === preset ? 'active' : ''}`}
+                      onClick={() => handlePresetChange(preset)}
+                    >
+                      {preset.toUpperCase().replace(/-/g, ' ')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <h3>Visual Effects</h3>
+                <label className="toggle-control">
+                  <input
+                    type="checkbox"
+                    checked={settings.scanlines_enabled}
+                    onChange={(e) => setSettings({ ...settings, scanlines_enabled: e.target.checked })}
+                  />
+                  <span>CRT Scanlines</span>
+                </label>
+
+                <label className="toggle-control">
+                  <input
+                    type="checkbox"
+                    checked={settings.glow_enabled}
+                    onChange={(e) => setSettings({ ...settings, glow_enabled: e.target.checked })}
+                  />
+                  <span>Phosphor Glow</span>
+                </label>
+
+                <label className="toggle-control">
+                  <input
+                    type="checkbox"
+                    checked={settings.rgb_ghosting_enabled}
+                    onChange={(e) => setSettings({ ...settings, rgb_ghosting_enabled: e.target.checked })}
+                  />
+                  <span>RGB Ghosting</span>
+                </label>
+              </div>
+
+              <div className="settings-section">
+                <h3>Phosphor Color</h3>
+                <div className="color-picker">
+                  <input
+                    type="color"
+                    value={settings.phosphor_color}
+                    onChange={(e) => setSettings({ ...settings, phosphor_color: e.target.value })}
+                  />
+                  <span>{settings.phosphor_color}</span>
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <h3>Glow Intensity: {settings.glow_intensity}%</h3>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={settings.glow_intensity}
+                  onChange={(e) => setSettings({ ...settings, glow_intensity: parseInt(e.target.value) })}
+                  className="intensity-slider"
+                />
+              </div>
+
+              <div className="settings-actions">
+                <button className="dk-btn" onClick={saveSettings}>💾 Save Settings</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function SystemLog({ logs }) {
+      return (
+        <div className="system-log">
+          <div className="log-header">⚡ System Log</div>
+          {logs.map((log, i) => (
+            <div key={i} className="log-entry">
+              <span className="log-timestamp">{log.timestamp}</span>
+              <span className="log-message">{log.message}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    function ServiceCard({ name, service, onClick }) {
+      const [showDiagnostics, setShowDiagnostics] = useState(false);
+
+      const getStatusColor = () => {
+        if (service.status === 'ONLINE') return 'online';
+        if (service.status === 'OFFLINE') return 'offline';
+        return 'pending';
+      };
+
+      const getLoadPercentage = () => {
+        if (service.status !== 'ONLINE') return 0;
+        return Math.random() * 40 + 30; // Mock load 30-70%
+      };
+
+      const handleClick = () => {
+        if (service.status === 'OFFLINE' || service.status === 'ERROR') {
+          setShowDiagnostics(true);
+        } else {
+          onClick();
+        }
+      };
+
+      return (
+        <React.Fragment>
+          <div className="service-card" onClick={handleClick}>
+            <span className="material-icons service-icon">{SERVICE_ICONS[name] || 'settings'}</span>
+            <div className="service-name">{name}</div>
+            <div className="service-port">:{service.port}</div>
+            <span className={`service-status ${getStatusColor()}`}>
+              {service.status || 'PENDING'}
+            </span>
+            {service.status === 'ONLINE' && (
+              <SegmentedBar percentage={getLoadPercentage()} segments={5} />
+            )}
+            {(service.status === 'OFFLINE' || service.status === 'ERROR') && (
+              <div className="diagnostic-hint">Click for diagnostics</div>
+            )}
+          </div>
+
+          {showDiagnostics && (
+            <DiagnosticModal
+              service={{ ...service, name }}
+              onClose={() => setShowDiagnostics(false)}
+            />
+          )}
+        </React.Fragment>
+      );
+    }
+
+    function ServicesGrid({ services, onServiceClick }) {
+      return (
+        <div className="services-grid-container">
+          <div className="services-grid">
+            {Object.entries(SERVICE_ZONES).map(([zone, serviceNames]) => (
+              <React.Fragment key={zone}>
+                <div className="zone-header">
+                  <div className="zone-title">{zone}</div>
+                </div>
+                {serviceNames.map(name => {
+                  const service = services.find(s => s.name === name);
+                  if (!service) return null;
+                  return (
+                    <ServiceCard
+                      key={name}
+                      name={name}
+                      service={service}
+                      onClick={() => onServiceClick(service.port)}
+                    />
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function RightSidebar({ summary }) {
+      const [hwMetrics, setHwMetrics] = useState({ cpu: 0, memory: 0, gpu: 0 });
+
+      useEffect(() => {
+        fetchHardwareMetrics();
+        const interval = setInterval(fetchHardwareMetrics, 2000); // Every 2s
+        return () => clearInterval(interval);
+      }, []);
+
+      async function fetchHardwareMetrics() {
+        try {
+          const response = await fetch('/api/hardware/metrics');
+          if (response.ok) {
+            const data = await response.json();
+            setHwMetrics(data);
+          }
+        } catch (error) {
+          console.error('Hardware metrics fetch failed:', error);
+        }
+      }
+
+      return (
+        <div className="right-sidebar">
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">⚡ HARDWARE PULSE</div>
+            <div className="hardware-bars">
+              <VerticalBar label="CPU" value={hwMetrics.cpu} />
+              <VerticalBar label="MEM" value={hwMetrics.memory} />
+              <VerticalBar label="GPU" value={hwMetrics.gpu} />
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <div className="sidebar-section-title">🚢 Harbor Dock</div>
+            <div className="dock-status">
+              <div className="dock-port">
+                <span className="dock-port-name">HTTP Services</span>
+                <span className="dock-port-status">{summary?.online || 0} UP</span>
+              </div>
+              <div className="dock-port">
+                <span className="dock-port-name">Core Services</span>
+                <span className="dock-port-status">READY</span>
+              </div>
+              <div className="dock-port">
+                <span className="dock-port-name">AI Engine</span>
+                <span className="dock-port-status">ACTIVE</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mascot-container">
+            <div className="mascot-grid">
+              <div className="mascot-pixel row-1 col-5-8 bg"></div>
+              <div className="mascot-pixel row-2 col-4 bg"></div>
+              <div className="mascot-pixel row-2 col-9 bg"></div>
+              <div className="mascot-pixel row-3 col-5 eye"></div>
+              <div className="mascot-pixel row-3 col-8 eye"></div>
+              <div className="mascot-pixel row-4-6 col-4-9 bg"></div>
+              <div className="mascot-pixel row-5-6 col-1-2 glow"></div>
+              <div className="mascot-pixel row-5-6 col-11-12 glow"></div>
+            </div>
+            <div className="mascot-name">THE SILENT ADMIN // ARCHIVE KEEPER</div>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [services, setServices] = useState([]);
+      const [summary, setSummary] = useState(null);
+      const [logs, setLogs] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [showSettings, setShowSettings] = useState(false);
+
+      useEffect(() => {
+        checkServices();
+        const interval = setInterval(checkServices, 15000); // Check every 15s
+        return () => clearInterval(interval);
+      }, []);
+
+      useEffect(() => {
+        // Initial theme apply
+        fetch('/api/theme/settings')
+          .then(res => res.json())
+          .then(theme => {
+            document.documentElement.style.setProperty('--cyber-teal', theme.phosphor_color);
+            document.body.classList.toggle('scanlines-off', !theme.scanlines_enabled);
+            document.body.classList.toggle('glow-off', !theme.glow_enabled);
+            document.body.classList.toggle('rgb-ghosting', theme.rgb_ghosting_enabled);
+          }).catch(() => {});
+      }, []);
+
+      async function checkServices() {
+        try {
+          const response = await fetch('/api/services/health');
+          if (response.ok) {
+            const data = await response.json();
+            setServices(data.services);
+            setSummary(data.summary);
+
+            // Add log entry
+            addLog(`Health check complete: ${data.summary.online}/${data.summary.total} services online`);
+          } else {
+            addLog('Health check failed: Backend error');
+          }
+        } catch (error) {
+          addLog(`Health check failed: ${error.message}`);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      function addLog(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        setLogs(prev => [{ timestamp, message }, ...prev.slice(0, 19)]);
+      }
+
+      function openService(port) {
+        window.open(`http://localhost:${port}`, '_blank');
+        addLog(`Opened service on port ${port}`);
+      }
+
+      if (loading) {
+        return (
+          <div className="loading">
+            <div className="loading-spinner">⚡</div>
+            <div className="loading-text">INITIALIZING DEEPKIT HUB...</div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="hub-container">
+          <div className="hub-header">
+            <div>
+              <h1 className="hub-title">DEEPKIT // UTILITY: COMMAND CENTER</h1>
+              <div className="hub-subtitle">YOUR PERSONAL AI. LOCALLY CONTAINED. LOCALLY EMPOWERED.</div>
+            </div>
+            <div className="hub-status-bar">
+              <div className="status-item">
+                <span className="status-dot online"></span>
+                <span>{summary?.online || 0} ONLINE</span>
+              </div>
+              <div className="status-item">
+                <span className="status-dot offline"></span>
+                <span>{summary?.offline || 0} OFFLINE</span>
+              </div>
+              <div className="status-item">
+                <span className="status-dot idle"></span>
+                <span>{summary?.total || 0} TOTAL</span>
+              </div>
+              <button className="settings-btn" onClick={() => setShowSettings(true)}>
+                <span className="material-icons">settings</span>
+                SETTINGS
+              </button>
+            </div>
+          </div>
+
+          <SystemLog logs={logs} />
+          <ServicesGrid services={services} onServiceClick={openService} />
+          <RightSidebar summary={summary} />
+
+          {showSettings && (
+            <ThemeSettingsPanel
+              isOpen={showSettings}
+              onClose={() => setShowSettings(false)}
+            />
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>

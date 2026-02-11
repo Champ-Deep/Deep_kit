@@ -1,6 +1,6 @@
-# Deep Starter Kit
+# DEEPKIT
 
-Your personal AI & automation toolkit. No coding required.
+> "Your Personal AI. Locally Contained. Locally Empowered."
 
 ```
   ██████╗ ███████╗███████╗██████╗    ██╗  ██╗██╗████████╗
@@ -9,19 +9,22 @@ Your personal AI & automation toolkit. No coding required.
   ██║  ██║██╔══╝  ██╔══╝  ██╔═══╝    ██╔═██╗ ██║   ██║
   ██████╔╝███████╗███████╗██║        ██║  ██╗██║   ██║
   ╚═════╝ ╚══════╝╚══════╝╚═╝        ╚═╝  ╚═╝╚═╝   ╚═╝
+
+  [ SYSTEM_ONLINE ] ................... [ LOCAL_AI_READY ]
 ```
 
-## What is this?
+## What is DEEPKIT?
 
-Deep Starter Kit is a modular collection of AI and automation tools that run on your computer. Choose what you need:
+DEEPKIT is a **sovereign AI toolkit** — a modular collection of 25+ AI and automation tools that run entirely on your computer. Your data stays private. No cloud subscriptions. No data harvesting.
 
-- **AI Chat** - ChatGPT-like interface, but private and local
-- **Workflow Automation** - Connect apps and automate tasks (like Zapier)
-- **PDF Tools** - Merge, split, compress PDFs
-- **Document Research** - Upload documents, ask questions, get summaries
-- **Content Management** - Manage blog posts and content
-- **Customer Management** - Track leads, contacts, and deals
-- **And more...**
+**Start chatting with your AI assistant at `http://localhost:7777`**
+
+The AI can:
+- List and manage your services ("list my services")
+- Check hardware stats ("check hardware stats")
+- Create tasks, notes, and workflows
+- Execute tools via natural language
+- Answer questions using local LLMs
 
 ## Quick Start
 
@@ -37,40 +40,57 @@ Deep Starter Kit is a modular collection of AI and automation tools that run on 
 ./install.sh
 
 # Or choose a preset
-./install.sh --preset minimal     # AI chat + automation + PDF tools
-./install.sh --preset creator     # + Document research + CMS
-./install.sh --preset business    # + CRM + Monitoring
-./install.sh --preset developer   # + Knowledge graphs + Vector DB
+./install.sh --preset minimal     # Core + Automation (5 services, ~5GB RAM)
+./install.sh --preset creator     # + Research + CMS + Marketing (11 services)
+./install.sh --preset business    # + CRM + Monitoring + Productivity (15 services)
+./install.sh --preset developer   # + Knowledge + Vector + APIs (14 services)
+./install.sh --preset full        # Everything (25+ services)
 ```
 
-The installer will guide you through everything.
-
-## Available Modules
-
-| Module | What It Does | Port |
-|--------|--------------|------|
-| **Core** | Database, caching, local AI, Docker UI | 5432, 6379, 11434, 9000 |
-| **Automation** | n8n workflow automation | 5678 |
-| **AI Chat** | Open WebUI chat interface | 3001 |
-| **Research** | Local NotebookLM for documents | 3002 |
-| **CMS** | Strapi content management | 3003 |
-| **CRM** | EspoCRM customer management | 3004 |
-| **PDF Tools** | chamPDF manipulation | 3005 |
-| **Knowledge** | FalkorDB + Graphiti graphs | 6380, 3011, 8000 |
-| **Vector** | Qdrant semantic search | 6333 |
-| **Monitoring** | Uptime Kuma health checks | 9002 |
-| **Admin** | Adminer database UI | 9003 |
+The installer will guide you through everything and auto-generate secure secrets.
 
 ## After Installation
 
-Open these URLs in your browser:
+### Your AI Command Center
 
-| Service | URL |
-|---------|-----|
-| Portainer (Docker UI) | http://localhost:9000 |
-| n8n (Automation) | http://localhost:5678 |
-| Open WebUI (AI Chat) | http://localhost:3001 |
-| chamPDF (PDF Tools) | http://localhost:3005 |
+| Service | URL | Description |
+|---------|-----|-------------|
+| **DeepKit Messenger** | http://localhost:7777 | **Chat with your AI assistant** |
+
+Open `http://localhost:7777` and start chatting. The AI can manage all your services.
+
+### Core Infrastructure (Always Running)
+
+| Service | Port | Description |
+|---------|------|-------------|
+| DeepKit Messenger | 7777 | AI chat + generative UI + service management |
+| DeepKit Orchestrator | 5678 | n8n workflow automation |
+| DeepKit Store | 5432 | PostgreSQL database |
+| DeepKit Cache | 6379 | Redis event bus |
+| DeepKit Engine | 11434 | Ollama local LLM |
+
+### Available Modules
+
+| Category | Services | Ports |
+|----------|----------|-------|
+| **Chat & Research** | Open WebUI, Document Analysis | 3001, 3002 |
+| **Content & CRM** | Strapi CMS, SuiteCRM | 3003, 3004 |
+| **Marketing** | Marketing360, Link Shortener, UTM Tracker | 7712, 3013, 3007 |
+| **Productivity** | Invoicing, Calendar, Tasks, Time Tracking | 7715, 7714, 7718, 7719 |
+| **Knowledge** | FalkorDB, Qdrant Vector | 6378, 6333 |
+| **Utilities** | Password Manager, ChampMail, QR Generator | 7716, 3025, 3010 |
+| **Admin** | Super Admin, File Manager, Webhook Manager | 7722, 7720, 7721 |
+| **Monitoring** | Prometheus, Grafana | 9090, 3000 |
+
+## Presets
+
+| Preset | Services | RAM | Best For |
+|--------|----------|-----|----------|
+| **Minimal** | 5 | ~5GB | Getting started, lightweight use |
+| **Creator** | 11 | ~7GB | Content creators, marketers |
+| **Business** | 15 | ~10GB | Business operations, CRM |
+| **Developer** | 14 | ~9GB | Building AI applications |
+| **Full** | 25+ | ~16GB | Everything included |
 
 ## Common Commands
 
@@ -99,20 +119,24 @@ docker compose pull && docker compose up -d
 ## Project Structure
 
 ```
-deep-starter-kit/
-├── docker-compose.yml    # Core services
+deepkit/
+├── docker-compose.yml    # Core services (Store, Cache, Engine)
 ├── modules/              # Optional module compose files
-│   ├── automation.yml    # n8n
+│   ├── deepkit-core.yml  # Messenger (always included)
+│   ├── automation.yml    # n8n Orchestrator
 │   ├── chat.yml          # Open WebUI
-│   ├── research.yml      # Local NotebookLM
-│   ├── cms.yml           # Strapi
-│   ├── crm.yml           # EspoCRM
-│   ├── pdf.yml           # chamPDF
+│   ├── research.yml      # Document analysis
+│   ├── cms.yml           # Strapi CMS
+│   ├── crm.yml           # SuiteCRM
 │   ├── knowledge.yml     # FalkorDB + Graphiti
 │   ├── vector.yml        # Qdrant
-│   ├── monitoring.yml    # Uptime Kuma
-│   └── admin.yml         # Adminer
+│   └── ...               # 20+ more modules
 ├── presets/              # Pre-configured combinations
+├── services/             # Service source code
+│   ├── messenger/        # DeepKit Messenger (Core)
+│   └── ...               # Other custom services
+├── backend/lib/          # Shared libraries
+│   └── deepkit-fabric/   # Auth, logging, metrics
 ├── scripts/              # Helper scripts
 ├── docs/                 # Documentation
 ├── install.sh            # Interactive installer
@@ -126,6 +150,9 @@ Start Docker Desktop and try again.
 
 **Port already in use?**
 Check what's using the port: `lsof -i :PORT_NUMBER`
+
+**AI not responding?**
+Ensure Ollama is running: `docker compose logs deepkit-engine`
 
 **Need more help?**
 Check the logs: `docker compose logs -f SERVICE_NAME`

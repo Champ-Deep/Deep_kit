@@ -1,0 +1,357 @@
+/* ============================================================
+   DEEPKIT_RESEARCH - Local NotebookLM Theme Override
+   ============================================================ */
+
+@import url('./deepkit-base.css');
+
+/* ============================================================
+   HIDE ORIGINAL BRANDING
+   ============================================================ */
+
+/* Hide NotebookLM / Local NotebookLM logo */
+.logo,
+img[alt*="NotebookLM"],
+img[alt*="notebook"],
+[class*="logo"],
+.brand-logo {
+  display: none !important;
+}
+
+/* ============================================================
+   DEEPKIT RESEARCH HEADER
+   ============================================================ */
+
+/* Main header */
+header, .navbar, .top-bar {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+}
+
+/* Add DeepKit branding */
+.navbar-brand::before,
+header::before,
+.app-title::before {
+  content: '[ DEEPKIT // RESEARCH ]';
+  font-family: var(--dk-font-display);
+  font-size: 1.2rem;
+  color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+  letter-spacing: 2px;
+}
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+
+body, .main-container, .app-container {
+  background: var(--dk-black) !important;
+}
+
+/* ============================================================
+   DOCUMENT SIDEBAR
+   ============================================================ */
+
+.sidebar,
+.document-list,
+.sources-panel {
+  background: var(--dk-black) !important;
+  border-right: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Document cards */
+.document-card,
+.source-card,
+.notebook-card {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+  margin: 0.25rem 0;
+  transition: var(--dk-transition);
+}
+
+.document-card:hover,
+.source-card:hover,
+.notebook-card:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+.document-card.selected,
+.source-card.active {
+  border-color: var(--dk-green) !important;
+  background: var(--dk-green-subtle) !important;
+}
+
+/* Document title */
+.document-title,
+.source-title {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+}
+
+/* Document meta */
+.document-meta,
+.source-meta {
+  color: var(--dk-green-dim) !important;
+  font-size: 0.8rem;
+}
+
+/* ============================================================
+   FILE UPLOAD
+   ============================================================ */
+
+.upload-zone,
+.dropzone,
+.file-drop {
+  background: var(--dk-gray) !important;
+  border: 2px dashed var(--dk-green) !important;
+  border-radius: 0 !important;
+  color: var(--dk-green) !important;
+}
+
+.upload-zone:hover,
+.dropzone:hover {
+  background: var(--dk-green-subtle) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+.upload-text::before {
+  content: '[ INPUT_SOURCE ]';
+  font-family: var(--dk-font-display);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* ============================================================
+   CHAT / Q&A INTERFACE
+   ============================================================ */
+
+.chat-container,
+.qa-container {
+  background: var(--dk-black) !important;
+}
+
+/* Message bubbles */
+.message,
+.chat-message {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+  color: var(--dk-green) !important;
+  margin: 0.5rem 0;
+  padding: 1rem;
+}
+
+/* User question */
+.message-user,
+.user-message,
+.question {
+  border-left: 3px solid var(--dk-amber) !important;
+}
+
+.message-user::before,
+.question::before {
+  content: 'QUERY > ';
+  color: var(--dk-amber);
+  font-family: var(--dk-font-display);
+  font-size: 0.8rem;
+}
+
+/* AI response */
+.message-assistant,
+.ai-message,
+.response {
+  border-left: 3px solid var(--dk-green) !important;
+}
+
+.message-assistant::before,
+.response::before {
+  content: 'DEEPKIT > ';
+  color: var(--dk-green);
+  font-family: var(--dk-font-display);
+  font-size: 0.8rem;
+}
+
+/* Citations */
+.citation,
+.source-reference {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green-dim) !important;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.citation:hover,
+.source-reference:hover {
+  border-color: var(--dk-green) !important;
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   INPUT AREA
+   ============================================================ */
+
+textarea,
+.query-input,
+.chat-input {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+}
+
+textarea:focus,
+.query-input:focus,
+.chat-input:focus {
+  box-shadow: var(--dk-green-glow) !important;
+  outline: none !important;
+}
+
+textarea::placeholder {
+  color: var(--dk-green-dim) !important;
+}
+
+/* Submit button */
+button[type="submit"],
+.send-button,
+.ask-button {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  border: none !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+}
+
+button[type="submit"]:hover,
+.send-button:hover,
+.ask-button:hover {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+  border: 2px solid var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow) !important;
+}
+
+/* ============================================================
+   SUMMARY / NOTES PANEL
+   ============================================================ */
+
+.summary-panel,
+.notes-panel {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+.summary-title,
+.notes-title {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--dk-green-dim);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* ============================================================
+   DOCUMENT VIEWER
+   ============================================================ */
+
+.document-viewer,
+.pdf-viewer,
+.content-viewer {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Highlight text */
+.highlight,
+.text-highlight {
+  background: var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+button, .btn {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+  text-transform: uppercase;
+}
+
+button:hover, .btn:hover {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+
+.modal,
+.modal-content {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--dk-green-glow-strong);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+}
+
+.modal-title {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+}
+
+/* ============================================================
+   LOADING STATES
+   ============================================================ */
+
+.loading,
+.thinking {
+  color: var(--dk-green) !important;
+}
+
+.loading::after,
+.thinking::after {
+  content: 'PROCESSING...';
+  animation: loading-dots 1.5s infinite;
+  font-family: var(--dk-font-body);
+}
+
+/* ============================================================
+   TAGS / CHIPS
+   ============================================================ */
+
+.tag,
+.chip,
+.label {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  border-radius: 0 !important;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* ============================================================
+   TOOLTIPS
+   ============================================================ */
+
+.tooltip {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   END DEEPKIT_RESEARCH THEME
+   ============================================================ */

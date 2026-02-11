@@ -1,0 +1,375 @@
+/* ============================================================
+   DEEPKIT_DATA - Adminer Theme Override
+   ============================================================ */
+
+@import url('./deepkit-base.css');
+
+/* ============================================================
+   HIDE ORIGINAL BRANDING
+   ============================================================ */
+
+/* Hide Adminer logo/branding */
+#h1,
+.version,
+a[href*="adminer.org"] {
+  visibility: hidden;
+  font-size: 0;
+}
+
+/* Replace with DeepKit branding */
+#h1::before {
+  content: '[ DEEPKIT // DATA ]';
+  visibility: visible;
+  font-family: var(--dk-font-display);
+  font-size: 1.2rem;
+  color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+  letter-spacing: 2px;
+}
+
+/* ============================================================
+   BODY & LAYOUT
+   ============================================================ */
+
+body {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+}
+
+/* Main content area */
+#content {
+  background: var(--dk-black) !important;
+}
+
+/* ============================================================
+   NAVIGATION / MENU
+   ============================================================ */
+
+#menu {
+  background: var(--dk-black) !important;
+  border-right: 1px solid var(--dk-green-dim) !important;
+}
+
+#menu a {
+  color: var(--dk-green) !important;
+  border-left: 3px solid transparent;
+  padding: 0.5rem;
+  display: block;
+}
+
+#menu a:hover {
+  background: var(--dk-green-subtle) !important;
+  border-left-color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+}
+
+/* Submenu */
+#menu p {
+  color: var(--dk-green-dim) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 1rem;
+  border-bottom: 1px solid var(--dk-green-dim);
+  padding-bottom: 0.25rem;
+}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+
+table {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  width: 100%;
+}
+
+th {
+  background: var(--dk-gray) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid var(--dk-green-dim) !important;
+  padding: 0.5rem;
+}
+
+td {
+  color: var(--dk-green) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  padding: 0.5rem;
+}
+
+tr:hover {
+  background: var(--dk-green-subtle) !important;
+}
+
+/* Alternating rows */
+tr:nth-child(even) {
+  background: rgba(26, 26, 26, 0.5) !important;
+}
+
+/* Selected rows */
+tr.checked,
+tr.selected {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+
+input, textarea, select {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  padding: 0.5rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+  outline: none;
+}
+
+/* Login form */
+.login {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  padding: 2rem;
+}
+
+.login table {
+  border: none !important;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+input[type="submit"],
+input[type="button"],
+button,
+.button {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: var(--dk-transition);
+}
+
+input[type="submit"]:hover,
+input[type="button"]:hover,
+button:hover,
+.button:hover {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Danger/delete buttons */
+input[value*="Drop"],
+input[value*="Delete"],
+input[value*="Truncate"] {
+  border-color: #FF4444 !important;
+  color: #FF4444 !important;
+}
+
+input[value*="Drop"]:hover,
+input[value*="Delete"]:hover,
+input[value*="Truncate"]:hover {
+  background: #FF4444 !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   SQL EDITOR
+   ============================================================ */
+
+.sqlarea,
+textarea.jush {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  font-size: 14px;
+}
+
+.sqlarea:focus,
+textarea.jush:focus {
+  box-shadow: var(--dk-green-glow);
+}
+
+/* SQL syntax highlighting */
+.jush-sql,
+.jush-sql_code {
+  color: var(--dk-green) !important;
+}
+
+.jush-sql_keyword {
+  color: var(--dk-amber) !important;
+  font-weight: bold;
+}
+
+.jush-sql_string {
+  color: #98FB98 !important;
+}
+
+.jush-sql_number {
+  color: #87CEEB !important;
+}
+
+.jush-sql_comment {
+  color: var(--dk-green-dim) !important;
+  font-style: italic;
+}
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+
+a {
+  color: var(--dk-green) !important;
+  text-decoration: none;
+}
+
+a:hover {
+  text-shadow: var(--dk-green-glow);
+}
+
+/* Action links */
+a.edit,
+a.clone {
+  color: var(--dk-green) !important;
+}
+
+a.delete {
+  color: #FF4444 !important;
+}
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+
+.pages {
+  color: var(--dk-green-dim) !important;
+}
+
+.pages a {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  padding: 0.25rem 0.5rem;
+  margin: 0 0.125rem;
+}
+
+.pages a:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+.pages a.current {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   MESSAGES
+   ============================================================ */
+
+.message {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.error {
+  border-color: #FF4444 !important;
+  color: #FF4444 !important;
+}
+
+/* ============================================================
+   FIELDSETS
+   ============================================================ */
+
+fieldset {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  margin: 1rem 0;
+  padding: 1rem;
+}
+
+legend {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 0.5rem;
+}
+
+/* ============================================================
+   CHECKBOXES
+   ============================================================ */
+
+input[type="checkbox"] {
+  accent-color: var(--dk-green);
+}
+
+/* ============================================================
+   TABLE STRUCTURE VIEW
+   ============================================================ */
+
+.structure {
+  background: var(--dk-black) !important;
+}
+
+.structure th {
+  background: var(--dk-gray) !important;
+}
+
+/* Column types */
+.type {
+  color: var(--dk-amber) !important;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+#lang,
+#logout {
+  background: var(--dk-black) !important;
+  color: var(--dk-green-dim) !important;
+}
+
+/* ============================================================
+   SCROLLBAR (for SQL area)
+   ============================================================ */
+
+.sqlarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sqlarea::-webkit-scrollbar-track {
+  background: var(--dk-black);
+}
+
+.sqlarea::-webkit-scrollbar-thumb {
+  background: var(--dk-green-dim);
+}
+
+.sqlarea::-webkit-scrollbar-thumb:hover {
+  background: var(--dk-green);
+}
+
+/* ============================================================
+   END DEEPKIT_DATA THEME
+   ============================================================ */

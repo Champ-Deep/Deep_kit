@@ -1,6 +1,8 @@
-# Quick Start Guide
+# DEEPKIT Quick Start Guide
 
-Welcome to Deep Starter Kit! This guide will get you up and running in minutes.
+> "Your Personal AI. Locally Contained. Locally Empowered."
+
+Welcome to DEEPKIT! This guide will get you up and running in minutes.
 
 ## Prerequisites
 
@@ -54,25 +56,24 @@ Choose a preset that matches your needs:
 
 | Service | What It Does | URL |
 |---------|--------------|-----|
-| PostgreSQL | Stores your data | Internal |
-| Redis | Speeds things up | Internal |
-| Ollama | Runs AI models locally | http://localhost:11434 |
-| Portainer | Manage Docker containers | http://localhost:9000 |
+| DEEPKIT_STORE | Stores your data (PostgreSQL) | Internal |
+| DEEPKIT_CACHE | Speeds things up (Redis) | Internal |
+| DEEPKIT_ENGINE | Runs AI models locally (Ollama) | http://localhost:11434 |
 
 ### Optional Modules
 
-| Module | Services | Best For |
-|--------|----------|----------|
-| **Automation** | n8n | Automating tasks, connecting apps |
-| **AI Chat** | Open WebUI | Chatting with AI (like ChatGPT) |
-| **Research** | NotebookLM | Researching documents, PDFs |
-| **CMS** | Strapi | Managing blog posts, content |
-| **CRM** | EspoCRM | Tracking customers, deals |
-| **PDF Tools** | chamPDF | Merging, splitting PDFs |
-| **Knowledge** | FalkorDB + Graphiti | Building AI memory |
-| **Vector** | Qdrant | Semantic search |
-| **Monitoring** | Uptime Kuma | Checking service health |
-| **Admin** | Adminer | Managing databases |
+| Module | DEEPKIT Service | Best For |
+|--------|-----------------|----------|
+| **Automation** | DEEPKIT_ORCHESTRATOR | Automating tasks, connecting apps |
+| **AI Chat** | DEEPKIT_CHAT | Chatting with AI (like ChatGPT) |
+| **Research** | DEEPKIT_RESEARCH | Researching documents, PDFs |
+| **CMS** | DEEPKIT_CONTENT | Managing blog posts, content |
+| **CRM** | DEEPKIT_SALES | Tracking customers, deals |
+| **PDF Tools** | DEEPKIT_DOCS | Merging, splitting PDFs |
+| **Knowledge** | DEEPKIT_GRAPH + DEEPKIT_MEMORY | Building AI memory |
+| **Vector** | DEEPKIT_VECTOR | Semantic search |
+| **Monitoring** | DEEPKIT_PULSE | Checking service health |
+| **Admin** | DEEPKIT_DATA | Managing databases |
 
 ---
 
@@ -80,25 +81,25 @@ Choose a preset that matches your needs:
 
 ### 1. Check Everything is Running
 
-Open Portainer to see all your services:
-- Go to: http://localhost:9000
-- Create an admin account (first time only)
-- Click "Local" to see your containers
+Use Docker Desktop to see all your services:
+- Open Docker Desktop
+- Click on "Containers" to see your DEEPKIT containers
+- All containers should show "Running" status
 
-### 2. Chat with AI
+### 2. Chat with AI (DEEPKIT_CHAT)
 
 If you installed the AI Chat module:
 - Go to: http://localhost:3001
-- Start chatting! The AI runs completely on your computer.
+- Start chatting! The AI runs completely on your computer via DEEPKIT_ENGINE.
 
-### 3. Create Your First Automation
+### 3. Create Your First Automation (DEEPKIT_ORCHESTRATOR)
 
 If you installed the Automation module:
 - Go to: http://localhost:5678
 - Click "Add workflow"
 - Try a simple automation like "When I send an email, save it to a spreadsheet"
 
-### 4. Work with PDFs
+### 4. Work with PDFs (DEEPKIT_DOCS)
 
 If you installed PDF Tools:
 - Go to: http://localhost:3005
@@ -186,15 +187,15 @@ docker compose logs -f [service-name]
 
 ## Next Steps
 
-- Read the [Modules Guide](MODULES.md) to learn about each service
-- Watch video tutorials (coming soon)
-- Join our community for help and tips
+- Read the [Modules Guide](MODULES.md) to learn about each DEEPKIT service
+- Explore the CRT terminal-themed interfaces
+- Check out the Hardware Pulse widget in your apps
 
 ## Need Help?
 
 Contact us at: deep@championsmail.com
 
-Happy automating!
+Happy automating with DEEPKIT!
 
 ---
 

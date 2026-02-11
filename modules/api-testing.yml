@@ -1,0 +1,41 @@
+services:
+  api-testing:
+    build: ./services/api-testing
+    container_name: deepkit-api-testing
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=api-testing"
+      - "deepkit.service.name=api-testing"
+      - "deepkit.service.port=7717"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=API Testing Tool"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-testing.rule=PathPrefix(`/api-testing`)"
+      - "traefik.http.routers.api-testing.entrypoints=web"
+      - "traefik.http.routers.api-testing.middlewares=deepkit-auth"
+      - "traefik.http.services.api-testing.loadbalancer.server.port=7717"
+    restart: unless-stopped
+    ports:
+      - "7717:7717"
+    environment:
+      - PORT=7717
+      - SERVICE_NAME=api-testing
+      - NODE_ENV=${NODE_ENV:-production}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+    volumes:
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    depends_on:
+      deepkit-cache:
+        condition: service_started
+    networks:
+      - deepkit-network
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

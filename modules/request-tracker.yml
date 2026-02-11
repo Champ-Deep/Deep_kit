@@ -1,0 +1,71 @@
+# =============================================================================
+# MODULE: REQUEST_TRACKER
+# =============================================================================
+# "I want to track support tickets and requests"
+#
+# Services: Request Tracker
+# Ports: 3023
+# Dependencies: PostgreSQL, Redis (event bus)
+# Database: PostgreSQL (departments, tickets, ticket_comments, ticket_attachments)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # REQUEST TRACKER - Support Ticketing Platform (port 3023)
+  # ---------------------------------------------------------------------------
+  request-tracker:
+    build: ./services/request-tracker
+    container_name: deepkit-request-tracker
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=request-tracker"
+      - "deepkit.service.name=request-tracker"
+      - "deepkit.service.port=3023"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=Feature Request Tracking"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.request-tracker.rule=PathPrefix(`/requests`)"
+      - "traefik.http.routers.request-tracker.entrypoints=web"
+      - "traefik.http.routers.request-tracker.middlewares=deepkit-auth"
+      - "traefik.http.services.request-tracker.loadbalancer.server.port=3023"
+    restart: unless-stopped
+    ports:
+      - "3023:3023"
+    volumes:
+      - ~/DeepKit/Attachments:/app/attachments
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    environment:
+      - PORT=3023
+      - SERVICE_NAME=request-tracker
+      - NODE_ENV=${NODE_ENV:-production}
+      - POSTGRES_HOST=${POSTGRES_HOST:-deepkit-store}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_DB=${POSTGRES_DB:-deepkit}
+      - POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+      - ENABLE_EMAIL=${ENABLE_EMAIL:-false}
+      - TZ=${TIMEZONE:-UTC}
+    networks:
+      - deepkit-network
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3023/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

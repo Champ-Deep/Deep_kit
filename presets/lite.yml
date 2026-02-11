@@ -1,0 +1,26 @@
+# =============================================================================
+# PRESET: Lite
+# =============================================================================
+# Minimal footprint for 4GB RAM machines.
+# AI chat interface only - no workflow automation.
+#
+# Included:
+#   - Core (DEEPKIT_STORE, DEEPKIT_CACHE, DEEPKIT_ENGINE)
+#   - DEEPKIT_CORE (command center - AI chat + generative UI)
+#
+# Total: 4 services
+# Ports: 5432 (internal), 6379 (internal), 11434, 7777
+# RAM: ~3.5 GB (with llama3.2:3b model)
+#
+# Usage: ./install.sh --preset lite
+#
+# Notes:
+#   - No n8n workflow automation
+#   - External integrations require manual API calls
+#   - Recommended model: llama3.2:3b or qwen2:1.5b for lower memory
+#
+# =============================================================================
+
+include:
+  - path: ../docker-compose.yml
+  - path: ../modules/deepkit-core.yml

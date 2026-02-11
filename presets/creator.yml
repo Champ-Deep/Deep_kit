@@ -4,23 +4,29 @@
 # For content creators, marketers, and creative professionals.
 #
 # Included:
-#   - Core (PostgreSQL, Redis, Ollama, Portainer)
-#   - Module A: n8n (automation)
-#   - Module B: Open WebUI (AI chat)
-#   - Module C: Local NotebookLM (document research)
-#   - Module D: Strapi CMS (content management)
-#   - Module F: chamPDF (PDF tools)
+#   - Core (DEEPKIT_STORE, DEEPKIT_CACHE, DEEPKIT_ENGINE)
+#   - DEEPKIT_CORE (command center - AI chat + generative UI)
+#   - DEEPKIT_ORCHESTRATOR (workflow automation)
+#   - DEEPKIT_CHAT (AI conversation)
+#   - DEEPKIT_RESEARCH (document research)
+#   - DEEPKIT_CONTENT (content management)
+#   - DEEPKIT_DOCS (PDF tools)
+#   - MARKETING360 (AI marketing platform)
+#   - LINK_SHORTENER (URL management)
 #
-# Total: 9 services
-# Ports: 5432, 6379, 11434, 9000, 5678, 3001, 3002, 3003, 3005
+# Total: 11 services
+# Ports: 5432, 6379, 11434, 7777, 5678, 3001, 3002, 3003, 3005, 7712, 3013
 #
 # Usage: ./install.sh --preset creator
 # =============================================================================
 
 include:
   - path: ../docker-compose.yml
+  - path: ../modules/deepkit-core.yml
   - path: ../modules/automation.yml
   - path: ../modules/chat.yml
   - path: ../modules/research.yml
   - path: ../modules/cms.yml
   - path: ../modules/pdf.yml
+  - path: ../modules/marketing360.yml
+  - path: ../modules/link-shortener.yml

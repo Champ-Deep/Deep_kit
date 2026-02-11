@@ -1,0 +1,65 @@
+services:
+  champmail:
+    build: ./services/champmail
+    container_name: deepkit-champmail
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=champmail"
+      - "deepkit.service.name=champmail"
+      - "deepkit.service.port=3025"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=Email Campaign Manager"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.champmail.rule=PathPrefix(`/champmail`)"
+      - "traefik.http.routers.champmail.entrypoints=web"
+      - "traefik.http.routers.champmail.middlewares=deepkit-auth"
+      - "traefik.http.services.champmail.loadbalancer.server.port=3025"
+    restart: unless-stopped
+    ports:
+      - "3025:3025"
+    environment:
+      - PORT=3025
+      - SERVICE_NAME=champmail
+      - NODE_ENV=${NODE_ENV:-production}
+      - POSTGRES_HOST=deepkit-store
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=champmail
+      - POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+      # SMTP Configuration (optional - uses test mode if not set)
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      # Email worker settings
+      - EMAIL_CONCURRENCY=${EMAIL_CONCURRENCY:-5}
+      - EMAIL_RATE_LIMIT=${EMAIL_RATE_LIMIT:-100}
+      - EMAIL_RATE_DURATION=${EMAIL_RATE_DURATION:-60000}
+    volumes:
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+      - ./branding/css/deepkit-champmail.css:/app/public/css/custom.css:ro
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+    networks:
+      - deepkit-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3025/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

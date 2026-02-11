@@ -4,25 +4,40 @@
 # For managing customers, content, and business operations.
 #
 # Included:
-#   - Core (PostgreSQL, Redis, Ollama, Portainer)
-#   - Module A: n8n (automation)
-#   - Module B: Open WebUI (AI chat)
-#   - Module D: Strapi CMS (content management)
-#   - Module E: EspoCRM (customer management)
-#   - Module F: chamPDF (PDF tools)
-#   - Module I: Uptime Kuma (monitoring)
+#   - Core (DEEPKIT_STORE, DEEPKIT_CACHE, DEEPKIT_ENGINE)
+#   - DEEPKIT_CORE (command center - AI chat + generative UI)
+#   - DEEPKIT_ORCHESTRATOR (workflow automation)
+#   - DEEPKIT_CHAT (AI conversation)
+#   - DEEPKIT_CONTENT (content management)
+#   - DEEPKIT_SALES (customer management)
+#   - DEEPKIT_DOCS (PDF tools)
+#   - DEEPKIT_PULSE (system monitoring)
+#   - CHAMPMAIL (email automation)
+#   - COWORK (unified AI workspace)
+#   - INVOICING (invoice & billing)
+#   - CALENDAR (scheduling)
+#   - MARKETING360 (AI marketing)
+#   - TASK_TRACKER (gamified tasks)
+#   - TIME_TRACKER (time tracking)
 #
-# Total: 12 services (includes MariaDB for CRM)
-# Ports: 5432, 6379, 11434, 9000, 5678, 3001, 3003, 3004, 3306, 3005, 9002
+# Total: 19 services (includes MariaDB for CRM)
 #
 # Usage: ./install.sh --preset business
 # =============================================================================
 
 include:
   - path: ../docker-compose.yml
+  - path: ../modules/deepkit-core.yml
   - path: ../modules/automation.yml
   - path: ../modules/chat.yml
   - path: ../modules/cms.yml
   - path: ../modules/crm.yml
   - path: ../modules/pdf.yml
   - path: ../modules/monitoring.yml
+  - path: ../modules/champmail.yml
+  - path: ../modules/cowork.yml
+  - path: ../modules/invoicing.yml
+  - path: ../modules/calendar.yml
+  - path: ../modules/marketing360.yml
+  - path: ../modules/task-tracker.yml
+  - path: ../modules/time-tracker.yml

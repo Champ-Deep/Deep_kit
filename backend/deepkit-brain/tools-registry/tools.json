@@ -1,0 +1,318 @@
+{
+  "tools": [
+    {
+      "name": "qr_generator",
+      "description": "Generate QR codes for URLs, WiFi, vCards, and more",
+      "endpoint": "http://qr-generator:3010/api/qr",
+      "methods": {
+        "generate": {
+          "method": "POST",
+          "params": ["type", "content", "size", "format"]
+        }
+      }
+    },
+    {
+      "name": "link_shortener",
+      "description": "Shorten URLs and track analytics",
+      "endpoint": "http://link-shortener:3011/api/links",
+      "methods": {
+        "create": {
+          "method": "POST",
+          "params": ["originalUrl", "customCode", "password", "expiresAt", "autoQR"]
+        },
+        "list": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "utm_tracker",
+      "description": "Create and track UTM campaign URLs",
+      "endpoint": "http://utm-tracker:3007/api/campaigns",
+      "methods": {
+        "create": {
+          "method": "POST",
+          "params": ["name", "baseUrl", "utmSource", "utmMedium", "utmCampaign"]
+        },
+        "list": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "request_tracker",
+      "description": "Create and manage support tickets",
+      "endpoint": "http://request-tracker:3008/api/tickets",
+      "methods": {
+        "create": {
+          "method": "POST",
+          "params": ["subject", "description", "departmentId", "priority"]
+        },
+        "list": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "deepkit_forms",
+      "description": "Create interactive forms and surveys",
+      "endpoint": "http://deepkit-forms:3009/api/forms",
+      "methods": {
+        "create": {
+          "method": "POST",
+          "params": ["title", "description"]
+        },
+        "list": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "port_manager",
+      "description": "Check port availability and detect conflicts",
+      "endpoint": "http://deepkit-dock:7778/api/ports",
+      "methods": {
+        "list": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "api_testing",
+      "description": "Test REST and GraphQL APIs with collections and environments",
+      "endpoint": "http://api-testing:3017/api",
+      "methods": {
+        "send_request": {
+          "method": "POST",
+          "params": ["method", "url", "headers", "body"]
+        },
+        "list_collections": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "calendar",
+      "description": "Manage events, bookings, and schedules with recurring events support",
+      "endpoint": "http://deepkit-calendar:7714/api",
+      "methods": {
+        "create_event": {
+          "method": "POST",
+          "params": ["title", "start_time", "end_time", "description"]
+        },
+        "list_events": {
+          "method": "GET",
+          "params": []
+        },
+        "create_booking": {
+          "method": "POST",
+          "params": ["event_id", "attendee_name", "attendee_email"]
+        }
+      }
+    },
+    {
+      "name": "time_tracker",
+      "description": "Track billable hours and project time with timer functionality",
+      "endpoint": "http://deepkit-time-tracker:7719/api",
+      "methods": {
+        "start_timer": {
+          "method": "POST",
+          "params": ["project_id", "description"]
+        },
+        "stop_timer": {
+          "method": "POST",
+          "params": []
+        },
+        "list_entries": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "file_manager",
+      "description": "Browse and manage files with duplicate detection and storage analytics",
+      "endpoint": "http://file-manager:3020/api",
+      "methods": {
+        "list_files": {
+          "method": "GET",
+          "params": []
+        },
+        "get_duplicates": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "task_tracker",
+      "description": "Gamified task management with achievements and leveling system",
+      "endpoint": "http://deepkit-task-tracker:7718/api",
+      "methods": {
+        "create_task": {
+          "method": "POST",
+          "params": ["title", "priority", "due_date"]
+        },
+        "list_tasks": {
+          "method": "GET",
+          "params": []
+        },
+        "get_achievements": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "password_manager",
+      "description": "Secure encrypted password vault with AES-256-GCM encryption",
+      "endpoint": "http://deepkit-password-manager:7716/api",
+      "methods": {
+        "create_password": {
+          "method": "POST",
+          "params": ["title", "username", "password", "url"]
+        },
+        "list_passwords": {
+          "method": "GET",
+          "params": []
+        },
+        "generate_password": {
+          "method": "POST",
+          "params": ["length"]
+        }
+      }
+    },
+    {
+      "name": "marketing360",
+      "description": "Email marketing, social media, WhatsApp campaigns with AI image generation",
+      "endpoint": "http://marketing360:3012/api",
+      "methods": {
+        "create_campaign": {
+          "method": "POST",
+          "params": ["name", "type", "content"]
+        },
+        "create_social_post": {
+          "method": "POST",
+          "params": ["platform", "content"]
+        },
+        "generate_image": {
+          "method": "POST",
+          "params": ["prompt"]
+        },
+        "track_interaction": {
+          "method": "POST",
+          "params": ["customer_id", "channel", "interaction_type"]
+        }
+      }
+    },
+    {
+      "name": "webhook_manager",
+      "description": "Central webhook registry with retry logic and event logging",
+      "endpoint": "http://webhook-manager:3021/api",
+      "methods": {
+        "create_endpoint": {
+          "method": "POST",
+          "params": ["name", "url", "events"]
+        },
+        "create_event": {
+          "method": "POST",
+          "params": ["event_type", "payload"]
+        },
+        "list_events": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "invoicing",
+      "description": "Invoice generation and payment tracking for billing management",
+      "endpoint": "http://invoicing:3015/api",
+      "methods": {
+        "create_invoice": {
+          "method": "POST",
+          "params": ["client_id", "due_date", "items"]
+        },
+        "list_invoices": {
+          "method": "GET",
+          "params": []
+        },
+        "create_payment": {
+          "method": "POST",
+          "params": ["invoice_id", "amount", "payment_method"]
+        }
+      }
+    },
+    {
+      "name": "super_admin",
+      "description": "Unified control panel for monitoring all services, Docker, and databases",
+      "endpoint": "http://super-admin:3022/api",
+      "methods": {
+        "list_services": {
+          "method": "GET",
+          "params": []
+        },
+        "list_containers": {
+          "method": "GET",
+          "params": []
+        },
+        "restart_container": {
+          "method": "POST",
+          "params": ["name"]
+        },
+        "get_system_stats": {
+          "method": "GET",
+          "params": []
+        }
+      }
+    },
+    {
+      "name": "champmail",
+      "description": "Internal email automation service - send single or bulk emails with templates and queue system",
+      "endpoint": "http://champmail:3025/api",
+      "methods": {
+        "send": {
+          "method": "POST",
+          "path": "/send",
+          "params": ["to", "from", "subject", "html"]
+        },
+        "send_bulk": {
+          "method": "POST",
+          "path": "/send-bulk",
+          "params": ["contacts", "from", "subject", "html"]
+        },
+        "send_template": {
+          "method": "POST",
+          "path": "/send-template",
+          "params": ["templateId", "to", "from", "data"]
+        },
+        "get_stats": {
+          "method": "GET",
+          "path": "/stats",
+          "params": []
+        },
+        "list_emails": {
+          "method": "GET",
+          "path": "/emails",
+          "params": ["limit"]
+        },
+        "list_templates": {
+          "method": "GET",
+          "path": "/templates",
+          "params": []
+        },
+        "create_template": {
+          "method": "POST",
+          "path": "/templates",
+          "params": ["name", "subject", "html", "variables"]
+        }
+      }
+    }
+  ]
+}

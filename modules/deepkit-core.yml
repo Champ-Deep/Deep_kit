@@ -1,0 +1,108 @@
+# =============================================================================
+# MODULE: DeepKit Core (THE COMMAND CENTER)
+# =============================================================================
+# "I want to control everything from one intelligent interface"
+#
+# DeepKit Messenger - The unified AI chat interface that serves as command center
+# for the entire Arsenal. Includes Docker service discovery, hardware metrics,
+# event bus integration, and AI-powered tool execution.
+#
+# Built from: services/messenger (formerly CEO WhatsApp assistant/deepkit-messenger)
+#
+# Port: 7777
+# Zone: THE FACE
+# Dependencies: Postgres (conversations), Redis (event bus), Ollama (AI)
+# Features: Chat UI, Crayon generative UI, service discovery, WhatsApp adapter
+# =============================================================================
+
+services:
+  deepkit-core:
+    build: ./services/messenger
+    container_name: deepkit-core
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=core"
+      - "deepkit.service.name=core"
+      - "deepkit.service.port=7777"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=Command Center - AI Chat Interface"
+      # Traefik routing (root path - this is the main entry point)
+      - "traefik.enable=true"
+      - "traefik.http.routers.core.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.core.entrypoints=web"
+      - "traefik.http.routers.core.priority=1"
+      - "traefik.http.services.core.loadbalancer.server.port=7777"
+    restart: unless-stopped
+    ports:
+      - "${DEEPKIT_CORE_PORT:-7777}:7777"
+    environment:
+      # Server config
+      - PORT=7777
+      - SERVICE_NAME=core
+      - NODE_ENV=${NODE_ENV:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      # Database (conversations, history)
+      - DEEPKIT_POSTGRES_HOST=deepkit-store
+      - DEEPKIT_POSTGRES_PORT=5432
+      - DEEPKIT_POSTGRES_DB=${DEEPKIT_CORE_DB:-messenger}
+      - DEEPKIT_POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - DEEPKIT_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      # Event Bus
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      # DeepKit Fabric
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+      # Ollama (THE BRAIN)
+      - OLLAMA_BASE_URL=http://deepkit-engine:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:latest}
+      # n8n (THE ENGINE)
+      - N8N_WEBHOOK_URL=http://deepkit-automation:5678
+      - N8N_API_KEY=${N8N_API_KEY:-}
+      # WhatsApp (Whatomate)
+      - WHATOMATE_API_KEY=${WHATOMATE_API_KEY:-}
+      - WHATOMATE_VERIFY_TOKEN=${WHATOMATE_VERIFY_TOKEN:-deepkit-verify}
+      - WHATOMATE_WEBHOOK_URL=${WHATOMATE_WEBHOOK_URL:-}
+      # Optional integrations
+      - NOTION_API_KEY=${NOTION_API_KEY:-}
+      # Timezone
+      - TZ=${TIMEZONE:-UTC}
+    volumes:
+      # Docker socket for service discovery
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # DeepKit Fabric bundle
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+      # Persistent data directory
+      - ~/.deepkit:/root/.deepkit
+      # Uploads
+      - core_uploads:/app/uploads
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+    networks:
+      - deepkit-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:7777/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+volumes:
+  core_uploads:
+    name: deepkit-core-uploads
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

@@ -1,0 +1,324 @@
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Activity, Cpu, Database, Zap, Terminal, Shield,
+  CheckCircle2, ArrowRightLeft, Settings, Info,
+  AlertTriangle, Workflow, BrainCircuit, FileText, Search, Box,
+  Video, Anchor, QrCode, Link, BarChart3, Ticket, ClipboardList
+} from 'lucide-react';
+
+/**
+ * DEEPKIT CORE V5.6 - THE SILENT ADMIN EDITION
+ * Featuring the integrated CRT Mascot and high-density Micro-UI.
+ */
+
+const COLORS = {
+  deepCore: '#0A0B10',
+  portActive: '#7000FF',
+  dataFlow: '#00F2FF',
+  warning: '#FF3B3B',
+  text: '#FFFFFF',
+  textDim: '#A0A0A0'
+};
+
+const SERVICE_INVENTORY = [
+  { name: 'n8n', port: 5678, cat: 'Automation', icon: Workflow },
+  { name: 'Ollama', port: 11434, cat: 'AI/LLM', icon: BrainCircuit },
+  { name: 'Strapi', port: 3003, cat: 'CMS', icon: FileText },
+  { name: 'chamPDF', port: 3005, cat: 'Tools', icon: Box },
+  { name: 'Recorder', port: 3006, cat: 'Tools', icon: Video },
+  { name: 'UTM Tracker', port: 3007, cat: 'Marketing', icon: BarChart3 },
+  { name: 'Request Tracker', port: 3008, cat: 'Support', icon: Ticket },
+  { name: 'DeepKit Forms', port: 3009, cat: 'Forms', icon: ClipboardList },
+  { name: 'Qdrant', port: 6333, cat: 'Vector DB', icon: Database },
+  { name: 'Neo4j', port: 7474, cat: 'Graph DB', icon: Search },
+  { name: 'DeepKit Dock', port: 7777, cat: 'Tools', icon: Anchor },
+  { name: 'QR Generator', port: 3010, cat: 'Tools', icon: QrCode },
+  { name: 'Link Shortener', port: 3011, cat: 'Tools', icon: Link },
+  { name: 'DeepKit Brain', port: 11500, cat: 'AI/LLM', icon: BrainCircuit },
+];
+
+// --- MICRO-UI COMPONENTS ---
+
+const StatusPill = ({ status = 'Running', color = COLORS.dataFlow }) => (
+  <div className="flex items-center gap-2 px-2 py-0.5 rounded-full border text-[9px] font-bold uppercase tracking-tighter"
+    style={{ borderColor: `${color}33`, color: color, backgroundColor: `${color}11` }}>
+    <div className={`h-1 w-1 rounded-full ${status === 'Running' || status === 'Processing' ? 'animate-pulse' : ''}`}
+      style={{ backgroundColor: color }} />
+    {status}
+  </div>
+);
+
+const MiniToggle = ({ active, onClick }) => (
+  <button
+    onClick={onClick}
+    className="w-8 h-3 rounded-full relative transition-all duration-300 border border-white/10 bg-white/5 overflow-hidden"
+  >
+    <div className="absolute top-0 bottom-0 transition-all duration-300"
+      style={{ left: active ? '50%' : '0', width: '50%', backgroundColor: active ? COLORS.dataFlow : 'rgba(255,255,255,0.2)' }} />
+  </button>
+);
+
+const DataBit = ({ label, value }) => (
+  <div className="font-mono text-[9px] leading-tight">
+    <span className="opacity-40 uppercase">{label}:</span>{' '}
+    <span style={{ color: COLORS.dataFlow }}>{value}</span>
+  </div>
+);
+
+const ProgressSliver = ({ progress = 45, color = COLORS.dataFlow }) => (
+  <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/5">
+    <div className="h-full transition-all duration-500"
+      style={{ width: `${progress}%`, backgroundColor: color, boxShadow: `0 0 8px ${color}` }} />
+  </div>
+);
+
+// --- THE SILENT ADMIN MASCOT ---
+
+const TheNexus = ({ size = 120, state = 'idle', className = "" }) => {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - rect.width / 2) / 30;
+      const y = (e.clientY - rect.top - rect.height / 2) / 30;
+      setMousePos({ x, y });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className={`relative group perspective-1000 ${className}`}
+      style={{
+        width: size,
+        height: size * 0.56,
+        transform: `rotateY(${mousePos.x}deg) rotateX(${-mousePos.y}deg)`,
+        transition: 'transform 0.1s ease-out'
+      }}
+    >
+      <div className={`absolute inset-0 rounded-sm border transition-all duration-500 ${state === 'processing' ? 'border-cyan-400 shadow-[0_0_20px_rgba(0,242,255,0.4)]' : 'border-white/20'}`} />
+
+      <div className="relative w-full h-full overflow-hidden rounded-sm bg-black">
+        <img
+          src="Gemini_Generated_Image_px9qz3px9qz3px9q.jpg"
+          alt="The Silent Admin"
+          className={`w-full h-full object-cover transition-opacity duration-300 ${state === 'processing' ? 'opacity-80 animate-glitch' : 'opacity-100'}`}
+        />
+
+        <div className="absolute inset-0 pointer-events-none opacity-40 mix-blend-overlay bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
+
+        {state === 'processing' && (
+          <div className="absolute inset-0 bg-cyan-500/10 animate-pulse flex items-center justify-center">
+            <div className="text-[10px] font-mono font-bold text-cyan-400 tracking-widest bg-black/80 px-2 py-1 uppercase animate-bounce">
+              SYNCING...
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-cyan-400/50" />
+      <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b border-r border-cyan-400/50" />
+    </div>
+  );
+};
+
+// --- PRIMARY COMPONENTS ---
+
+const DeepCard = ({ children, title, className = "", progress, service, onClick, ...props }) => (
+  <div
+    className={`relative bg-white/[0.03] border border-white/10 backdrop-blur-[15px] p-5 overflow-hidden group transition-all duration-300 hover:border-white/20 ${className}`}
+    onClick={onClick}
+    {...props}
+  >
+    {progress !== undefined && <ProgressSliver progress={progress} />}
+    {title && (
+      <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 italic">{title}</h3>
+        {service && <div className="text-[10px] font-mono font-bold" style={{ color: COLORS.dataFlow }}>PORT:{service.port}</div>}
+      </div>
+    )}
+    {children}
+  </div>
+);
+
+const Port = ({ type = 'in', label, active }) => (
+  <div className={`flex items-center gap-4 p-3 border border-dashed transition-all duration-300 ${active ? 'opacity-100 bg-white/5' : 'opacity-30'}`}
+    style={{ borderColor: active ? COLORS.portActive : 'rgba(255,255,255,0.1)' }}>
+    <div className={`h-2 w-2 rounded-full ${active ? 'animate-ping' : ''}`} style={{ backgroundColor: active ? COLORS.dataFlow : 'gray' }} />
+    <div className="flex flex-col text-left">
+      <span className="text-[8px] font-black opacity-40 uppercase tracking-widest">{type}_PORT</span>
+      <span className="text-[10px] font-bold font-mono tracking-tighter" style={{ color: active ? COLORS.dataFlow : 'white' }}>{label}</span>
+    </div>
+  </div>
+);
+
+// --- MAIN HUB APP ---
+
+export default function App() {
+  const [activePort, setActivePort] = useState('INGEST');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [config, setConfig] = useState({ snapping: true, pulse: true, safe: true });
+
+  const triggerProcess = () => {
+    setIsProcessing(true);
+    setTimeout(() => setIsProcessing(false), 3000);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0A0B10] text-white font-sans selection:bg-[#7000FF]/30 overflow-x-hidden p-6 md:p-12 flex flex-col items-center">
+      <div className="fixed inset-0 pointer-events-none opacity-[0.05] scanlines z-50" />
+
+      <header className="w-full max-w-7xl flex flex-col md:flex-row justify-between items-center mb-16 border-b border-white/5 pb-8 gap-8">
+        <div className="flex items-center gap-5">
+          <TheNexus size={80} state={isProcessing ? 'processing' : 'idle'} />
+          <div className="text-left ml-2">
+            <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none">
+              DEEPKIT <span style={{ color: COLORS.dataFlow }}>// NEXUS</span>
+            </h1>
+            <p className="text-[10px] font-mono opacity-40 tracking-[0.4em] uppercase mt-1">Sovereign Admin Interface // V5.6</p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-4">
+          <Port type="in" label="TCP:5678" active={activePort === 'INGEST'} />
+          <Port type="out" label="API:11434" active={activePort === 'EXPORT'} />
+        </div>
+      </header>
+
+      <main className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-8 space-y-8">
+          <DeepCard title="Process_Hub" progress={isProcessing ? 100 : 0}>
+            <div className="flex flex-col md:flex-row items-center gap-12 py-6">
+              <TheNexus size={280} state={isProcessing ? 'processing' : 'idle'} />
+              <div className="flex-1 space-y-6 text-left">
+                <h2 className="text-5xl font-black uppercase tracking-tighter leading-[0.9] italic">
+                  Initialize <br /><span style={{ color: COLORS.dataFlow }}>Silent Protocol.</span>
+                </h2>
+                <div className="flex flex-wrap gap-3">
+                  <StatusPill status={isProcessing ? "Processing" : "Idle"} />
+                  <StatusPill status="Admin Verified" color={COLORS.portActive} />
+                </div>
+                <p className="text-sm opacity-50 leading-relaxed font-medium">
+                  The Silent Admin is online. All local ports are authenticated. Your machine's creative sovereignty is now overseen by the Nexus Core.
+                </p>
+                <div className="pt-2 flex flex-wrap gap-4">
+                  <button
+                    onClick={triggerProcess}
+                    disabled={isProcessing}
+                    className="px-8 py-3 bg-[#7000FF] font-black text-[10px] tracking-[0.2em] uppercase transition-all active:scale-95 hover:brightness-125 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ boxShadow: `0 0 20px rgba(112, 0, 255, 0.4)` }}
+                  >
+                    {isProcessing ? 'Executing...' : 'Trigger_Sync'}
+                  </button>
+                  <button className="px-8 py-3 border border-white/20 font-black text-[10px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all">
+                    Access_Terminal
+                  </button>
+                </div>
+              </div>
+            </div>
+          </DeepCard>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {SERVICE_INVENTORY.map(service => (
+              <DeepCard
+                key={service.name}
+                title={service.name}
+                service={service}
+                className="cursor-pointer hover:bg-white/5 transition-colors text-left"
+                onClick={() => window.open(`http://localhost:${service.port}`, '_blank')}
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="flex justify-between items-center">
+                    <service.icon size={20} style={{ color: COLORS.dataFlow }} />
+                    <StatusPill status="Ready" />
+                  </div>
+                  <div className="space-y-1">
+                    <DataBit label="CAT" value={service.cat} />
+                    <DataBit label="PORT" value={service.port} />
+                    <DataBit label="STATUS" value="CONTAINED" />
+                  </div>
+                </div>
+              </DeepCard>
+            ))}
+          </div>
+        </div>
+
+        <div className="lg:col-span-4 space-y-8">
+          <DeepCard title="The_Silent_Admin">
+            <div className="flex flex-col items-center gap-6 py-4">
+              <div className="p-1 border border-white/10 bg-black shadow-inner">
+                <TheNexus size={120} state={isProcessing ? 'processing' : 'idle'} />
+              </div>
+              <div className="text-center space-y-2">
+                <p className="text-[11px] font-black tracking-[0.3em] uppercase" style={{ color: COLORS.dataFlow }}>Nexus_Protocol</p>
+                <p className="text-[10px] opacity-40 italic leading-relaxed px-4">
+                  "Analytical, precise, and just a chill guy hanging in your terminal."
+                </p>
+              </div>
+            </div>
+          </DeepCard>
+
+          <div className="space-y-4 p-6 border-2 border-white/5 bg-white/[0.01] text-left">
+            <div className="flex items-center gap-2 mb-2">
+              <Settings size={14} className="opacity-40" />
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-80">System Config</span>
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-[10px]">
+                <span className="opacity-40 uppercase">Magnetic Snapping</span>
+                <MiniToggle active={config.snapping} onClick={() => setConfig({ ...config, snapping: !config.snapping })} />
+              </div>
+              <div className="flex justify-between items-center text-[10px]">
+                <span className="opacity-40 uppercase">Bioluminescence</span>
+                <MiniToggle active={config.pulse} onClick={() => setConfig({ ...config, pulse: !config.pulse })} />
+              </div>
+              <div className="flex justify-between items-center text-[10px]">
+                <span className="opacity-40 uppercase">Local Safe Mode</span>
+                <MiniToggle active={config.safe} onClick={() => setConfig({ ...config, safe: !config.safe })} />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-4 bg-[#FF3B3B]/10 border border-[#FF3B3B]/20 text-left">
+            <AlertTriangle size={18} style={{ color: COLORS.warning }} />
+            <div className="space-y-1">
+              <p className="text-[10px] font-black uppercase" style={{ color: COLORS.warning }}>Local Lockdown</p>
+              <p className="text-[9px] opacity-60 leading-tight">System is 100% contained. No external traffic detected. Creative sovereignty is secure.</p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer className="mt-20 border-t border-white/5 w-full pt-8 flex justify-center opacity-30">
+        <div className="text-[10px] font-black tracking-[1.5em] uppercase">DeepKit // Nexus_v5.6 // 2026</div>
+      </footer>
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #0A0B10; margin: 0; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .scanlines { background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%); background-size: 100% 4px; }
+        
+        .perspective-1000 { perspective: 1000px; }
+
+        @keyframes glitch {
+          0% { transform: translate(0); }
+          20% { transform: translate(-2px, 2px); }
+          40% { transform: translate(-2px, -2px); }
+          60% { transform: translate(2px, 2px); }
+          80% { transform: translate(2px, -2px); }
+          100% { transform: translate(0); }
+        }
+        .animate-glitch {
+          animation: glitch 0.2s infinite;
+        }
+      `}</style>
+    </div>
+  );
+}

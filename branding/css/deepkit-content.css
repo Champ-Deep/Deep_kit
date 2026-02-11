@@ -1,0 +1,366 @@
+/* ============================================================
+   DEEPKIT_CONTENT - Strapi CMS Theme Override
+   ============================================================ */
+
+@import url('./deepkit-base.css');
+
+/* ============================================================
+   HIDE ORIGINAL BRANDING
+   ============================================================ */
+
+/* Hide Strapi logo */
+.strapi-logo,
+img[alt*="Strapi"],
+img[alt*="strapi"],
+[class*="strapi-logo"],
+.brand-logo {
+  display: none !important;
+}
+
+/* ============================================================
+   DEEPKIT CONTENT HEADER
+   ============================================================ */
+
+/* Main header */
+header, .navbar, [class*="MainNav"] {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green) !important;
+}
+
+/* Add DeepKit branding */
+[class*="MainNav"]::before {
+  content: '[ DEEPKIT // CONTENT ]';
+  font-family: var(--dk-font-display);
+  font-size: 1rem;
+  color: var(--dk-green);
+  text-shadow: var(--dk-green-glow);
+  letter-spacing: 2px;
+  padding: 0.5rem 1rem;
+}
+
+/* ============================================================
+   SIDEBAR / LEFT NAV
+   ============================================================ */
+
+[class*="LeftMenu"],
+.left-menu,
+aside {
+  background: var(--dk-black) !important;
+  border-right: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Menu items */
+[class*="MenuItem"],
+.menu-item,
+.nav-link {
+  color: var(--dk-green) !important;
+  background: transparent !important;
+  border-left: 3px solid transparent;
+  transition: var(--dk-transition);
+}
+
+[class*="MenuItem"]:hover,
+.menu-item:hover,
+.nav-link:hover {
+  background: var(--dk-green-subtle) !important;
+  border-left-color: var(--dk-green);
+}
+
+[class*="MenuItem"].active,
+.menu-item.active,
+.nav-link.active {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+/* Menu icons */
+[class*="MenuItem"] svg,
+.menu-item svg {
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   MAIN CONTENT AREA
+   ============================================================ */
+
+main, .main-content, [class*="MainContent"] {
+  background: var(--dk-black) !important;
+}
+
+/* Page headers */
+[class*="HeaderLayout"],
+.page-header {
+  background: var(--dk-black) !important;
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+}
+
+/* Page titles */
+h1, h2, [class*="Title"] {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* ============================================================
+   CONTENT TYPE CARDS
+   ============================================================ */
+
+[class*="ContentType"],
+.content-type-card,
+.card {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+  transition: var(--dk-transition);
+}
+
+[class*="ContentType"]:hover,
+.content-type-card:hover,
+.card:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Card titles */
+.card-title {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+}
+
+/* ============================================================
+   DATA TABLES
+   ============================================================ */
+
+table, [class*="Table"] {
+  background: var(--dk-black) !important;
+}
+
+th, [class*="TableHeader"] {
+  background: var(--dk-gray) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+  text-transform: uppercase;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+td, [class*="TableCell"] {
+  color: var(--dk-green) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+tr:hover, [class*="TableRow"]:hover {
+  background: var(--dk-green-subtle) !important;
+}
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+
+input, textarea, select,
+[class*="Input"],
+[class*="TextArea"],
+[class*="Select"] {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+}
+
+input:focus, textarea:focus, select:focus,
+[class*="Input"]:focus,
+[class*="TextArea"]:focus {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Labels */
+label, [class*="Label"] {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+}
+
+/* Field descriptions */
+[class*="Description"],
+.field-description {
+  color: var(--dk-green-dim) !important;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+button, [class*="Button"] {
+  background: var(--dk-black) !important;
+  border: 2px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-body) !important;
+  border-radius: 0 !important;
+  text-transform: uppercase;
+}
+
+button:hover, [class*="Button"]:hover {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* Primary button */
+[class*="ButtonPrimary"],
+.btn-primary {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+}
+
+[class*="ButtonPrimary"]:hover,
+.btn-primary:hover {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+}
+
+/* Danger button */
+[class*="ButtonDanger"],
+.btn-danger {
+  border-color: #FF4444 !important;
+  color: #FF4444 !important;
+}
+
+[class*="ButtonDanger"]:hover,
+.btn-danger:hover {
+  background: #FF4444 !important;
+  color: var(--dk-black) !important;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+
+[class*="Modal"],
+.modal-content {
+  background: var(--dk-gray) !important;
+  border: 2px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--dk-green-glow-strong);
+}
+
+[class*="ModalHeader"],
+.modal-header {
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+}
+
+[class*="ModalTitle"],
+.modal-title {
+  color: var(--dk-green) !important;
+  font-family: var(--dk-font-display) !important;
+}
+
+/* ============================================================
+   RICH TEXT EDITOR
+   ============================================================ */
+
+[class*="Editor"],
+.ck-editor {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+}
+
+[class*="EditorToolbar"],
+.ck-toolbar {
+  background: var(--dk-gray) !important;
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+}
+
+[class*="EditorContent"],
+.ck-content {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   MEDIA LIBRARY
+   ============================================================ */
+
+[class*="MediaLibrary"] {
+  background: var(--dk-black) !important;
+}
+
+[class*="AssetCard"],
+.asset-card {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green-dim) !important;
+  border-radius: 0 !important;
+}
+
+[class*="AssetCard"]:hover,
+.asset-card:hover {
+  border-color: var(--dk-green) !important;
+  box-shadow: var(--dk-green-glow);
+}
+
+/* ============================================================
+   NOTIFICATIONS
+   ============================================================ */
+
+[class*="Notification"],
+.notification {
+  background: var(--dk-gray) !important;
+  border: 1px solid var(--dk-green) !important;
+  border-radius: 0 !important;
+  color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+
+[class*="Tabs"],
+.tabs {
+  border-bottom: 1px solid var(--dk-green-dim) !important;
+}
+
+[class*="Tab"],
+.tab {
+  color: var(--dk-green) !important;
+  border-bottom: 2px solid transparent;
+}
+
+[class*="Tab"].active,
+.tab.active {
+  border-bottom-color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   BADGES / TAGS
+   ============================================================ */
+
+[class*="Badge"],
+[class*="Tag"],
+.badge, .tag {
+  background: var(--dk-black) !important;
+  border: 1px solid var(--dk-green) !important;
+  color: var(--dk-green) !important;
+  border-radius: 0 !important;
+}
+
+/* ============================================================
+   LOADING STATES
+   ============================================================ */
+
+[class*="Loading"],
+.loading {
+  color: var(--dk-green) !important;
+}
+
+[class*="Spinner"],
+.spinner {
+  border-color: var(--dk-green-dim) !important;
+  border-top-color: var(--dk-green) !important;
+}
+
+/* ============================================================
+   END DEEPKIT_CONTENT THEME
+   ============================================================ */

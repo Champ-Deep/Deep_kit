@@ -33,3 +33,4 @@ temp/
 # Backup files
 *.bak
 *.backup
+backups/

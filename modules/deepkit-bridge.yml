@@ -1,0 +1,45 @@
+services:
+  n8n-bridge:
+    build: ./services/n8n-bridge
+    container_name: deepkit-n8n-bridge
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=n8n-bridge"
+      - "deepkit.service.name=n8n-bridge"
+      - "deepkit.service.port=7730"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE ENGINE"
+      - "deepkit.service.description=Event Bus → n8n Webhook Bridge"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n-bridge.rule=PathPrefix(`/n8n-bridge`)"
+      - "traefik.http.routers.n8n-bridge.entrypoints=web"
+      - "traefik.http.routers.n8n-bridge.middlewares=deepkit-auth"
+      - "traefik.http.services.n8n-bridge.loadbalancer.server.port=7730"
+    restart: unless-stopped
+    ports:
+      - "7730:7730"
+    environment:
+      - PORT=7730
+      - SERVICE_NAME=n8n-bridge
+      - NODE_ENV=${NODE_ENV:-production}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - N8N_HOST=deepkit-orchestrator
+      - N8N_PORT=5678
+      - N8N_WEBHOOK_PATH=/webhook/deepkit-events
+      - EVENT_FILTER=${N8N_BRIDGE_EVENT_FILTER:-}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+    volumes:
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    depends_on:
+      deepkit-cache:
+        condition: service_started
+    networks:
+      - deepkit-network
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

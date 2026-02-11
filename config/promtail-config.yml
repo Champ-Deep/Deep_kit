@@ -1,0 +1,45 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://deepkit-loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # Scrape all Docker container logs
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 10s
+        filters:
+          - name: network
+            values: ["deepkit-network"]
+    relabel_configs:
+      # Use container name as primary label
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      # Add service zone label from Docker labels
+      - source_labels: ['__meta_docker_container_label_deepkit_service_zone']
+        target_label: 'zone'
+      # Add service type label
+      - source_labels: ['__meta_docker_container_label_deepkit_service_type']
+        target_label: 'service_type'
+    pipeline_stages:
+      # Try to parse JSON-structured logs from deepkit-fabric logger
+      - json:
+          expressions:
+            level: level
+            service: service
+            correlationId: correlationId
+      # Add parsed fields as labels
+      - labels:
+          level:
+          service:
+      # Drop empty fields
+      - match:
+          selector: '{level=""}'
+          action: keep

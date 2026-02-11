@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEEPKIT_TIME_TRACKER</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root { --phosphor: #39FF14; --bg: #000000; }
+    body { background: var(--bg); color: var(--phosphor); font-family: 'JetBrains Mono', monospace; padding: 20px; }
+    body::before {
+      content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 255, 0, 0.06));
+      z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+    }
+    .header { border-bottom: 2px solid var(--phosphor); padding-bottom: 10px; margin-bottom: 20px; }
+    .title { font-family: 'VT323', monospace; font-size: 2.5rem; text-transform: uppercase; }
+    .timer-display { font-size: 4rem; text-align: center; margin: 40px 0; border: 2px solid var(--phosphor); padding: 20px; }
+    .btn-group { display: flex; justify-content: center; gap: 20px; }
+    button { background: transparent; border: 1px solid var(--phosphor); color: var(--phosphor); padding: 15px 40px; cursor: pointer; font-size: 1.2rem; }
+    button:hover { background: var(--phosphor); color: #000; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const TimeApp = () => {
+      const [seconds, setSeconds] = useState(0);
+      const [isActive, setIsActive] = useState(false);
+      useEffect(() => {
+        let interval = null;
+        if (isActive) {
+          interval = setInterval(() => { setSeconds(s => s + 1); }, 1000);
+        } else {
+          clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+      }, [isActive]);
+      const format = (s) => {
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+      };
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="title">DEEPKIT // PULSE_TRACKER</div>
+            <div>BILLABLE TIME & PRODUCTIVITY ANALYTICS</div>
+          </div>
+          <div className="timer-display">{format(seconds)}</div>
+          <div className="btn-group">
+            <button onClick={() => setIsActive(!isActive)}>{isActive ? 'STOP' : 'START'}</button>
+            <button onClick={() => setSeconds(0)}>RESET</button>
+          </div>
+        </div>
+      );
+    };
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<TimeApp />);
+  </script>
+</body>
+</html>

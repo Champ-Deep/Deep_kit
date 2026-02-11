@@ -1,0 +1,41 @@
+# DeepKit Automated Backup Module
+# Backs up all PostgreSQL databases every 6 hours with 7-day retention
+
+services:
+  deepkit-backup:
+    build:
+      context: ./services/backup
+      dockerfile: Dockerfile
+    container_name: deepkit-backup
+    restart: unless-stopped
+    networks:
+      - deepkit-network
+    volumes:
+      - ./backups:/var/lib/deepkit/backups
+      - ./logs/backup:/var/log
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST:-deepkit-store}
+      POSTGRES_USER: ${POSTGRES_USER:-deepkit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-deepkit}
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "sh", "-c", "test -f /var/lib/deepkit/backups/deepkit-*.sql.gz || exit 1"]
+      interval: 6h
+      timeout: 10s
+      retries: 1
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+networks:
+  deepkit-network:
+    external: true
+
+volumes:
+  backups:
+    driver: local

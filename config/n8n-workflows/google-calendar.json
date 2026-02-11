@@ -1,0 +1,173 @@
+{
+  "name": "DeepKit - Google Calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "calendar/create",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-create",
+      "name": "Webhook - Create Event",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 200],
+      "webhookId": "calendar-create"
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "calendar/list",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-list",
+      "name": "Webhook - List Events",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 400],
+      "webhookId": "calendar-list"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "start": "={{ $json.body.start_time || $json.query.start_time }}",
+        "end": "={{ $json.body.end_time || $json.query.end_time }}",
+        "additionalFields": {
+          "summary": "={{ $json.body.title || $json.query.title }}",
+          "description": "={{ $json.body.description || $json.query.description || '' }}",
+          "location": "={{ $json.body.location || $json.query.location || '' }}"
+        }
+      },
+      "id": "create-event",
+      "name": "Google Calendar - Create",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.2,
+      "position": [460, 200],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "google-calendar-oauth",
+          "name": "Google Calendar Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "returnAll": false,
+        "limit": 20,
+        "options": {
+          "timeMin": "={{ $json.query.start_date || new Date().toISOString() }}",
+          "timeMax": "={{ $json.query.end_date || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() }}",
+          "singleEvents": true,
+          "orderBy": "startTime"
+        }
+      },
+      "id": "list-events",
+      "name": "Google Calendar - List",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.2,
+      "position": [460, 400],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "google-calendar-oauth",
+          "name": "Google Calendar Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, event: { id: $json.id, title: $json.summary, start: $json.start, end: $json.end, link: $json.htmlLink } }) }}"
+      },
+      "id": "create-response",
+      "name": "Create Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, events: $json.map(e => ({ id: e.id, title: e.summary, start: e.start?.dateTime || e.start?.date, end: e.end?.dateTime || e.end?.date, location: e.location })) }) }}"
+      },
+      "id": "list-response",
+      "name": "List Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [680, 400]
+    }
+  ],
+  "connections": {
+    "Webhook - Create Event": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar - Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - List Events": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar - List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Create": {
+      "main": [
+        [
+          {
+            "node": "Create Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - List": {
+      "main": [
+        [
+          {
+            "node": "List Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "DeepKit",
+      "createdAt": "2026-02-06T00:00:00.000Z",
+      "updatedAt": "2026-02-06T00:00:00.000Z"
+    }
+  ],
+  "triggerCount": 0,
+  "meta": {
+    "instanceId": "deepkit-local"
+  }
+}

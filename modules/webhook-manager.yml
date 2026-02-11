@@ -1,0 +1,48 @@
+services:
+  webhook-manager:
+    build: ./services/webhook-manager
+    container_name: deepkit-webhook-manager
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=webhook-manager"
+      - "deepkit.service.name=webhook-manager"
+      - "deepkit.service.port=7721"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE ENGINE"
+      - "deepkit.service.description=Webhook Manager"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.webhook-manager.rule=PathPrefix(`/webhooks`)"
+      - "traefik.http.routers.webhook-manager.entrypoints=web"
+      - "traefik.http.routers.webhook-manager.middlewares=deepkit-auth"
+      - "traefik.http.services.webhook-manager.loadbalancer.server.port=7721"
+    restart: unless-stopped
+    ports:
+      - "7721:7721"
+    environment:
+      - PORT=7721
+      - SERVICE_NAME=webhook-manager
+      - NODE_ENV=${NODE_ENV:-production}
+      - POSTGRES_HOST=deepkit-store
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=webhooks
+      - POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+    volumes:
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+    networks:
+      - deepkit-network
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

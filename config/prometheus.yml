@@ -1,0 +1,72 @@
+# DeepKit Prometheus Configuration
+# Scrapes /metrics from all services exposing deepkit-fabric metrics middleware
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Core infrastructure
+  - job_name: 'deepkit-core'
+    static_configs:
+      - targets: ['deepkit-store:5432']
+        labels:
+          zone: 'THE_VAULT'
+          service: 'postgresql'
+
+  # Hub & user-facing services (THE FACE)
+  - job_name: 'deepkit-face'
+    static_configs:
+      - targets:
+          - 'deepkit-core:7777'
+          - 'deepkit-task-tracker:7718'
+          - 'deepkit-invoicing:7715'
+          - 'deepkit-calendar:7714'
+          - 'deepkit-marketing360:7712'
+          - 'deepkit-time-tracker:7719'
+          - 'deepkit-password-manager:7716'
+          - 'deepkit-file-manager:7720'
+          - 'deepkit-webhook-manager:7721'
+          - 'deepkit-super-admin:7722'
+          - 'deepkit-champmail:3025'
+          - 'deepkit-cowork:3030'
+          - 'deepkit-link-shortener:3013'
+          - 'deepkit-utm-tracker:3007'
+          - 'deepkit-request-tracker:3023'
+          - 'deepkit-forms:3009'
+          - 'deepkit-qr-generator:3010'
+          - 'deepkit-recorder:3006'
+          - 'deepkit-api-testing:7717'
+        labels:
+          zone: 'THE_FACE'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Automation engine (THE ENGINE)
+  - job_name: 'deepkit-engine'
+    static_configs:
+      - targets:
+          - 'deepkit-orchestrator:5678'
+          - 'deepkit-n8n-bridge:7730'
+        labels:
+          zone: 'THE_ENGINE'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # AI runtime (THE BRAIN)
+  - job_name: 'deepkit-brain'
+    static_configs:
+      - targets:
+          - 'deepkit-engine:11434'
+          - 'deepkit-brain:11500'
+        labels:
+          zone: 'THE_BRAIN'
+
+  # Monitoring services (THE MONITOR)
+  - job_name: 'deepkit-monitor'
+    static_configs:
+      - targets:
+          - 'deepkit-prometheus:9090'
+          - 'deepkit-grafana:3000'
+        labels:
+          zone: 'THE_MONITOR'

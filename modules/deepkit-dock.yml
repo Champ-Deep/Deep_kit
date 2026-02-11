@@ -1,0 +1,46 @@
+# =============================================================================
+# MODULE: DEEPKIT_DOCK
+# =============================================================================
+# "I want to manage ports and detect conflicts"
+#
+# Services: DEEPKIT_DOCK
+# Ports: 7777 (frontend), 7778 (API)
+# Dependencies: None (standalone tool)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # DEEPKIT_DOCK - Port Management Service (ports 7777, 7778)
+  # ---------------------------------------------------------------------------
+  deepkit-dock:
+    build: ./backend/deepkit-dock
+    container_name: deepkit-dock
+    restart: unless-stopped
+    ports:
+      - "7778:7778"  # Frontend
+      - "7779:7779"  # API + WebSocket
+    volumes:
+      # Mount Docker socket for container port scanning
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Mount DeepKit data directory for SQLite (future)
+      - ~/.deepkit:/data
+    environment:
+      # Server config
+      - PORT=7779
+      - FRONTEND_PORT=7778
+      - NODE_ENV=${NODE_ENV:-production}
+      # Timezone
+      - TZ=${TIMEZONE:-UTC}
+    networks:
+      - deepkit-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:7779/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

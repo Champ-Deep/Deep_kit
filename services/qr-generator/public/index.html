@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepKit QR Generator</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      background: #0A0B10;
+      color: #00F2FF;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline CRT effect */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.03) 50%,
+        transparent 50%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: scanline 8s linear infinite;
+    }
+
+    @keyframes scanline {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(4px); }
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(112, 0, 255, 0.1);
+      border: 2px solid #7000FF;
+      border-radius: 8px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #7000FF;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 20px rgba(112, 0, 255, 0.5);
+    }
+
+    .subtitle {
+      color: #00F2FF;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .panel {
+      background: rgba(0, 242, 255, 0.05);
+      border: 2px solid #00F2FF;
+      border-radius: 8px;
+      padding: 2rem;
+    }
+
+    .panel-header {
+      font-size: 1.2rem;
+      color: #00F2FF;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      color: #00F2FF;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: rgba(0, 242, 255, 0.1);
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #7000FF;
+      box-shadow: 0 0 10px rgba(112, 0, 255, 0.3);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .button {
+      background: #7000FF;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .button:hover {
+      background: #8F00FF;
+      box-shadow: 0 0 20px rgba(112, 0, 255, 0.5);
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button-secondary {
+      background: transparent;
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+    }
+
+    .button-secondary:hover {
+      background: rgba(0, 242, 255, 0.1);
+      box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+    }
+
+    .button-danger {
+      background: #FF0055;
+    }
+
+    .button-danger:hover {
+      background: #FF3377;
+      box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+    }
+
+    .qr-preview {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .qr-preview img {
+      max-width: 400px;
+      width: 100%;
+      height: auto;
+      border: 4px solid #7000FF;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(112, 0, 255, 0.3);
+    }
+
+    .qr-list {
+      background: rgba(0, 242, 255, 0.05);
+      border: 2px solid #00F2FF;
+      border-radius: 8px;
+      padding: 2rem;
+    }
+
+    .qr-item {
+      background: rgba(112, 0, 255, 0.1);
+      border: 1px solid #7000FF;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .qr-item-info {
+      flex: 1;
+    }
+
+    .qr-item-type {
+      color: #39FF14;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+
+    .qr-item-content {
+      color: #00F2FF;
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .qr-item-meta {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.7rem;
+      margin-top: 0.3rem;
+    }
+
+    .qr-item-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(112, 0, 255, 0.1);
+      border: 2px solid #7000FF;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      color: #7000FF;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      color: #00F2FF;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.5rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .tab {
+      background: transparent;
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      background: #7000FF;
+      border-color: #7000FF;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(112, 0, 255, 0.5);
+    }
+
+    .tab:hover:not(.active) {
+      background: rgba(0, 242, 255, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const API_BASE = window.location.origin;
+
+    function App() {
+      const [qrType, setQrType] = useState('url');
+      const [content, setContent] = useState('');
+      const [format, setFormat] = useState('png');
+      const [size, setSize] = useState(400);
+      const [errorCorrection, setErrorCorrection] = useState('M');
+      const [loading, setLoading] = useState(false);
+      const [generatedQR, setGeneratedQR] = useState(null);
+      const [qrList, setQrList] = useState([]);
+      const [stats, setStats] = useState({ total: 0, scans: 0 });
+
+      // WiFi fields
+      const [wifiSSID, setWifiSSID] = useState('');
+      const [wifiPassword, setWifiPassword] = useState('');
+      const [wifiEncryption, setWifiEncryption] = useState('WPA');
+
+      // vCard fields
+      const [vcardName, setVcardName] = useState('');
+      const [vcardPhone, setVcardPhone] = useState('');
+      const [vcardEmail, setVcardEmail] = useState('');
+
+      useEffect(() => {
+        loadQRList();
+      }, []);
+
+      const loadQRList = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/qr`);
+          const data = await response.json();
+          setQrList(data.qrCodes || []);
+
+          const totalScans = data.qrCodes.reduce((sum, qr) => sum + qr.scans, 0);
+          setStats({ total: data.total, scans: totalScans });
+        } catch (error) {
+          console.error('Failed to load QR list:', error);
+        }
+      };
+
+      const generateQR = async () => {
+        setLoading(true);
+        setGeneratedQR(null);
+
+        try {
+          let qrContent = content;
+
+          if (qrType === 'wifi') {
+            qrContent = JSON.stringify({
+              ssid: wifiSSID,
+              password: wifiPassword,
+              encryption: wifiEncryption
+            });
+          } else if (qrType === 'vcard') {
+            qrContent = JSON.stringify({
+              name: vcardName,
+              phone: vcardPhone,
+              email: vcardEmail
+            });
+          }
+
+          const response = await fetch(`${API_BASE}/api/qr/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: qrType,
+              content: qrContent,
+              format,
+              size: parseInt(size),
+              errorCorrection
+            })
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to generate QR code');
+          }
+
+          const result = await response.json();
+          setGeneratedQR(result);
+          loadQRList();
+        } catch (error) {
+          alert(`Error: ${error.message}`);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const deleteQR = async (id) => {
+        if (!confirm('Delete this QR code?')) return;
+
+        try {
+          const response = await fetch(`${API_BASE}/api/qr/${id}`, {
+            method: 'DELETE'
+          });
+
+          if (response.ok) {
+            loadQRList();
+            if (generatedQR && generatedQR.id === id) {
+              setGeneratedQR(null);
+            }
+          }
+        } catch (error) {
+          alert('Failed to delete QR code');
+        }
+      };
+
+      const renderTypeSpecificFields = () => {
+        switch (qrType) {
+          case 'wifi':
+            return (
+              <>
+                <div className="form-group">
+                  <label>SSID (Network Name)</label>
+                  <input
+                    type="text"
+                    value={wifiSSID}
+                    onChange={(e) => setWifiSSID(e.target.value)}
+                    placeholder="MyNetwork"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <input
+                    type="text"
+                    value={wifiPassword}
+                    onChange={(e) => setWifiPassword(e.target.value)}
+                    placeholder="password123"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Encryption</label>
+                  <select value={wifiEncryption} onChange={(e) => setWifiEncryption(e.target.value)}>
+                    <option value="WPA">WPA/WPA2</option>
+                    <option value="WEP">WEP</option>
+                    <option value="nopass">No Password</option>
+                  </select>
+                </div>
+              </>
+            );
+          case 'vcard':
+            return (
+              <>
+                <div className="form-group">
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    value={vcardName}
+                    onChange={(e) => setVcardName(e.target.value)}
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Phone (Optional)</label>
+                  <input
+                    type="tel"
+                    value={vcardPhone}
+                    onChange={(e) => setVcardPhone(e.target.value)}
+                    placeholder="+1234567890"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email (Optional)</label>
+                  <input
+                    type="email"
+                    value={vcardEmail}
+                    onChange={(e) => setVcardEmail(e.target.value)}
+                    placeholder="john@example.com"
+                  />
+                </div>
+              </>
+            );
+          default:
+            return (
+              <div className="form-group">
+                <label>Content</label>
+                <textarea
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder={
+                    qrType === 'url' ? 'https://example.com' :
+                    qrType === 'email' ? 'user@example.com' :
+                    qrType === 'phone' ? '+1234567890' :
+                    qrType === 'sms' ? '+1234567890' :
+                    'Enter text here'
+                  }
+                />
+              </div>
+            );
+        }
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <h1>🔳 QR Generator</h1>
+            <div className="subtitle">Persistent QR Code Generation</div>
+          </div>
+
+          <div className="stats">
+            <div className="stat-card">
+              <div className="stat-value">{stats.total}</div>
+              <div className="stat-label">Total QR Codes</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.scans}</div>
+              <div className="stat-label">Total Scans</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{format.toUpperCase()}</div>
+              <div className="stat-label">Current Format</div>
+            </div>
+          </div>
+
+          <div className="grid">
+            <div className="panel">
+              <div className="panel-header">Generate QR Code</div>
+
+              <div className="form-group">
+                <label>Type</label>
+                <select value={qrType} onChange={(e) => setQrType(e.target.value)}>
+                  <option value="url">URL</option>
+                  <option value="wifi">WiFi</option>
+                  <option value="vcard">vCard (Contact)</option>
+                  <option value="text">Plain Text</option>
+                  <option value="email">Email</option>
+                  <option value="phone">Phone</option>
+                  <option value="sms">SMS</option>
+                </select>
+              </div>
+
+              {renderTypeSpecificFields()}
+
+              <div className="form-group">
+                <label>Format</label>
+                <select value={format} onChange={(e) => setFormat(e.target.value)}>
+                  <option value="png">PNG</option>
+                  <option value="svg">SVG</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Size (px)</label>
+                <input
+                  type="number"
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  min="200"
+                  max="2000"
+                  step="100"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Error Correction</label>
+                <select value={errorCorrection} onChange={(e) => setErrorCorrection(e.target.value)}>
+                  <option value="L">Low (7%)</option>
+                  <option value="M">Medium (15%)</option>
+                  <option value="Q">Quartile (25%)</option>
+                  <option value="H">High (30%)</option>
+                </select>
+              </div>
+
+              <button className="button" onClick={generateQR} disabled={loading}>
+                {loading ? 'Generating...' : 'Generate QR Code'}
+              </button>
+
+              {generatedQR && (
+                <div className="qr-preview">
+                  <img
+                    src={`${API_BASE}/api/qr/${generatedQR.id}/download`}
+                    alt="Generated QR Code"
+                  />
+                  <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                    <a href={generatedQR.downloadUrl} download>
+                      <button className="button-secondary">Download</button>
+                    </a>
+                    <button className="button-secondary" onClick={() => setGeneratedQR(null)}>
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="qr-list">
+              <div className="panel-header">QR Code Library</div>
+              {qrList.length === 0 ? (
+                <div className="empty-state">No QR codes generated yet</div>
+              ) : (
+                qrList.map((qr) => (
+                  <div key={qr.id} className="qr-item">
+                    <div className="qr-item-info">
+                      <div className="qr-item-type">{qr.type}</div>
+                      <div className="qr-item-content">{qr.content.substring(0, 50)}</div>
+                      <div className="qr-item-meta">
+                        {new Date(qr.created_at).toLocaleDateString()} • {qr.scans} scans • {qr.format.toUpperCase()}
+                      </div>
+                    </div>
+                    <div className="qr-item-actions">
+                      <a href={`${API_BASE}/api/qr/${qr.id}/download`} download>
+                        <button className="button-secondary">Download</button>
+                      </a>
+                      <button
+                        className="button-secondary button-danger"
+                        onClick={() => deleteQR(qr.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>

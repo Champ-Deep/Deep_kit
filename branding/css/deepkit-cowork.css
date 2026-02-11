@@ -1,0 +1,348 @@
+/**
+ * DEEPKIT_COWORK - CRT Theme Override
+ * Unified AI Workspace Branding
+ */
+
+:root {
+  --dk-green: #39FF14;
+  --dk-green-dim: #00AA00;
+  --dk-green-bright: #00FF00;
+  --dk-black: #000000;
+  --dk-gray: #1A1A1A;
+  --dk-amber: #FFB000;
+  --dk-red: #FF0044;
+  --dk-purple: #7000FF;
+  --dk-cyan: #00F2FF;
+}
+
+/* Global overrides */
+* {
+  font-family: 'JetBrains Mono', 'Courier New', 'SF Mono', Monaco, monospace !important;
+  border-radius: 0 !important; /* Sharp corners only */
+}
+
+body {
+  background: var(--dk-black) !important;
+  color: var(--dk-green) !important;
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+}
+
+/* Enhanced CRT Scanline effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  z-index: 9999;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(10px); }
+}
+
+/* Header glow */
+.cowork-header h1 {
+  animation: flicker 3s infinite, glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px rgba(57, 255, 20, 0.5); }
+  to { text-shadow: 0 0 20px rgba(57, 255, 20, 0.8), 0 0 30px rgba(57, 255, 20, 0.4); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+  51% { opacity: 1; }
+}
+
+/* Tool palette styling */
+.tool-palette {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border-right: 2px solid var(--dk-green) !important;
+}
+
+.tool-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tool-button:hover {
+  transform: translateX(5px) !important;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.4) !important;
+}
+
+.tool-button.active {
+  background: var(--dk-green) !important;
+  color: var(--dk-black) !important;
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.2) !important;
+  transform: translateX(8px) !important;
+  font-weight: bold;
+}
+
+.tool-button.active::before {
+  content: '►';
+  margin-right: 8px;
+  animation: pulse 1.5s infinite;
+}
+
+/* Message styling */
+.message {
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  transition: all 0.3s;
+}
+
+.message:hover {
+  background: rgba(57, 255, 20, 0.08) !important;
+  border-left-width: 4px !important;
+}
+
+.message.user {
+  background: rgba(57, 255, 20, 0.05) !important;
+  border-left: 3px solid var(--dk-green) !important;
+}
+
+.message.assistant {
+  background: rgba(0, 0, 0, 0.6) !important;
+  border-left: 3px solid var(--dk-cyan) !important;
+}
+
+.message.tool {
+  background: rgba(255, 176, 0, 0.05) !important;
+  border-left: 3px solid var(--dk-amber) !important;
+}
+
+/* Input area glow on focus */
+.unified-input:focus {
+  border-color: var(--dk-green-bright) !important;
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.6) !important;
+  animation: inputGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes inputGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(57, 255, 20, 0.6); }
+  50% { box-shadow: 0 0 30px rgba(57, 255, 20, 0.8); }
+}
+
+/* Send button animation */
+.send-button:hover:not(:disabled) {
+  animation: buttonPulse 0.3s;
+}
+
+@keyframes buttonPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--dk-green);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite, glow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+/* Tool result styling */
+.tool-result {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: 1px solid var(--dk-amber) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.tool-result pre {
+  color: var(--dk-amber) !important;
+  text-shadow: 0 0 5px rgba(255, 176, 0, 0.3);
+}
+
+/* Alert animations */
+.alert {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert.error {
+  background: rgba(255, 0, 68, 0.1) !important;
+  border: 1px solid var(--dk-red) !important;
+  color: var(--dk-red) !important;
+  box-shadow: 0 0 15px rgba(255, 0, 68, 0.3);
+}
+
+.alert.success {
+  background: rgba(0, 255, 0, 0.1) !important;
+  border: 1px solid var(--dk-green-bright) !important;
+  color: var(--dk-green-bright) !important;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+/* Empty state styling */
+.empty-state {
+  animation: fadeIn 1s ease-in;
+}
+
+.empty-state-icon {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Tool category titles */
+.tool-category-title {
+  color: var(--dk-amber) !important;
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.5);
+}
+
+/* Session info */
+.session-info {
+  background: rgba(57, 255, 20, 0.1);
+  padding: 5px 10px;
+  border: 1px solid var(--dk-green);
+  animation: pulse 3s infinite;
+}
+
+/* Hardware Pulse widget integration */
+#hardware-pulse-widget {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dk-black);
+  border: 1px solid var(--dk-green);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dk-green);
+  border: 1px solid var(--dk-black);
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dk-green-bright);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+/* Loading dots animation */
+.loading-dots::after {
+  animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* Message fade-in */
+.message {
+  animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cursor blink in inputs */
+.unified-input::after {
+  content: '';
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Enhanced border glow for focused elements */
+*:focus {
+  outline: none !important;
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.5) !important;
+}
+
+/* Smooth transitions for all interactive elements */
+button, input, textarea, .tool-button, .message {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Disable smooth scrolling for authentic CRT feel */
+html {
+  scroll-behavior: auto !important;
+}
+
+/* Tool icon glow */
+.tool-icon {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.tool-button:hover .tool-icon {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 5px rgba(57, 255, 20, 0.8));
+}
+
+.tool-button.active .tool-icon {
+  filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
+}
+
+/* Enhanced grid lines (optional) */
+.cowork-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(57, 255, 20, 0.03) 49px, rgba(57, 255, 20, 0.03) 50px);
+  z-index: 1;
+}

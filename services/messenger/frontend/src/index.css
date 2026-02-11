@@ -1,0 +1,383 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* DeepKit Messenger - CRT Design System */
+
+:root {
+  --deep-core: #000000;
+  --cyber-teal: #00F2FF;
+  --phosphor-green: #39FF14;
+  --bright-amber: #FFB000;
+  --ghost-mono: #A0A0A0;
+  --error-red: #FF3B3B;
+  --text-primary: #FFFFFF;
+  --card-bg: #0a0a0a;
+  --border-color: #1a1a1a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: var(--deep-core);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Scanline overlay effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--deep-core);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ghost-mono);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cyber-teal);
+}
+
+/* Input styling */
+input, textarea {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 12px;
+  border-radius: 0;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--cyber-teal);
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+}
+
+/* Button styling - scoped to avoid overriding Crayon internals */
+button {
+  font-family: 'JetBrains Mono', monospace;
+  border-radius: 0;
+}
+
+/* Status indicators */
+.status-online {
+  color: var(--phosphor-green);
+  text-shadow: 0 0 10px var(--phosphor-green);
+}
+
+.status-offline {
+  color: var(--error-red);
+  text-shadow: 0 0 10px var(--error-red);
+}
+
+.status-pending {
+  color: var(--bright-amber);
+  text-shadow: 0 0 10px var(--bright-amber);
+}
+
+/* Glow effect for interactive elements */
+.glow {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.glow-box {
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+code {
+  background: var(--card-bg);
+  padding: 2px 6px;
+  font-size: 0.9em;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px var(--cyber-teal); }
+  50% { box-shadow: 0 0 20px var(--cyber-teal); }
+}
+
+.animate-glow {
+  animation: glow-pulse 2s infinite;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CRT OVERRIDES FOR CRAYON COMPONENTS
+   Tactical Monochrome enforcement on Crayon's CSS modules
+   ══════════════════════════════════════════════════════════ */
+
+/* Kill all border-radius globally */
+[class*="crayon"],
+[class*="Crayon"],
+[data-crayon] {
+  border-radius: 0 !important;
+}
+
+/* Chat container */
+[class*="chatContainer"],
+[class*="ChatContainer"],
+[class*="chatWrapper"] {
+  background-color: #000000 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Message bubbles */
+[class*="assistantMessage"],
+[class*="AssistantMessage"],
+[class*="assistantResponse"] {
+  background-color: transparent !important;
+  border-radius: 0 !important;
+}
+
+[class*="userMessage"],
+[class*="UserMessage"],
+[class*="userResponse"] {
+  background-color: #0a0a0a !important;
+  border: 1px solid #1a1a1a !important;
+  border-radius: 0 !important;
+}
+
+/* Input area */
+[class*="inputContainer"],
+[class*="InputContainer"],
+[class*="bottomTray"],
+[class*="BottomTray"] {
+  background-color: #000000 !important;
+  border-top: 1px solid #1a1a1a !important;
+}
+
+[class*="inputContainer"] textarea,
+[class*="InputContainer"] textarea,
+[class*="bottomTray"] textarea {
+  background-color: #0a0a0a !important;
+  border: 1px solid #1a1a1a !important;
+  border-radius: 0 !important;
+  color: #FFFFFF !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+[class*="inputContainer"] textarea:focus,
+[class*="InputContainer"] textarea:focus {
+  border-color: #00F2FF !important;
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.2) !important;
+}
+
+/* Send button */
+[class*="sendButton"],
+[class*="SendButton"] {
+  border-radius: 0 !important;
+  background-color: #00F2FF !important;
+  color: #000000 !important;
+}
+
+/* Conversation starters */
+[class*="conversationStarter"],
+[class*="ConversationStarter"],
+[class*="starterCard"] {
+  border-radius: 0 !important;
+  border: 1px solid #1a1a1a !important;
+  background-color: #0a0a0a !important;
+}
+
+[class*="conversationStarter"]:hover,
+[class*="ConversationStarter"]:hover,
+[class*="starterCard"]:hover {
+  border-color: #00F2FF !important;
+  box-shadow: 0 0 8px rgba(0, 242, 255, 0.15) !important;
+}
+
+/* Card components */
+[class*="card_"],
+[class*="Card_"] {
+  border-radius: 0 !important;
+  border-color: #1a1a1a !important;
+}
+
+/* Tag components - uppercase CRT style */
+[class*="tag_"],
+[class*="Tag_"] {
+  border-radius: 0 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Callout */
+[class*="callout"],
+[class*="Callout"] {
+  border-radius: 0 !important;
+}
+
+/* Code blocks */
+[class*="codeBlock"],
+[class*="CodeBlock"] {
+  border-radius: 0 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Steps */
+[class*="steps"],
+[class*="Steps"] {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Welcome screen */
+[class*="welcome"],
+[class*="Welcome"] {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* ListItem hover */
+[class*="listItem"]:hover,
+[class*="ListItem"]:hover {
+  background-color: rgba(0, 242, 255, 0.05) !important;
+}
+
+/* Separator */
+[class*="separator"],
+[class*="Separator"] {
+  background-color: #1a1a1a !important;
+}
+
+/* Charts - enforce square bars */
+.recharts-rectangle {
+  rx: 0 !important;
+  ry: 0 !important;
+}
+
+/* Markdown renderer */
+[class*="markdown"],
+[class*="MarkDown"],
+[class*="Markdown"] {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+[class*="markdown"] a,
+[class*="Markdown"] a {
+  color: #00F2FF !important;
+}
+
+[class*="markdown"] code,
+[class*="Markdown"] code {
+  background-color: #0a0a0a !important;
+  border-radius: 0 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Table components - CRT enforcement */
+[class*="table"],
+[class*="Table"] {
+  border-radius: 0 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+[class*="table"] th,
+[class*="Table"] th {
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  border-bottom: 1px solid #1a1a1a !important;
+}
+
+[class*="table"] td,
+[class*="Table"] td {
+  border-bottom: 1px solid #0d0d0d !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+[class*="table"] tr:hover,
+[class*="Table"] tr:hover {
+  background-color: rgba(0, 242, 255, 0.03) !important;
+}
+
+/* PieChart / donut - enforce CRT colors */
+.recharts-pie-sector {
+  stroke: #000000 !important;
+  stroke-width: 2 !important;
+}
+
+/* FollowUpBlock / Suggestions - CRT enforcement */
+.crayon-follow-up-block {
+  border: 1px solid #1a1a1a !important;
+  background-color: #050505 !important;
+  padding: 8px !important;
+  margin-top: 8px !important;
+}
+
+.crayon-follow-up-item {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 12px !important;
+  letter-spacing: 0.04em !important;
+  color: #00F2FF !important;
+  border-bottom-color: #1a1a1a !important;
+  padding: 10px 8px !important;
+  transition: background-color 0.15s, box-shadow 0.15s !important;
+}
+
+.crayon-follow-up-item:hover {
+  background-color: rgba(0, 242, 255, 0.06) !important;
+  box-shadow: inset 0 0 12px rgba(0, 242, 255, 0.08) !important;
+}
+
+.crayon-follow-up-item-text {
+  color: #00F2FF !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.crayon-follow-up-item-icon {
+  color: #00F2FF !important;
+  opacity: 0.6 !important;
+}
+
+/* Scrollable areas within Crayon */
+[class*="messagesContainer"],
+[class*="MessagesContainer"] {
+  scrollbar-width: thin;
+  scrollbar-color: #A0A0A0 #000000;
+}

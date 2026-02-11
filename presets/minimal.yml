@@ -1,22 +1,21 @@
 # =============================================================================
-# PRESET: Minimal
+# PRESET: Standard (formerly Minimal)
 # =============================================================================
-# Perfect for getting started. Includes the essentials for automation and AI.
+# The recommended starting point. AI chat interface + workflow automation.
 #
 # Included:
-#   - Core (PostgreSQL, Redis, Ollama, Portainer)
-#   - Module A: n8n (automation)
-#   - Module B: Open WebUI (AI chat)
-#   - Module F: chamPDF (PDF tools)
+#   - Core (DEEPKIT_STORE, DEEPKIT_CACHE, DEEPKIT_ENGINE)
+#   - DEEPKIT_CORE (command center - AI chat + generative UI)
+#   - DEEPKIT_ORCHESTRATOR (workflow automation)
 #
-# Total: 7 services
-# Ports: 5432, 6379, 11434, 9000, 5678, 3001, 3005
+# Total: 5 services
+# Ports: 5432, 6379, 11434, 7777, 5678
+# RAM: ~5-6 GB
 #
 # Usage: ./install.sh --preset minimal
 # =============================================================================
 
 include:
   - path: ../docker-compose.yml
+  - path: ../modules/deepkit-core.yml
   - path: ../modules/automation.yml
-  - path: ../modules/chat.yml
-  - path: ../modules/pdf.yml

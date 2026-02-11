@@ -1,0 +1,63 @@
+# =============================================================================
+# MODULE: DEEPKIT_RECORDER
+# =============================================================================
+# "I want to record my screen with annotations"
+#
+# Services: DEEPKIT_RECORDER
+# Ports: 3006
+# Dependencies: Redis (event bus)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # DEEPKIT_RECORDER - Screen Recording Service (port 3006)
+  # ---------------------------------------------------------------------------
+  deepkit-recorder:
+    build: ./services/recorder
+    container_name: deepkit-recorder
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=deepkit-recorder"
+      - "deepkit.service.name=recorder"
+      - "deepkit.service.port=3006"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=Screen Recorder"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.recorder.rule=PathPrefix(`/recorder`)"
+      - "traefik.http.routers.recorder.entrypoints=web"
+      - "traefik.http.routers.recorder.middlewares=deepkit-auth"
+      - "traefik.http.services.recorder.loadbalancer.server.port=3006"
+    restart: unless-stopped
+    ports:
+      - "3006:3006"
+    volumes:
+      - ~/DeepKit/Recordings:/recordings
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    environment:
+      - PORT=3006
+      - SERVICE_NAME=recorder
+      - NODE_ENV=${NODE_ENV:-production}
+      - RECORDINGS_DIR=/recordings
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+      - TZ=${TIMEZONE:-UTC}
+    networks:
+      - deepkit-network
+    depends_on:
+      deepkit-cache:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3006/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

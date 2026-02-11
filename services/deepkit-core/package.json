@@ -1,0 +1,50 @@
+{
+  "name": "deepkit-core",
+  "version": "1.0.0",
+  "description": "DeepKit Core (COMMAND CENTER) - AI-powered command interface with service discovery",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "cli": "node src/adapters/CLIAdapter.js",
+    "test": "jest",
+    "docker:build": "docker build -t deepkit-core .",
+    "docker:run": "docker-compose up -d",
+    "docker:stop": "docker-compose down",
+    "docker:logs": "docker logs -f deepkit-core"
+  },
+  "keywords": [
+    "deepkit",
+    "ai",
+    "llm",
+    "sovereign",
+    "local",
+    "ollama",
+    "command-center"
+  ],
+  "author": "DeepKit",
+  "license": "MIT",
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "@sendgrid/mail": "^8.1.4",
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
+    "pg": "^8.13.1",
+    "winston": "^3.17.0",
+    "youtube-transcript": "^1.2.1"
+  },
+  "optionalDependencies": {
+    "dockerode": "^4.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEEPKIT_DOCK</title>
+
+  <!-- React & ReactDOM from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* =================================================================== */
+    /* DEEPKIT CRT AESTHETIC */
+    /* =================================================================== */
+
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+    :root {
+      --deep-core: #0A0B10;
+      --port-active: #7000FF;
+      --data-flow: #00F2FF;
+      --success: #39FF14;
+      --warning: #FF3B3B;
+      --text: #FFFFFF;
+      --text-dim: #A0A0A0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--deep-core);
+      color: var(--text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* CRT Scanline */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(transparent 50%, rgba(0, 242, 255, 0.03) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: scan 8s linear infinite;
+    }
+
+    @keyframes scan {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(4px); }
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.97; }
+    }
+
+    body {
+      animation: flicker 0.15s infinite;
+    }
+
+    .container {
+      min-height: 100vh;
+      padding: 2rem;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      border: 2px solid var(--data-flow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      background: rgba(0, 242, 255, 0.05);
+      position: relative;
+    }
+
+    .header::before {
+      content: '[ PORT_MANAGER_ONLINE ]';
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: var(--deep-core);
+      padding: 0 10px;
+      font-size: 10px;
+      color: var(--success);
+      letter-spacing: 2px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      color: var(--data-flow);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Heatmap */
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .zone {
+      border: 2px solid;
+      padding: 1.5rem;
+      position: relative;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .zone-header {
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0.6;
+      margin-bottom: 0.5rem;
+    }
+
+    .zone-range {
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .zone-count {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+    }
+
+    .zone-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      opacity: 0.3;
+    }
+
+    /* Conflict Alert */
+    .conflict-alert {
+      border: 2px solid var(--warning);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: rgba(255, 59, 59, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .conflict-icon {
+      font-size: 1.5rem;
+    }
+
+    /* Port Table */
+    .table-container {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow-x: auto;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+
+    thead {
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      text-align: left;
+      padding: 0.75rem;
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    th:hover {
+      background: rgba(0, 242, 255, 0.1);
+    }
+
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .port-pill {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid;
+    }
+
+    .source-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      font-size: 0.625rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    /* Buttons */
+    .btn {
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.75rem 1.5rem;
+      border: 2px solid;
+      background: transparent;
+      color: var(--text);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      border-color: var(--port-active);
+      color: var(--port-active);
+    }
+
+    .btn-primary:hover {
+      background: var(--port-active);
+      color: var(--deep-core);
+    }
+
+    .btn-small {
+      padding: 0.25rem 0.75rem;
+      font-size: 0.625rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .modal {
+      background: var(--deep-core);
+      border: 2px solid var(--data-flow);
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal h2 {
+      font-size: 1.5rem;
+      color: var(--data-flow);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--data-flow);
+      background: rgba(0, 242, 255, 0.05);
+    }
+
+    .suggestion-result {
+      padding: 1.5rem;
+      border: 2px solid var(--success);
+      background: rgba(57, 255, 20, 0.05);
+      margin-bottom: 1rem;
+    }
+
+    .suggestion-port {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--success);
+      margin-bottom: 0.5rem;
+    }
+
+    .alternatives {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .alt-port {
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.875rem;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: transparent;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+      border-color: var(--data-flow);
+      background: rgba(0, 242, 255, 0.1);
+      color: var(--data-flow);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    function DeepKitDock() {
+      // State
+      const [ports, setPorts] = useState([]);
+      const [conflicts, setConflicts] = useState([]);
+      const [filter, setFilter] = useState('all');
+      const [sortBy, setSortBy] = useState('port');
+      const [sortDir, setSortDir] = useState('asc');
+      const [showSuggestModal, setShowSuggestModal] = useState(false);
+      const [suggestion, setSuggestion] = useState(null);
+      const [isScanning, setIsScanning] = useState(false);
+
+      // Form state
+      const [suggestType, setSuggestType] = useState('frontend');
+      const [projectId, setProjectId] = useState('');
+      const [clusterSize, setClusterSize] = useState(1);
+
+      // WebSocket ref
+      const wsRef = useRef(null);
+
+      // Connect to WebSocket for real-time updates
+      useEffect(() => {
+        const ws = new WebSocket('ws://localhost:7778/ws/ports');
+
+        ws.onopen = () => {
+          console.log('WebSocket connected');
+        };
+
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+
+          if (data.type === 'port_update') {
+            setPorts(data.ports || []);
+            setConflicts(data.conflicts || []);
+          }
+
+          if (data.type === 'conflict_detected') {
+            // Play alert sound (optional)
+            console.warn('Conflict detected!', data.conflicts);
+          }
+        };
+
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+        };
+
+        ws.onclose = () => {
+          console.log('WebSocket disconnected');
+          // Attempt reconnection after 5s
+          setTimeout(() => {
+            window.location.reload();
+          }, 5000);
+        };
+
+        wsRef.current = ws;
+
+        return () => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.close();
+          }
+        };
+      }, []);
+
+      // Manual scan
+      const triggerScan = async () => {
+        setIsScanning(true);
+        try {
+          const res = await fetch('/api/ports/scan', { method: 'POST' });
+          const data = await res.json();
+          setPorts(data.ports || []);
+          setConflicts(data.conflicts || []);
+        } catch (error) {
+          console.error('Scan error:', error);
+        }
+        setIsScanning(false);
+      };
+
+      // Request port suggestion
+      const requestSuggestion = async () => {
+        if (!projectId.trim()) {
+          alert('Please enter a project ID');
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/ports/suggest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: suggestType,
+              projectId: projectId.trim(),
+              clusterSize: clusterSize > 1 ? clusterSize : undefined
+            })
+          });
+
+          const data = await res.json();
+          setSuggestion(data);
+        } catch (error) {
+          console.error('Suggestion error:', error);
+        }
+      };
+
+      // Calculate zone statistics
+      const zoneStats = {
+        system: ports.filter(p => p.port <= 1023).length,
+        dev: ports.filter(p => p.port >= 1024 && p.port <= 9999).length,
+        services: ports.filter(p => p.port >= 10000 && p.port <= 49999).length,
+        misc: ports.filter(p => p.port >= 50000).length
+      };
+
+      const totalPorts = ports.length;
+      const dockerPorts = ports.filter(p => p.source === 'docker').length;
+
+      // Filter and sort ports
+      let filteredPorts = ports;
+      if (filter === 'docker') {
+        filteredPorts = ports.filter(p => p.source === 'docker');
+      } else if (filter === 'os') {
+        filteredPorts = ports.filter(p => p.source === 'os');
+      } else if (filter === 'conflicts') {
+        const conflictPorts = new Set(conflicts.map(c => c.port));
+        filteredPorts = ports.filter(p => conflictPorts.has(p.port));
+      }
+
+      // Sort
+      filteredPorts = [...filteredPorts].sort((a, b) => {
+        let aVal = a[sortBy];
+        let bVal = b[sortBy];
+
+        if (sortBy === 'port' || sortBy === 'pid') {
+          aVal = parseInt(aVal) || 0;
+          bVal = parseInt(bVal) || 0;
+        }
+
+        if (sortDir === 'asc') {
+          return aVal > bVal ? 1 : -1;
+        } else {
+          return aVal < bVal ? 1 : -1;
+        }
+      });
+
+      const handleSort = (column) => {
+        if (sortBy === column) {
+          setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+        } else {
+          setSortBy(column);
+          setSortDir('asc');
+        }
+      };
+
+      const getPortColor = (port) => {
+        if (port <= 1023) return '#FF3B3B';
+        if (port >= 3000 && port <= 3999) return '#7000FF';
+        if (port >= 5000 && port <= 5999) return '#00F2FF';
+        if (port >= 6000 && port <= 7999) return '#39FF14';
+        if (port >= 11000 && port <= 11999) return '#FFB000';
+        return '#A0A0A0';
+      };
+
+      return (
+        <div className="container">
+          {/* Header */}
+          <div className="header">
+            <h1>⚓ DEEPKIT_DOCK</h1>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', letterSpacing: '1px' }}>
+              Port Management & Conflict Detection • Ports 7777/7778
+            </p>
+            <div className="header-stats">
+              <div className="stat">
+                <div className="stat-dot" style={{ backgroundColor: 'var(--success)' }}></div>
+                <span><strong>{totalPorts}</strong> ports active</span>
+              </div>
+              <div className="stat">
+                <div className="stat-dot" style={{ backgroundColor: 'var(--data-flow)' }}></div>
+                <span><strong>{dockerPorts}</strong> Docker containers</span>
+              </div>
+              <div className="stat">
+                <div className="stat-dot" style={{ backgroundColor: conflicts.length > 0 ? 'var(--warning)' : 'var(--success)' }}></div>
+                <span><strong>{conflicts.length}</strong> conflicts</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Conflicts */}
+          {conflicts.map(conflict => (
+            <div key={conflict.port} className="conflict-alert">
+              <div className="conflict-icon">⚠️</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, marginBottom: '0.25rem', color: 'var(--warning)' }}>
+                  PORT CONFLICT: {conflict.port}
+                </div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                  {conflict.processes.length} processes competing for this port
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Port Heatmap */}
+          <div className="heatmap">
+            <div className="zone" style={{ borderColor: '#FF3B3B' }}>
+              <div>
+                <div className="zone-header">System Ports</div>
+                <div className="zone-range" style={{ color: '#FF3B3B' }}>0-1023</div>
+                <div className="zone-count" style={{ color: '#FF3B3B' }}>{zoneStats.system}</div>
+              </div>
+              <div className="zone-bar" style={{ backgroundColor: '#FF3B3B', height: `${Math.min((zoneStats.system / 100) * 100, 100)}%` }}></div>
+            </div>
+
+            <div className="zone" style={{ borderColor: '#00FF00' }}>
+              <div>
+                <div className="zone-header">Development</div>
+                <div className="zone-range" style={{ color: '#00FF00' }}>1024-9999</div>
+                <div className="zone-count" style={{ color: '#00FF00' }}>{zoneStats.dev}</div>
+              </div>
+              <div className="zone-bar" style={{ backgroundColor: '#00FF00', height: `${Math.min((zoneStats.dev / 100) * 100, 100)}%` }}></div>
+            </div>
+
+            <div className="zone" style={{ borderColor: '#FFB000' }}>
+              <div>
+                <div className="zone-header">Services</div>
+                <div className="zone-range" style={{ color: '#FFB000' }}>10000-49999</div>
+                <div className="zone-count" style={{ color: '#FFB000' }}>{zoneStats.services}</div>
+              </div>
+              <div className="zone-bar" style={{ backgroundColor: '#FFB000', height: `${Math.min((zoneStats.services / 100) * 100, 100)}%` }}></div>
+            </div>
+
+            <div className="zone" style={{ borderColor: '#A0A0A0' }}>
+              <div>
+                <div className="zone-header">Misc</div>
+                <div className="zone-range" style={{ color: '#A0A0A0' }}>50000+</div>
+                <div className="zone-count" style={{ color: '#A0A0A0' }}>{zoneStats.misc}</div>
+              </div>
+              <div className="zone-bar" style={{ backgroundColor: '#A0A0A0', height: `${Math.min((zoneStats.misc / 100) * 100, 100)}%` }}></div>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+            <button className="btn btn-primary" onClick={triggerScan} disabled={isScanning}>
+              {isScanning ? '⏳ Scanning...' : '🔄 Scan Ports'}
+            </button>
+            <button className="btn btn-primary" onClick={() => setShowSuggestModal(true)}>
+              💡 Suggest Port
+            </button>
+          </div>
+
+          {/* Filters */}
+          <div className="filter-bar">
+            <button className={`filter-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>
+              All ({ports.length})
+            </button>
+            <button className={`filter-btn ${filter === 'docker' ? 'active' : ''}`} onClick={() => setFilter('docker')}>
+              Docker ({dockerPorts})
+            </button>
+            <button className={`filter-btn ${filter === 'os' ? 'active' : ''}`} onClick={() => setFilter('os')}>
+              OS ({ports.filter(p => p.source === 'os').length})
+            </button>
+            <button className={`filter-btn ${filter === 'conflicts' ? 'active' : ''}`} onClick={() => setFilter('conflicts')}>
+              Conflicts ({conflicts.length})
+            </button>
+          </div>
+
+          {/* Port Table */}
+          <div className="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th onClick={() => handleSort('port')}>PORT {sortBy === 'port' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+                  <th onClick={() => handleSort('process')}>PROCESS {sortBy === 'process' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+                  <th onClick={() => handleSort('pid')}>PID {sortBy === 'pid' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+                  <th>PROTOCOL</th>
+                  <th>STATE</th>
+                  <th onClick={() => handleSort('source')}>SOURCE {sortBy === 'source' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+                  <th>CONTAINER</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPorts.length === 0 && (
+                  <tr>
+                    <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', opacity: 0.5 }}>
+                      No ports found
+                    </td>
+                  </tr>
+                )}
+                {filteredPorts.map((port, idx) => (
+                  <tr key={`${port.port}-${port.pid}-${idx}`}>
+                    <td>
+                      <span className="port-pill" style={{ borderColor: getPortColor(port.port), color: getPortColor(port.port) }}>
+                        {port.port}
+                      </span>
+                    </td>
+                    <td style={{ fontWeight: 600 }}>{port.process}</td>
+                    <td style={{ opacity: 0.6 }}>{port.pid}</td>
+                    <td style={{ opacity: 0.6, textTransform: 'uppercase' }}>{port.protocol}</td>
+                    <td style={{ opacity: 0.6 }}>{port.state}</td>
+                    <td>
+                      <span className="source-badge">{port.source}</span>
+                    </td>
+                    <td style={{ fontSize: '0.625rem', opacity: 0.6 }}>
+                      {port.dockerContainer ? port.dockerContainer.name : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Suggestion Modal */}
+          {showSuggestModal && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <h2>💡 Port Suggestion Engine</h2>
+
+                <div className="form-group">
+                  <label className="form-label">Port Type</label>
+                  <select className="form-select" value={suggestType} onChange={(e) => setSuggestType(e.target.value)}>
+                    <option value="frontend">Frontend (THE FACE: 3000-3999)</option>
+                    <option value="backend">Backend (THE ENGINE: 5000-5999)</option>
+                    <option value="database">Database (THE VAULT: 6000-7999)</option>
+                    <option value="service">Service (THE BRAIN: 11000+)</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Project ID</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={projectId}
+                    onChange={(e) => setProjectId(e.target.value)}
+                    placeholder="my-project"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Cluster Size (optional)</label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={clusterSize}
+                    onChange={(e) => setClusterSize(parseInt(e.target.value))}
+                    min="1"
+                    max="10"
+                  />
+                  <p style={{ fontSize: '0.625rem', opacity: 0.5, marginTop: '0.5rem' }}>
+                    Request N consecutive ports for clustered deployments
+                  </p>
+                </div>
+
+                <button className="btn btn-primary" onClick={requestSuggestion} style={{ width: '100%', marginBottom: '1rem' }}>
+                  🔍 Find Available Port
+                </button>
+
+                {suggestion && (
+                  <div className="suggestion-result">
+                    <div style={{ fontSize: '0.75rem', opacity: 0.6, marginBottom: '0.5rem' }}>RECOMMENDED</div>
+                    <div className="suggestion-port">{suggestion.recommended}</div>
+                    <div style={{ fontSize: '0.75rem', opacity: 0.8, marginBottom: '1rem' }}>
+                      {suggestion.reasoning}
+                    </div>
+
+                    {suggestion.cluster && suggestion.cluster.length > 1 && (
+                      <div>
+                        <div style={{ fontSize: '0.625rem', opacity: 0.6, marginBottom: '0.5rem' }}>CLUSTER</div>
+                        <div className="alternatives">
+                          {suggestion.cluster.map(p => (
+                            <div key={p} className="alt-port">{p}</div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {suggestion.alternatives && suggestion.alternatives.length > 0 && (
+                      <div style={{ marginTop: '1rem' }}>
+                        <div style={{ fontSize: '0.625rem', opacity: 0.6, marginBottom: '0.5rem' }}>ALTERNATIVES</div>
+                        <div className="alternatives">
+                          {suggestion.alternatives.map(p => (
+                            <div key={p} className="alt-port">{p}</div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  className="btn"
+                  onClick={() => { setShowSuggestModal(false); setSuggestion(null); }}
+                  style={{ width: '100%', borderColor: 'var(--text-dim)', color: 'var(--text-dim)' }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Render app
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<DeepKitDock />);
+  </script>
+</body>
+</html>

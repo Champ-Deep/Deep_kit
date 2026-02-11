@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepKit UTM Tracker</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      background: #0A0B10;
+      color: #00F2FF;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 50%, transparent 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: scanline 8s linear infinite;
+    }
+    @keyframes scanline {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(4px); }
+    }
+    .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(112, 0, 255, 0.1);
+      border: 2px solid #7000FF;
+      border-radius: 8px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #7000FF;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 20px rgba(112, 0, 255, 0.5);
+    }
+    .subtitle { color: #00F2FF; font-size: 0.9rem; opacity: 0.8; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: rgba(112, 0, 255, 0.1);
+      border: 2px solid #7000FF;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .stat-value { font-size: 2.5rem; color: #7000FF; font-weight: bold; }
+    .stat-label {
+      color: #00F2FF;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.5rem;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+    .panel {
+      background: rgba(0, 242, 255, 0.05);
+      border: 2px solid #00F2FF;
+      border-radius: 8px;
+      padding: 2rem;
+    }
+    .panel-header {
+      font-size: 1.2rem;
+      color: #00F2FF;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .form-group { margin-bottom: 1.5rem; }
+    label {
+      display: block;
+      color: #00F2FF;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: rgba(0, 242, 255, 0.1);
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+    input:focus, select:focus { outline: none; border-color: #7000FF; box-shadow: 0 0 10px rgba(112, 0, 255, 0.3); }
+    .button {
+      background: #7000FF;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      width: 100%;
+    }
+    .button:hover { background: #8F00FF; box-shadow: 0 0 20px rgba(112, 0, 255, 0.5); }
+    .button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .button-secondary {
+      background: transparent;
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+    }
+    .button-secondary:hover { background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
+    .campaign-item {
+      background: rgba(112, 0, 255, 0.1);
+      border: 1px solid #7000FF;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .campaign-name { color: #39FF14; font-weight: bold; font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .campaign-url {
+      color: #00F2FF;
+      font-size: 0.8rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin: 0.5rem 0;
+    }
+    .campaign-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 0.5rem;
+    }
+    .campaign-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .badge {
+      display: inline-block;
+      background: rgba(57, 255, 20, 0.2);
+      border: 1px solid #39FF14;
+      color: #39FF14;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      margin-right: 0.5rem;
+    }
+    .empty-state { text-align: center; padding: 3rem; color: rgba(255, 255, 255, 0.5); }
+    .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; }
+    .tab {
+      background: transparent;
+      border: 1px solid #00F2FF;
+      color: #00F2FF;
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    .tab.active { background: #7000FF; border-color: #7000FF; color: #fff; box-shadow: 0 0 20px rgba(112, 0, 255, 0.5); }
+    .url-preview {
+      background: rgba(57, 255, 20, 0.1);
+      border: 2px solid #39FF14;
+      padding: 1rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+      word-break: break-all;
+      color: #39FF14;
+      font-size: 0.9rem;
+    }
+    .template-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem; }
+    .template-card {
+      background: rgba(112, 0, 255, 0.05);
+      border: 1px solid #7000FF;
+      padding: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .template-card:hover { background: rgba(112, 0, 255, 0.15); border-color: #00F2FF; }
+    .template-card.selected { background: rgba(112, 0, 255, 0.2); border: 2px solid #39FF14; }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .template-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const API_BASE = window.location.origin;
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('create');
+      const [campaigns, setCampaigns] = useState([]);
+      const [templates, setTemplates] = useState([]);
+      const [stats, setStats] = useState({ totalCampaigns: 0, totalClicks: 0, campaignsToday: 0, clicksToday: 0 });
+      const [loading, setLoading] = useState(false);
+      const [selectedCampaign, setSelectedCampaign] = useState(null);
+      const [analytics, setAnalytics] = useState(null);
+      const [selectedTemplate, setSelectedTemplate] = useState(null);
+      
+      // Form state
+      const [name, setName] = useState('');
+      const [baseUrl, setBaseUrl] = useState('');
+      const [utmSource, setUtmSource] = useState('');
+      const [utmMedium, setUtmMedium] = useState('');
+      const [utmCampaign, setUtmCampaign] = useState('');
+      const [utmTerm, setUtmTerm] = useState('');
+      const [utmContent, setUtmContent] = useState('');
+
+      useEffect(() => {
+        loadCampaigns();
+        loadTemplates();
+        loadStats();
+      }, []);
+
+      const loadCampaigns = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/campaigns`);
+          const data = await response.json();
+          setCampaigns(data.campaigns || []);
+        } catch (error) {
+          console.error('Failed to load campaigns:', error);
+        }
+      };
+
+      const loadTemplates = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/campaigns/templates`);
+          const data = await response.json();
+          setTemplates(data.templates || []);
+        } catch (error) {
+          console.error('Failed to load templates:', error);
+        }
+      };
+
+      const loadStats = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/campaigns/stats/global`);
+          const data = await response.json();
+          setStats(data);
+        } catch (error) {
+          console.error('Failed to load stats:', error);
+        }
+      };
+
+      const buildPreviewUrl = () => {
+        if (!baseUrl) return 'Enter a base URL to preview';
+        try {
+          const url = new URL(baseUrl);
+          if (utmSource) url.searchParams.set('utm_source', utmSource);
+          if (utmMedium) url.searchParams.set('utm_medium', utmMedium);
+          if (utmCampaign) url.searchParams.set('utm_campaign', utmCampaign);
+          if (utmTerm) url.searchParams.set('utm_term', utmTerm);
+          if (utmContent) url.searchParams.set('utm_content', utmContent);
+          return url.toString();
+        } catch {
+          return 'Invalid URL';
+        }
+      };
+
+      const applyTemplate = (template) => {
+        setSelectedTemplate(template);
+        setUtmSource(template.utmSource);
+        setUtmMedium(template.utmMedium);
+        setUtmCampaign(template.utmCampaign);
+      };
+
+      const createCampaign = async () => {
+        if (!name || !baseUrl) {
+          alert('Please enter campaign name and base URL');
+          return;
+        }
+
+        setLoading(true);
+        try {
+          const response = await fetch(`${API_BASE}/api/campaigns`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name,
+              baseUrl,
+              utmSource: utmSource || undefined,
+              utmMedium: utmMedium || undefined,
+              utmCampaign: utmCampaign || undefined,
+              utmTerm: utmTerm || undefined,
+              utmContent: utmContent || undefined
+            })
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to create campaign');
+          }
+
+          const result = await response.json();
+          alert(`Campaign created: ${result.name}`);
+          
+          // Reset form
+          setName('');
+          setBaseUrl('');
+          setUtmSource('');
+          setUtmMedium('');
+          setUtmCampaign('');
+          setUtmTerm('');
+          setUtmContent('');
+          setSelectedTemplate(null);
+          
+          loadCampaigns();
+          loadStats();
+        } catch (error) {
+          alert(`Error: ${error.message}`);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const deleteCampaign = async (id) => {
+        if (!confirm('Delete this campaign?')) return;
+        
+        try {
+          const response = await fetch(`${API_BASE}/api/campaigns/${id}`, { method: 'DELETE' });
+          if (response.ok) {
+            loadCampaigns();
+            loadStats();
+          }
+        } catch (error) {
+          alert('Failed to delete campaign');
+        }
+      };
+
+      const viewAnalytics = async (campaign) => {
+        setSelectedCampaign(campaign);
+        setActiveTab('analytics');
+        
+        try {
+          const response = await fetch(`${API_BASE}/api/campaigns/${campaign.id}/analytics`);
+          const data = await response.json();
+          setAnalytics(data);
+        } catch (error) {
+          console.error('Failed to load analytics:', error);
+        }
+      };
+
+      const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        alert('Copied to clipboard!');
+      };
+
+      const renderCreateTab = () => (
+        <div>
+          <div className="panel" style={{ marginBottom: '2rem' }}>
+            <div className="panel-header">Campaign Templates</div>
+            <div className="template-grid">
+              {templates.map((template) => (
+                <div
+                  key={template.name}
+                  className={`template-card ${selectedTemplate?.name === template.name ? 'selected' : ''}`}
+                  onClick={() => applyTemplate(template)}
+                >
+                  <div style={{ color: '#7000FF', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                    {template.name}
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>
+                    {template.description}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid">
+            <div className="panel">
+              <div className="panel-header">Campaign Builder</div>
+              
+              <div className="form-group">
+                <label>Campaign Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Summer Sale 2024"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Base URL</label>
+                <input
+                  type="url"
+                  value={baseUrl}
+                  onChange={(e) => setBaseUrl(e.target.value)}
+                  placeholder="https://example.com/products"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>UTM Source (where traffic comes from)</label>
+                <input
+                  type="text"
+                  value={utmSource}
+                  onChange={(e) => setUtmSource(e.target.value)}
+                  placeholder="facebook, google, newsletter"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>UTM Medium (marketing medium)</label>
+                <input
+                  type="text"
+                  value={utmMedium}
+                  onChange={(e) => setUtmMedium(e.target.value)}
+                  placeholder="cpc, email, social"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>UTM Campaign (campaign name)</label>
+                <input
+                  type="text"
+                  value={utmCampaign}
+                  onChange={(e) => setUtmCampaign(e.target.value)}
+                  placeholder="summer-sale-2024"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>UTM Term (Optional - paid keywords)</label>
+                <input
+                  type="text"
+                  value={utmTerm}
+                  onChange={(e) => setUtmTerm(e.target.value)}
+                  placeholder="running shoes"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>UTM Content (Optional - differentiate ads)</label>
+                <input
+                  type="text"
+                  value={utmContent}
+                  onChange={(e) => setUtmContent(e.target.value)}
+                  placeholder="banner-ad, text-link"
+                />
+              </div>
+
+              <button className="button" onClick={createCampaign} disabled={loading}>
+                {loading ? 'Creating...' : 'Create Campaign'}
+              </button>
+            </div>
+
+            <div className="panel">
+              <div className="panel-header">URL Preview</div>
+              <div className="url-preview">{buildPreviewUrl()}</div>
+              
+              <div style={{ marginTop: '2rem' }}>
+                <div className="panel-header">Recent Campaigns</div>
+                {campaigns.slice(0, 5).length === 0 ? (
+                  <div className="empty-state">No campaigns yet</div>
+                ) : (
+                  campaigns.slice(0, 5).map((campaign) => (
+                    <div key={campaign.id} className="campaign-item">
+                      <div className="campaign-name">{campaign.name}</div>
+                      <div className="campaign-url">{campaign.final_url}</div>
+                      <div className="campaign-actions">
+                        <button className="button-secondary" onClick={() => copyToClipboard(campaign.final_url)}>
+                          Copy
+                        </button>
+                        <button className="button-secondary" onClick={() => viewAnalytics(campaign)}>
+                          Analytics
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      const renderCampaignsTab = () => (
+        <div className="panel">
+          <div className="panel-header">All Campaigns ({campaigns.length})</div>
+          {campaigns.length === 0 ? (
+            <div className="empty-state">No campaigns created yet</div>
+          ) : (
+            campaigns.map((campaign) => (
+              <div key={campaign.id} className="campaign-item">
+                <div className="campaign-name">{campaign.name}</div>
+                {campaign.utm_source && <span className="badge">Source: {campaign.utm_source}</span>}
+                {campaign.utm_medium && <span className="badge">Medium: {campaign.utm_medium}</span>}
+                <div className="campaign-url">{campaign.final_url}</div>
+                <div className="campaign-meta">
+                  <span>Created: {new Date(campaign.created_at).toLocaleDateString()}</span>
+                </div>
+                <div className="campaign-actions">
+                  <button className="button-secondary" onClick={() => copyToClipboard(campaign.final_url)}>
+                    Copy
+                  </button>
+                  <button className="button-secondary" onClick={() => copyToClipboard(`${API_BASE}/track/${campaign.id}`)}>
+                    Copy Track URL
+                  </button>
+                  <button className="button-secondary" onClick={() => viewAnalytics(campaign)}>
+                    Analytics
+                  </button>
+                  <button
+                    className="button-secondary"
+                    style={{ borderColor: '#FF0055', color: '#FF0055' }}
+                    onClick={() => deleteCampaign(campaign.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      );
+
+      const renderAnalyticsTab = () => {
+        if (!selectedCampaign || !analytics) {
+          return (
+            <div className="panel">
+              <div className="empty-state">Select a campaign to view analytics</div>
+            </div>
+          );
+        }
+
+        return (
+          <div>
+            <div className="panel" style={{ marginBottom: '2rem' }}>
+              <div className="panel-header">Analytics: {selectedCampaign.name}</div>
+              <div className="campaign-url">{analytics.campaign.final_url}</div>
+
+              <div className="stats-grid" style={{ marginTop: '2rem' }}>
+                <div className="stat-card">
+                  <div className="stat-value">{analytics.totalClicks}</div>
+                  <div className="stat-label">Total Clicks</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-value">{analytics.clicksByCountry.length}</div>
+                  <div className="stat-label">Countries</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-value">{analytics.clicksByDate.length}</div>
+                  <div className="stat-label">Active Days</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid">
+              <div className="panel">
+                <div className="panel-header">Clicks by Country</div>
+                {analytics.clicksByCountry.length === 0 ? (
+                  <div className="empty-state">No data yet</div>
+                ) : (
+                  analytics.clicksByCountry.slice(0, 10).map((item) => (
+                    <div key={item.country} className="campaign-item">
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>{item.country}</span>
+                        <span className="badge">{item.count} clicks</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="panel">
+                <div className="panel-header">Top Referrers</div>
+                {analytics.clicksByReferrer.length === 0 ? (
+                  <div className="empty-state">No data yet</div>
+                ) : (
+                  analytics.clicksByReferrer.map((item) => (
+                    <div key={item.referrer} className="campaign-item">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.8rem', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {item.referrer}
+                        </span>
+                        <span className="badge">{item.count}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <h1>📊 UTM Tracker</h1>
+            <div className="subtitle">Campaign URL Builder & Analytics</div>
+          </div>
+
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-value">{stats.totalCampaigns}</div>
+              <div className="stat-label">Total Campaigns</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.totalClicks}</div>
+              <div className="stat-label">Total Clicks</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.campaignsToday}</div>
+              <div className="stat-label">Campaigns Today</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{stats.clicksToday}</div>
+              <div className="stat-label">Clicks Today</div>
+            </div>
+          </div>
+
+          <div className="tabs">
+            <button className={`tab ${activeTab === 'create' ? 'active' : ''}`} onClick={() => setActiveTab('create')}>
+              Create
+            </button>
+            <button className={`tab ${activeTab === 'campaigns' ? 'active' : ''}`} onClick={() => setActiveTab('campaigns')}>
+              All Campaigns
+            </button>
+            <button className={`tab ${activeTab === 'analytics' ? 'active' : ''}`} onClick={() => setActiveTab('analytics')}>
+              Analytics
+            </button>
+          </div>
+
+          {activeTab === 'create' && renderCreateTab()}
+          {activeTab === 'campaigns' && renderCampaignsTab()}
+          {activeTab === 'analytics' && renderAnalyticsTab()}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>

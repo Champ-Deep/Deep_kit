@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEEPKIT // CHRONOS</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-bg: #000000;
+      --color-text: #FFFFFF;
+      --color-success: #39FF14;
+      --color-data: #00F2FF;
+      --color-warning: #FFB000;
+      --color-error: #FF3B3B;
+      --color-dim: #A0A0A0;
+      --color-surface: #0a0a0a;
+      --color-border: #1a1a1a;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-display: 'VT323', monospace;
+      --font-pixel: 'Press Start 2P', cursive;
+      --glow-green: 0 0 10px rgba(57, 255, 20, 0.5);
+      --glow-cyan: 0 0 10px rgba(0, 242, 255, 0.5);
+      --glow-amber: 0 0 10px rgba(255, 176, 0, 0.5);
+    }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* Scanline overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.03) 0px,
+        rgba(0,0,0,0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* CRT vignette */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.4) 100%);
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    .app {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--color-success);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .header-left { display: flex; align-items: baseline; gap: 16px; }
+    .logo {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--color-success);
+      text-shadow: var(--glow-green);
+      letter-spacing: 2px;
+    }
+    .subtitle {
+      color: var(--color-dim);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+    }
+
+    /* Navigation bar */
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .nav-group { display: flex; gap: 4px; align-items: center; }
+
+    /* Buttons */
+    .btn {
+      background: transparent;
+      color: var(--color-dim);
+      border: 1px solid var(--color-border);
+      padding: 6px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.15s;
+      border-radius: 0;
+    }
+    .btn:hover {
+      color: var(--color-success);
+      border-color: var(--color-success);
+      box-shadow: var(--glow-green);
+    }
+    .btn-active {
+      color: var(--color-success);
+      border-color: var(--color-success);
+      background: rgba(57, 255, 20, 0.08);
+    }
+    .btn-primary {
+      color: #000;
+      background: var(--color-success);
+      border-color: var(--color-success);
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #4dff33;
+      box-shadow: var(--glow-green);
+      color: #000;
+    }
+    .btn-danger {
+      color: var(--color-error);
+      border-color: var(--color-error);
+    }
+    .btn-danger:hover {
+      background: rgba(255, 59, 59, 0.1);
+      box-shadow: 0 0 10px rgba(255, 59, 59, 0.5);
+    }
+    .btn-small { padding: 3px 8px; font-size: 0.65rem; }
+
+    .month-label {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      color: var(--color-data);
+      text-shadow: var(--glow-cyan);
+      min-width: 260px;
+      text-align: center;
+    }
+
+    /* Calendar Grid - Month View */
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      border: 1px solid var(--color-success);
+      border-top: 2px solid var(--color-success);
+    }
+    .cal-header {
+      background: rgba(57, 255, 20, 0.06);
+      text-align: center;
+      padding: 8px 4px;
+      border: 1px solid rgba(57, 255, 20, 0.15);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--color-success);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .cal-cell {
+      border: 1px solid var(--color-border);
+      min-height: 100px;
+      padding: 4px;
+      cursor: pointer;
+      transition: all 0.1s;
+      position: relative;
+    }
+    .cal-cell:hover {
+      background: rgba(57, 255, 20, 0.03);
+      border-color: rgba(57, 255, 20, 0.3);
+    }
+    .cal-cell.today {
+      background: rgba(0, 242, 255, 0.05);
+      border-color: var(--color-data);
+    }
+    .cal-cell.other-month { opacity: 0.3; }
+    .cal-day-num {
+      font-size: 0.75rem;
+      color: var(--color-dim);
+      margin-bottom: 2px;
+      font-weight: 500;
+    }
+    .cal-cell.today .cal-day-num {
+      color: var(--color-data);
+      text-shadow: var(--glow-cyan);
+      font-weight: 700;
+    }
+
+    /* Event pills */
+    .event-pill {
+      padding: 1px 4px;
+      font-size: 0.6rem;
+      margin-bottom: 2px;
+      border-left: 2px solid;
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: all 0.1s;
+    }
+    .event-pill:hover {
+      filter: brightness(1.3);
+    }
+    .event-more {
+      font-size: 0.55rem;
+      color: var(--color-dim);
+      text-align: center;
+      cursor: pointer;
+    }
+
+    /* Week View */
+    .week-grid {
+      display: grid;
+      grid-template-columns: 60px repeat(7, 1fr);
+      border: 1px solid var(--color-success);
+    }
+    .week-time-col {
+      border-right: 1px solid var(--color-border);
+    }
+    .week-time-label {
+      height: 48px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 0 4px;
+      font-size: 0.6rem;
+      color: var(--color-dim);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .week-day-col {
+      border-right: 1px solid var(--color-border);
+    }
+    .week-day-header {
+      text-align: center;
+      padding: 6px 2px;
+      font-size: 0.65rem;
+      color: var(--color-success);
+      border-bottom: 1px solid var(--color-success);
+      text-transform: uppercase;
+    }
+    .week-day-header.today-header {
+      background: rgba(0, 242, 255, 0.08);
+      color: var(--color-data);
+    }
+    .week-hour-cell {
+      height: 48px;
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.1s;
+    }
+    .week-hour-cell:hover {
+      background: rgba(57, 255, 20, 0.03);
+    }
+    .week-event {
+      position: absolute;
+      left: 1px; right: 1px;
+      padding: 1px 3px;
+      font-size: 0.55rem;
+      border-left: 2px solid;
+      overflow: hidden;
+      z-index: 2;
+      cursor: pointer;
+    }
+    .week-event:hover { filter: brightness(1.3); }
+
+    /* Day View */
+    .day-grid {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      border: 1px solid var(--color-success);
+    }
+    .day-header-bar {
+      text-align: center;
+      padding: 10px;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--color-data);
+      border-bottom: 1px solid var(--color-success);
+      grid-column: 1 / -1;
+    }
+    .day-hour-label {
+      height: 60px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 0 6px;
+      font-size: 0.65rem;
+      color: var(--color-dim);
+      border-bottom: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+    }
+    .day-hour-cell {
+      height: 60px;
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.1s;
+    }
+    .day-hour-cell:hover { background: rgba(57, 255, 20, 0.03); }
+    .day-event {
+      position: absolute;
+      left: 2px; right: 2px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      border-left: 3px solid;
+      z-index: 2;
+      cursor: pointer;
+    }
+    .day-event:hover { filter: brightness(1.3); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal {
+      background: var(--color-bg);
+      border: 2px solid var(--color-success);
+      padding: 24px;
+      min-width: 420px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 0 30px rgba(57, 255, 20, 0.15);
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--color-success);
+      margin-bottom: 16px;
+      text-shadow: var(--glow-green);
+    }
+    .form-group { margin-bottom: 12px; }
+    .form-label {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--color-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      padding: 8px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      border-radius: 0;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus {
+      border-color: var(--color-success);
+      box-shadow: var(--glow-green);
+    }
+    .form-input::placeholder { color: rgba(160,160,160,0.4); }
+    .form-row { display: flex; gap: 8px; }
+    .form-row > .form-group { flex: 1; }
+    .form-checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-checkbox {
+      accent-color: var(--color-success);
+      width: 16px;
+      height: 16px;
+    }
+    .color-picker-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .color-swatch {
+      width: 24px;
+      height: 24px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .color-swatch:hover, .color-swatch.selected {
+      border-color: var(--color-text);
+      box-shadow: 0 0 8px currentColor;
+      transform: scale(1.15);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      margin-top: 12px;
+      border-top: 1px solid var(--color-border);
+      font-size: 0.65rem;
+      color: var(--color-dim);
+    }
+    .status-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--color-success);
+      margin-right: 6px;
+      box-shadow: var(--glow-green);
+    }
+
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .blink { animation: blink 1.2s infinite; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useCallback, useMemo, useRef } = React;
+
+    const COLORS = ['#39FF14','#00F2FF','#FFB000','#FF3B3B','#FF6BFF','#8B5CF6','#FFFFFF'];
+    const DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    const HOURS = Array.from({length:24}, (_,i) => i);
+
+    // Helpers
+    const pad = n => String(n).padStart(2,'0');
+    const fmtDate = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const fmtTime = h => h === 0 ? '12 AM' : h < 12 ? `${h} AM` : h === 12 ? '12 PM' : `${h-12} PM`;
+    const fmtDateTime = d => {
+      const dt = new Date(d);
+      return `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+    };
+    const sameDay = (a,b) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+    const toLocalISO = d => {
+      const off = d.getTimezoneOffset();
+      const local = new Date(d.getTime() - off * 60000);
+      return local.toISOString().slice(0,16);
+    };
+
+    // API
+    const api = {
+      async getEvents(start, end) {
+        const params = new URLSearchParams();
+        if (start) params.set('start', start);
+        if (end) params.set('end', end);
+        const r = await fetch(`/api/events?${params}`);
+        return r.json();
+      },
+      async getTaskEvents() {
+        try { const r = await fetch('/api/events/tasks'); return r.json(); }
+        catch { return []; }
+      },
+      async createEvent(data) {
+        const r = await fetch('/api/events', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+        return r.json();
+      },
+      async updateEvent(id, data) {
+        const r = await fetch(`/api/events/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+        return r.json();
+      },
+      async deleteEvent(id) {
+        await fetch(`/api/events/${id}`, { method:'DELETE' });
+      }
+    };
+
+    // Event Modal
+    const EventModal = ({ event, defaultStart, defaultEnd, defaultAllDay, onSave, onDelete, onClose }) => {
+      const isEdit = !!event;
+      const [title, setTitle] = useState(event?.title || '');
+      const [description, setDescription] = useState(event?.description || '');
+      const [startTime, setStartTime] = useState(
+        event ? toLocalISO(new Date(event.start_time)) : defaultStart ? toLocalISO(defaultStart) : toLocalISO(new Date())
+      );
+      const [endTime, setEndTime] = useState(
+        event ? toLocalISO(new Date(event.end_time)) : defaultEnd ? toLocalISO(defaultEnd) : toLocalISO(new Date(Date.now()+3600000))
+      );
+      const [allDay, setAllDay] = useState(event?.all_day || defaultAllDay || false);
+      const [color, setColor] = useState(event?.color || '#39FF14');
+      const [location, setLocation] = useState(event?.location || '');
+      const [saving, setSaving] = useState(false);
+
+      const handleSave = async () => {
+        if (!title.trim()) return;
+        setSaving(true);
+        const data = {
+          title: title.trim(),
+          description: description.trim() || null,
+          start_time: new Date(startTime).toISOString(),
+          end_time: new Date(endTime).toISOString(),
+          all_day: allDay,
+          color,
+          location: location.trim() || null,
+        };
+        await onSave(data, event?.id);
+        setSaving(false);
+      };
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') onClose();
+        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSave();
+      };
+
+      return (
+        <div className="modal-overlay" onClick={onClose} onKeyDown={handleKeyDown}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-title">{isEdit ? '// EDIT EVENT' : '// NEW EVENT'}</div>
+
+            <div className="form-group">
+              <label className="form-label">Title</label>
+              <input className="form-input" value={title} onChange={e=>setTitle(e.target.value)}
+                placeholder="Event title..." autoFocus />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Description</label>
+              <textarea className="form-input" value={description} onChange={e=>setDescription(e.target.value)}
+                placeholder="Optional description..." rows={2} style={{resize:'vertical'}} />
+            </div>
+
+            <div className="form-group">
+              <div className="form-checkbox-group">
+                <input type="checkbox" className="form-checkbox" checked={allDay} onChange={e=>setAllDay(e.target.checked)} id="allday" />
+                <label htmlFor="allday" className="form-label" style={{marginBottom:0}}>All Day</label>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Start</label>
+                <input className="form-input" type={allDay ? 'date' : 'datetime-local'} value={allDay ? startTime.slice(0,10) : startTime}
+                  onChange={e=>setStartTime(allDay ? e.target.value + 'T00:00' : e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">End</label>
+                <input className="form-input" type={allDay ? 'date' : 'datetime-local'} value={allDay ? endTime.slice(0,10) : endTime}
+                  onChange={e=>setEndTime(allDay ? e.target.value + 'T23:59' : e.target.value)} />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Location</label>
+              <input className="form-input" value={location} onChange={e=>setLocation(e.target.value)} placeholder="Optional location..." />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Color</label>
+              <div className="color-picker-group">
+                {COLORS.map(c => (
+                  <div key={c} className={`color-swatch ${c===color?'selected':''}`}
+                    style={{background:c, color:c}} onClick={()=>setColor(c)} />
+                ))}
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              {isEdit && <button className="btn btn-danger" onClick={()=>onDelete(event.id)}>DELETE</button>}
+              <button className="btn" onClick={onClose}>CANCEL</button>
+              <button className="btn btn-primary" onClick={handleSave} disabled={saving || !title.trim()}>
+                {saving ? 'SAVING...' : isEdit ? 'UPDATE' : 'CREATE'}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Month View
+    const MonthView = ({ date, events, onCellClick, onEventClick }) => {
+      const today = new Date();
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month+1, 0).getDate();
+      const prevMonthDays = new Date(year, month, 0).getDate();
+
+      const cells = [];
+      // Previous month
+      for (let i = firstDay - 1; i >= 0; i--) {
+        cells.push({ day: prevMonthDays - i, month: month - 1, otherMonth: true });
+      }
+      // Current month
+      for (let i = 1; i <= daysInMonth; i++) {
+        cells.push({ day: i, month, otherMonth: false });
+      }
+      // Next month
+      const remaining = 42 - cells.length;
+      for (let i = 1; i <= remaining; i++) {
+        cells.push({ day: i, month: month + 1, otherMonth: true });
+      }
+
+      const getEventsForDay = (day, m) => {
+        const cellDate = new Date(year, m, day);
+        return events.filter(ev => {
+          const start = new Date(ev.start_time);
+          const end = new Date(ev.end_time);
+          return sameDay(start, cellDate) || (start <= cellDate && end >= cellDate);
+        });
+      };
+
+      return (
+        <div className="cal-grid">
+          {DAYS.map(d => <div key={d} className="cal-header">{d}</div>)}
+          {cells.map((cell, i) => {
+            const cellDate = new Date(year, cell.month, cell.day);
+            const isToday = sameDay(cellDate, today);
+            const dayEvents = getEventsForDay(cell.day, cell.month);
+            const maxShow = 3;
+            return (
+              <div key={i} className={`cal-cell ${cell.otherMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}`}
+                onClick={() => onCellClick(cellDate)}>
+                <div className="cal-day-num">{cell.day}</div>
+                {dayEvents.slice(0, maxShow).map((ev, j) => (
+                  <div key={j} className="event-pill"
+                    style={{borderColor: ev.color || '#39FF14', background: (ev.color || '#39FF14') + '18', color: ev.color || '#39FF14'}}
+                    onClick={e => { e.stopPropagation(); onEventClick(ev); }}>
+                    {ev.title}
+                  </div>
+                ))}
+                {dayEvents.length > maxShow && (
+                  <div className="event-more">+{dayEvents.length - maxShow} more</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    };
+
+    // Week View
+    const WeekView = ({ date, events, onCellClick, onEventClick }) => {
+      const today = new Date();
+      const weekStart = new Date(date);
+      weekStart.setDate(date.getDate() - date.getDay());
+      const weekDays = Array.from({length:7}, (_,i) => {
+        const d = new Date(weekStart);
+        d.setDate(weekStart.getDate()+i);
+        return d;
+      });
+
+      const getEventsForDayHour = (day, hour) => {
+        return events.filter(ev => {
+          const start = new Date(ev.start_time);
+          return sameDay(start, day) && start.getHours() === hour;
+        });
+      };
+
+      const getEventStyle = (ev) => {
+        const start = new Date(ev.start_time);
+        const end = new Date(ev.end_time);
+        const startMin = start.getMinutes();
+        const duration = Math.max(20, (end - start) / 60000);
+        const top = (startMin / 60) * 48;
+        const height = Math.min((duration / 60) * 48, 48 * 4);
+        return { top: `${top}px`, height: `${height}px` };
+      };
+
+      return (
+        <div className="week-grid" style={{maxHeight:'calc(100vh - 200px)', overflowY:'auto'}}>
+          <div className="week-time-col">
+            <div className="week-day-header" style={{borderBottom:'1px solid var(--color-success)'}}>&nbsp;</div>
+            {HOURS.map(h => (
+              <div key={h} className="week-time-label">{fmtTime(h)}</div>
+            ))}
+          </div>
+          {weekDays.map((day, di) => {
+            const isToday = sameDay(day, today);
+            return (
+              <div key={di} className="week-day-col">
+                <div className={`week-day-header ${isToday ? 'today-header' : ''}`}>
+                  {DAYS[day.getDay()]} {day.getDate()}
+                </div>
+                {HOURS.map(h => {
+                  const hourEvents = getEventsForDayHour(day, h);
+                  return (
+                    <div key={h} className="week-hour-cell"
+                      onClick={() => { const d = new Date(day); d.setHours(h); onCellClick(d); }}>
+                      {hourEvents.map((ev, j) => (
+                        <div key={j} className="week-event"
+                          style={{
+                            ...getEventStyle(ev),
+                            borderColor: ev.color || '#39FF14',
+                            background: (ev.color || '#39FF14') + '20',
+                            color: ev.color || '#39FF14',
+                          }}
+                          onClick={e => { e.stopPropagation(); onEventClick(ev); }}>
+                          {ev.title}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      );
+    };
+
+    // Day View
+    const DayView = ({ date, events, onCellClick, onEventClick }) => {
+      const today = new Date();
+      const isToday = sameDay(date, today);
+      const dayLabel = `${DAYS[date.getDay()]} ${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+
+      const getEventsForHour = (hour) => {
+        return events.filter(ev => {
+          const start = new Date(ev.start_time);
+          return sameDay(start, date) && start.getHours() === hour;
+        });
+      };
+
+      const getEventStyle = (ev) => {
+        const start = new Date(ev.start_time);
+        const end = new Date(ev.end_time);
+        const startMin = start.getMinutes();
+        const duration = Math.max(30, (end - start) / 60000);
+        const top = (startMin / 60) * 60;
+        const height = Math.min((duration / 60) * 60, 60 * 4);
+        return { top: `${top}px`, height: `${height}px` };
+      };
+
+      return (
+        <div className="day-grid" style={{maxHeight:'calc(100vh - 200px)', overflowY:'auto'}}>
+          <div className="day-header-bar" style={{color: isToday ? 'var(--color-data)' : 'var(--color-dim)'}}>
+            {dayLabel} {isToday && <span style={{color:'var(--color-success)', fontSize:'0.8rem'}}>// TODAY</span>}
+          </div>
+          {HOURS.map(h => (
+            <React.Fragment key={h}>
+              <div className="day-hour-label">{fmtTime(h)}</div>
+              <div className="day-hour-cell" onClick={() => { const d = new Date(date); d.setHours(h); onCellClick(d); }}>
+                {getEventsForHour(h).map((ev, j) => (
+                  <div key={j} className="day-event"
+                    style={{
+                      ...getEventStyle(ev),
+                      borderColor: ev.color || '#39FF14',
+                      background: (ev.color || '#39FF14') + '18',
+                      color: ev.color || '#39FF14',
+                    }}
+                    onClick={e => { e.stopPropagation(); onEventClick(ev); }}>
+                    <strong>{fmtDateTime(ev.start_time)}</strong> {ev.title}
+                  </div>
+                ))}
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+      );
+    };
+
+    // Main App
+    const CalendarApp = () => {
+      const [view, setView] = useState('month');
+      const [currentDate, setCurrentDate] = useState(new Date());
+      const [events, setEvents] = useState([]);
+      const [taskEvents, setTaskEvents] = useState([]);
+      const [showModal, setShowModal] = useState(false);
+      const [editEvent, setEditEvent] = useState(null);
+      const [modalDefaults, setModalDefaults] = useState({});
+      const [showTasks, setShowTasks] = useState(true);
+
+      const allEvents = useMemo(() => {
+        return showTasks ? [...events, ...taskEvents] : events;
+      }, [events, taskEvents, showTasks]);
+
+      const fetchEvents = useCallback(async () => {
+        try {
+          const [evts, tasks] = await Promise.all([api.getEvents(), api.getTaskEvents()]);
+          setEvents(Array.isArray(evts) ? evts : []);
+          setTaskEvents(Array.isArray(tasks) ? tasks : []);
+        } catch (err) {
+          console.error('Fetch error:', err);
+        }
+      }, []);
+
+      useEffect(() => { fetchEvents(); }, [fetchEvents]);
+
+      const navigate = (dir) => {
+        const d = new Date(currentDate);
+        if (view === 'month') d.setMonth(d.getMonth() + dir);
+        else if (view === 'week') d.setDate(d.getDate() + (dir * 7));
+        else d.setDate(d.getDate() + dir);
+        setCurrentDate(d);
+      };
+
+      const goToday = () => setCurrentDate(new Date());
+
+      const getTitle = () => {
+        const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+        if (view === 'month') return `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+        if (view === 'week') {
+          const ws = new Date(currentDate);
+          ws.setDate(currentDate.getDate() - currentDate.getDay());
+          const we = new Date(ws);
+          we.setDate(ws.getDate() + 6);
+          return `${months[ws.getMonth()].slice(0,3)} ${ws.getDate()} - ${months[we.getMonth()].slice(0,3)} ${we.getDate()}, ${we.getFullYear()}`;
+        }
+        return `${months[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getFullYear()}`;
+      };
+
+      const handleCellClick = (date) => {
+        const isAllDay = view === 'month';
+        const start = new Date(date);
+        const end = new Date(date);
+        if (isAllDay) {
+          start.setHours(0, 0, 0);
+          end.setHours(23, 59, 59);
+        } else {
+          end.setHours(start.getHours() + 1);
+        }
+        setEditEvent(null);
+        setModalDefaults({ start, end, allDay: isAllDay });
+        setShowModal(true);
+      };
+
+      const handleEventClick = (ev) => {
+        if (ev.source === 'task_tracker') return; // Can't edit task events
+        setEditEvent(ev);
+        setModalDefaults({});
+        setShowModal(true);
+      };
+
+      const handleSave = async (data, id) => {
+        if (id) {
+          await api.updateEvent(id, data);
+        } else {
+          await api.createEvent(data);
+        }
+        setShowModal(false);
+        setEditEvent(null);
+        fetchEvents();
+      };
+
+      const handleDelete = async (id) => {
+        if (confirm('Delete this event?')) {
+          await api.deleteEvent(id);
+          setShowModal(false);
+          setEditEvent(null);
+          fetchEvents();
+        }
+      };
+
+      return (
+        <div className="app">
+          <div className="header">
+            <div className="header-left">
+              <div className="logo">DEEPKIT // CHRONOS</div>
+              <div className="subtitle">Local Scheduling System</div>
+            </div>
+            <div>
+              <button className="btn btn-primary" onClick={() => { setEditEvent(null); setModalDefaults({start:new Date(), end:new Date(Date.now()+3600000)}); setShowModal(true); }}>
+                + NEW EVENT
+              </button>
+            </div>
+          </div>
+
+          <div className="nav-bar">
+            <div className="nav-group">
+              <button className="btn" onClick={() => navigate(-1)}>&lt;</button>
+              <button className="btn" onClick={goToday}>TODAY</button>
+              <button className="btn" onClick={() => navigate(1)}>&gt;</button>
+              <div className="month-label">{getTitle()}</div>
+            </div>
+            <div className="nav-group">
+              <button className={`btn btn-small ${showTasks ? 'btn-active' : ''}`}
+                onClick={() => setShowTasks(!showTasks)} title="Show task due dates">
+                TASKS
+              </button>
+              <button className={`btn ${view==='month'?'btn-active':''}`} onClick={()=>setView('month')}>MONTH</button>
+              <button className={`btn ${view==='week'?'btn-active':''}`} onClick={()=>setView('week')}>WEEK</button>
+              <button className={`btn ${view==='day'?'btn-active':''}`} onClick={()=>setView('day')}>DAY</button>
+            </div>
+          </div>
+
+          {view === 'month' && <MonthView date={currentDate} events={allEvents} onCellClick={handleCellClick} onEventClick={handleEventClick} />}
+          {view === 'week' && <WeekView date={currentDate} events={allEvents} onCellClick={handleCellClick} onEventClick={handleEventClick} />}
+          {view === 'day' && <DayView date={currentDate} events={allEvents} onCellClick={handleCellClick} onEventClick={handleEventClick} />}
+
+          {showModal && (
+            <EventModal
+              event={editEvent}
+              defaultStart={modalDefaults.start}
+              defaultEnd={modalDefaults.end}
+              defaultAllDay={modalDefaults.allDay}
+              onSave={handleSave}
+              onDelete={handleDelete}
+              onClose={() => { setShowModal(false); setEditEvent(null); }}
+            />
+          )}
+
+          <div className="status-bar">
+            <div><span className="status-dot blink"></span>SYSTEM ONLINE // CHRONOS v1.0</div>
+            <div>{events.length} EVENTS | {taskEvents.length} TASKS</div>
+            <div>{new Date().toLocaleDateString('en-US', {weekday:'short', year:'numeric', month:'short', day:'numeric'})}</div>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<CalendarApp />);
+  </script>
+</body>
+</html>

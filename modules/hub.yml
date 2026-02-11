@@ -1,0 +1,50 @@
+services:
+  deepkit-hub:
+    build: ./services/hub
+    container_name: deepkit-hub
+    restart: unless-stopped
+    ports:
+      - "7777:7777"
+    labels:
+      - "com.docker.compose.project=deepkit"
+      - "com.docker.compose.service=hub"
+      - "deepkit.service.name=DeepKit Hub"
+      - "deepkit.service.port=7777"
+      - "deepkit.health.path=/health"
+      - "deepkit.service.type=http"
+      - "deepkit.service.zone=THE FACE"
+      - "deepkit.service.description=Central command center"
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.hub.rule=PathPrefix(`/hub`)"
+      - "traefik.http.routers.hub.entrypoints=web"
+      - "traefik.http.services.hub.loadbalancer.server.port=7777"
+    environment:
+      - PORT=7777
+      - SERVICE_NAME=hub
+      - NODE_ENV=${NODE_ENV:-production}
+      - POSTGRES_HOST=deepkit-store
+      - POSTGRES_DB=hubconfig
+      - POSTGRES_USER=${POSTGRES_USER:-deepkit}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=deepkit-cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DEEPKIT_INTERNAL_TOKEN=${DEEPKIT_INTERNAL_TOKEN:-}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./services/hub:/app
+      - ./config:/app/config:ro
+      - ./.env:/app/.env:ro
+      - ./backend/lib/deepkit-fabric/bundle:/app/node_modules/deepkit-fabric:ro
+    depends_on:
+      deepkit-store:
+        condition: service_healthy
+      deepkit-cache:
+        condition: service_started
+    networks:
+      - deepkit-network
+
+networks:
+  deepkit-network:
+    external: true
+    name: deepkit-network

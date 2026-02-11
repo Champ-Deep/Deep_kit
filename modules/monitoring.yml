@@ -1,28 +1,36 @@
 # =============================================================================
-# MODULE I: Monitoring (Uptime Kuma)
+# MODULE: DEEPKIT_PULSE (Uptime Kuma)
 # =============================================================================
 # "I want to monitor uptime and service health"
 #
-# Services: Uptime Kuma
+# Services: DEEPKIT_PULSE
 # Ports: 9002
 # Dependencies: Core (none specifically)
 # =============================================================================
 
 services:
   # ---------------------------------------------------------------------------
-  # Uptime Kuma - Service Monitoring (port 9002)
+  # DEEPKIT_PULSE - Service Monitoring (port 9002)
   # ---------------------------------------------------------------------------
-  uptime-kuma:
+  deepkit-pulse:
     image: louislam/uptime-kuma:1
-    container_name: deepkit-uptime-kuma
+    container_name: deepkit-pulse
     restart: unless-stopped
     ports:
-      - "9002:3001"
+      - "7792:3001"
+    labels:
+      # Traefik routing
+      - "traefik.enable=true"
+      - "traefik.http.routers.pulse.rule=PathPrefix(`/pulse`)"
+      - "traefik.http.routers.pulse.entrypoints=web"
+      - "traefik.http.routers.pulse.middlewares=deepkit-auth"
+      - "traefik.http.services.pulse.loadbalancer.server.port=3001"
     volumes:
-      - uptimekuma_data:/app/data
+      - deepkit-pulse-data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - deepkit-network
 
 volumes:
-  uptimekuma_data:
-    name: deepkit-uptimekuma-data
+  pulse_data:
+    name: deepkit-pulse-data
