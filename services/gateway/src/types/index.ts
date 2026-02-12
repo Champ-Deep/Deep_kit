@@ -19,6 +19,7 @@ export interface MessageMetadata {
   lastName?: string;
   isGroup?: boolean;
   replyToMessageId?: string;
+  messageId?: string;
   raw?: any; // Original platform-specific data
 }
 

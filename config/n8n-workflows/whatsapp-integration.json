@@ -1,0 +1,74 @@
+{
+  "name": "DeepKit WhatsApp Integration",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "webhook-receive",
+      "name": "WhatsApp Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "whatsapp-inbound",
+      "path": "whatsapp-inbound",
+      "responseMode": "responseNode",
+      "options": {}
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://gateway:3333/webhook/whatsapp",
+        "body": {
+          "from": "={{ $json.body.from }}",
+          "body": "={{ $json.body.message }}",
+          "profileName": "={{ $json.body.profileName }}"
+        },
+        "options": {}
+      },
+      "id": "forward-to-gateway",
+      "name": "Forward to Gateway",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"message\": \"Message received\" }"
+      },
+      "id": "respond-whatsapp",
+      "name": "Respond to WhatsApp",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "WhatsApp Webhook": {
+      "main": [
+        [
+          {
+            "node": "Forward to Gateway",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Forward to Gateway": {
+      "main": [
+        [
+          {
+            "node": "Respond to WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": []
+}

@@ -15,7 +15,7 @@
 
 ## What is DEEPKIT?
 
-DEEPKIT is a **sovereign AI toolkit** — a modular collection of 25+ AI and automation tools that run entirely on your computer. Your data stays private. No cloud subscriptions. No data harvesting.
+DEEPKIT is a **sovereign AI toolkit** — a streamlined collection of AI and automation tools that run entirely on your computer. Your data stays private. No cloud subscriptions. No data harvesting.
 
 **Start chatting with your AI assistant at `http://localhost:7777`**
 
@@ -25,6 +25,7 @@ The AI can:
 - Create tasks, notes, and workflows
 - Execute tools via natural language
 - Answer questions using local LLMs
+- Chat via Telegram, WhatsApp, or Web UI
 
 ## Quick Start
 
@@ -55,42 +56,99 @@ The installer will guide you through everything and auto-generate secure secrets
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| **DeepKit Messenger** | http://localhost:7777 | **Chat with your AI assistant** |
+| **Core API** | http://localhost:7777 | **Web UI + AI chat + service management** |
+| **Gateway** | http://localhost:3333 | Telegram/WhatsApp message routing |
+| **Task Tracker** | http://localhost:7718 | Gamified task management |
 
 Open `http://localhost:7777` and start chatting. The AI can manage all your services.
 
-### Core Infrastructure (Always Running)
+### Core Architecture (v0.5)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    DEEPKIT v0.5                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [Telegram] [WhatsApp] [Web UI]                             │
+│       ↓          ↓          ↓                               │
+│   ┌──────────────────────────────────────┐                 │
+│   │  Gateway (Port 3333)                 │                 │
+│   │  • Message normalization             │                 │
+│   │  • Session management (Redis)        │                 │
+│   └──────────────┬───────────────────────┘                 │
+│                  ↓                                          │
+│   ┌──────────────────────────────────────┐                 │
+│   │  Core API (Port 7777)                │                 │
+│   │  • AI orchestration (OpenCode)       │                 │
+│   │  • Tool execution (Task Tracker)     │                 │
+│   │  • React Web UI                      │                 │
+│   └──────────────┬───────────────────────┘                 │
+│                  ↓                                          │
+│  [OpenCode] [Task Tracker] [n8n] [Ollama]                   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Core Services (Always Running)
 
 | Service | Port | Description |
 |---------|------|-------------|
-| DeepKit Messenger | 7777 | AI chat + generative UI + service management |
-| DeepKit Orchestrator | 5678 | n8n workflow automation |
-| DeepKit Store | 5432 | PostgreSQL database |
-| DeepKit Cache | 6379 | Redis event bus |
-| DeepKit Engine | 11434 | Ollama local LLM |
+| **Core API** | 7777 | AI orchestration + Web UI + REST API |
+| **Gateway** | 3333 | Message gateway (Telegram/WhatsApp/Web) |
+| **Task Tracker** | 7718 | Gamified task management |
+| **n8n** | 5678 | Workflow automation |
+| **PostgreSQL** | 5432 | Primary database |
+| **Redis** | 6379 | Cache, sessions, conversations |
+| **Ollama** | 11434 | Local LLM inference |
+| **OpenCode** | 4096 | AI agent runtime |
 
-### Available Modules
+### v0.5 Simplified Architecture
 
-| Category | Services | Ports |
-|----------|----------|-------|
-| **Chat & Research** | Open WebUI, Document Analysis | 3001, 3002 |
-| **Content & CRM** | Strapi CMS, SuiteCRM | 3003, 3004 |
-| **Marketing** | Marketing360, Link Shortener, UTM Tracker | 7712, 3013, 3007 |
-| **Productivity** | Invoicing, Calendar, Tasks, Time Tracking | 7715, 7714, 7718, 7719 |
-| **Knowledge** | FalkorDB, Qdrant Vector | 6378, 6333 |
-| **Utilities** | Password Manager, ChampMail, QR Generator | 7716, 3025, 3010 |
-| **Admin** | Super Admin, File Manager, Webhook Manager | 7722, 7720, 7721 |
-| **Monitoring** | Prometheus, Grafana | 9090, 3000 |
+**What we removed (from v0.1):**
+- 20+ redundant microservices → Consolidated into Core API
+- Duplicate chat interfaces → Unified Gateway
+- Complex backend → Replaced by OpenCode
+- 50+ documentation files → Archived
 
-## Presets
+**What we kept:**
+- ✅ Task Tracker (star service)
+- ✅ n8n workflows
+- ✅ Core infrastructure (PG, Redis, Ollama)
+
+**What we added:**
+- ✅ Gateway service (multi-channel messaging)
+- ✅ Core API (AI orchestration + Web UI)
+- ✅ OpenCode integration (advanced AI)
+- ✅ Modern React Web UI
+
+**Result:** 28 services → 11 services (-61% complexity)
+
+## Presets (v0.5)
 
 | Preset | Services | RAM | Best For |
 |--------|----------|-----|----------|
-| **Minimal** | 5 | ~5GB | Getting started, lightweight use |
-| **Creator** | 11 | ~7GB | Content creators, marketers |
-| **Business** | 15 | ~10GB | Business operations, CRM |
-| **Developer** | 14 | ~9GB | Building AI applications |
-| **Full** | 25+ | ~16GB | Everything included |
+| **Minimal** | 8 | ~4GB | Core AI + Task Tracker |
+| **Messaging** | 9 | ~5GB | + Telegram/WhatsApp integration |
+| **Full** | 11 | ~6GB | All services + n8n workflows |
+
+### Quick Deploy
+
+```bash
+# Start core infrastructure
+docker compose up -d
+
+# Add messaging channels (optional)
+docker compose -f docker-compose.yml \
+  -f modules/gateway.yml \
+  -f modules/core-api.yml \
+  -f modules/opencode.yml up -d --build
+
+# Add task tracker
+docker compose -f modules/task-tracker.yml up -d
+
+# Add n8n for workflows (optional)
+docker compose -f modules/automation.yml up -d
+```
 
 ## Common Commands
 

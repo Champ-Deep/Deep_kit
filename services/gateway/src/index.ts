@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { TelegramAdapter, WebAdapter } from './adapters';
+import { TelegramAdapter, WebAdapter, WhatsAppAdapter } from './adapters';
 import { SessionManager } from './services/session-manager';
 import { CoreAPIClient } from './services/core-api-client';
 import { GatewayMessage } from './types';
@@ -45,26 +45,25 @@ app.get('/status', (req: Request, res: Response) => {
   });
 });
 
-// Webhook endpoint for WhatsApp (via n8n)
+// Webhook endpoint for WhatsApp (via n8n or Evolution API)
 app.post('/webhook/whatsapp', async (req: Request, res: Response) => {
   try {
-    const { from, body, profileName } = req.body;
+    // Find WhatsApp adapter
+    const whatsappAdapter = adapters.find(a => a.channel === 'whatsapp') as WhatsAppAdapter;
     
-    const message: GatewayMessage = {
-      id: `whatsapp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      channel: 'whatsapp',
-      userId: from,
-      text: body,
-      metadata: {
-        chatId: from,
-        username: profileName,
-        raw: req.body
-      },
-      timestamp: new Date()
-    };
-
+    if (!whatsappAdapter) {
+      return res.status(503).json({ success: false, error: 'WhatsApp adapter not initialized' });
+    }
+    
+    // Parse the message using the adapter
+    const message = whatsappAdapter.handleWebhook(req.body);
+    
+    if (!message) {
+      return res.status(400).json({ success: false, error: 'Invalid message format' });
+    }
+    
     await handleMessage(message);
-    res.json({ success: true });
+    res.json({ success: true, messageId: message.id });
   } catch (error) {
     console.error('WhatsApp webhook error:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
@@ -159,6 +158,11 @@ async function initializeAdapters(): Promise<void> {
   web.onMessage(handleMessage);
   await web.initialize();
   adapters.push(web);
+
+  // WhatsApp (webhook-based)
+  const whatsapp = new WhatsAppAdapter();
+  await whatsapp.initialize();
+  adapters.push(whatsapp);
 
   console.log(`✅ ${adapters.length} adapters initialized`);
 }
